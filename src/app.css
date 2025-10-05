@@ -1,7 +1,15 @@
+/* Team colors for matches - using Pico's built-in variables */
 .team1-color {
-    color: orange;
+	color: var(--pico-primary);
+	font-weight: 600;
 }
 
 .team2-color {
-    color: blue;
+	color: var(--pico-secondary);
+	font-weight: 600;
+}
+
+/* Utility styles */
+[role='button'].outline.secondary {
+	margin-top: 1rem;
 }
