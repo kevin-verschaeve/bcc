@@ -1,11 +1,15 @@
-/* Team colors for matches - using Pico's built-in variables */
+:root {
+	--color-team1: #c08f36;
+	--color-team2: #0c7f36;
+}
+
 .team1-color {
-	color: var(--pico-primary);
+	color: var(--color-team1);
 	font-weight: 600;
 }
 
 .team2-color {
-	color: var(--pico-secondary);
+	color: var(--color-team2);
 	font-weight: 600;
 }
 

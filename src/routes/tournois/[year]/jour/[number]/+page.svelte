@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Modal from '$lib/component/Modal.svelte';
 	import type { PageProps } from './$types';
 
@@ -10,7 +11,7 @@
 </script>
 
 <hgroup>
-	<h1>Jour {data.number}</h1>
+	<h1>Jour {page.params.number}</h1>
 	<p>Tournoi {data.tournament.year}</p>
 </hgroup>
 
