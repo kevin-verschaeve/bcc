@@ -10,6 +10,8 @@
 	};
 </script>
 
+<a href="/" class="secondary">← Retour</a>
+
 <h1>Tournois</h1>
 
 <table role="grid">

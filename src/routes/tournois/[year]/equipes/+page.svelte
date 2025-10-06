@@ -9,6 +9,8 @@
 </script>
 
 
+<a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
+
 <h2>Équipes du tournoi {data.tournament.year} - {data.tournament.name}</h2>
 
 <button onclick="{() => (showModal = true)}">Ajouter une équipe</button>

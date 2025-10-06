@@ -10,6 +10,8 @@
 	let showModal: boolean = $state(false);
 </script>
 
+<a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
+
 <hgroup>
 	<h1>Jour {page.params.number}</h1>
 	<p>Tournoi {data.tournament.year}</p>
@@ -49,10 +51,6 @@
 		{/each}
 	</tbody>
 </table>
-
-<a href="/tournois/{data.tournament.year}" role="button" class="outline secondary">
-	&larr; Retour au tournoi
-</a>
 
 <Modal bind:showModal>
 	{#snippet header()}

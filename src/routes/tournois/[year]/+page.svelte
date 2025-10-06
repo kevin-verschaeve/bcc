@@ -4,6 +4,8 @@
 	let { data }: PageProps = $props();
 </script>
 
+<a href="/tournois" class="secondary">← Retour</a>
+
 <hgroup>
 	<h1>Tournoi {data.tournament.year}</h1>
 	<p>{data.tournament.name || 'Saison ' + data.tournament.year}</p>

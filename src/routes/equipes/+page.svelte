@@ -25,6 +25,8 @@
   }
 </script>
 
+<a href="/" class="secondary">← Retour</a>
+
 <h1>Équipes</h1>
 
 <button onclick={() => (showModal = true)}>Ajouter une équipe</button>
