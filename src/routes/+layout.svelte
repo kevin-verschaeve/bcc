@@ -36,6 +36,7 @@
 			<ul>
 				<li><a href="/tournois">Tournois</a></li>
 				<li><a href="/equipes">Équipes</a></li>
+				<li><a href="/joueurs">Joueurs</a></li>
 			</ul>
 		</nav>
 	</header>

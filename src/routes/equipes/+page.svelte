@@ -1,28 +1,14 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import Modal from '$lib/component/Modal.svelte';
-	import Svelecte from 'svelecte';
-  import type { PageProps } from './$types';
-	import type { Tables } from '../../../database.types';
+   import { enhance } from '$app/forms';
+   import Modal from '$lib/component/Modal.svelte';
+   import Svelecte from 'svelecte';
+   import type { PageProps } from './$types';
+   import type { Tables } from '../../../database.types';
 
   let { data }: PageProps = $props();
   let players: Tables<'players'>[] = $state(data.players);
 
   let showModal: boolean = $state(false);
-
-  const createPlayer = async ({ inputValue }: {inputValue: string}) => {
-    const res = await fetch('/joueurs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({name: inputValue, tel: 1234}),
-    });
-
-    const newPlayer = await res.json();
-
-    players = [...players, newPlayer];
-  }
 </script>
 
 <a href="/" class="secondary">← Retour</a>
@@ -74,8 +60,6 @@
 				valueField="id"
 				labelField="name"
 				required={true}
-				creatable={true}
-				createHandler={createPlayer}
 			/>
 		</label>
 
@@ -87,8 +71,6 @@
 				valueField="id"
 				labelField="name"
 				required={true}
-				creatable={true}
-				createHandler={createPlayer}
 			/>
 		</label>
 
