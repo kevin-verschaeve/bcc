@@ -34,6 +34,11 @@
 				<li><strong><a href="/">BCC</a></strong></li>
 			</ul>
 			<ul>
+				<li>
+					<a href="https://www.notion.so/BCC-Tournament-bddfd1ac300c40bd9c41deec65a15bba" target="_blank" class="secondary" role="button">
+						&#x2660; Règles du jeu
+					</a>
+				</li>
 				<li><a href="/tournois">Tournois</a></li>
 				<li><a href="/equipes">Équipes</a></li>
 				<li><a href="/joueurs">Joueurs</a></li>
