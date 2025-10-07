@@ -4,7 +4,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
   const { data: tournament } = await supabase.from('tournaments').select().eq('year', params.year).single();
   const { data: teams } = await supabase.from('teams').select();
   const { data: matchs } = await supabase.from('matchs')
-    .select('*, team1(*), team2(*)')
+    .select('*, team1(*, player1(*), player2(*)), team2(*, player1(*), player2(*))')
     .eq('tournament', tournament.id)
     .eq('number', params.number)
   ;
