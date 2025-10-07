@@ -2,8 +2,23 @@
 	import '@picocss/pico/css/pico.min.css';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import { getFlash } from 'sveltekit-flash-message';
+  import { Toaster, toast } from 'svelte-sonner';
+	import { page } from '$app/state';
 
 	let { children } = $props();
+
+	const flash = getFlash(page);
+
+    flash.subscribe(($flash) => {
+        if (!$flash) return;
+        if ($flash.type === 'success') {
+            toast.success($flash.message);
+        } else {
+            toast.error($flash.message);
+        }
+        flash.set(undefined);
+    });
 </script>
 
 <svelte:head>
@@ -12,6 +27,7 @@
 </svelte:head>
 
 <div class="container">
+    <Toaster position="top-center" richColors />
 	<header>
 		<nav>
 			<ul>

@@ -1,3 +1,4 @@
+import { setFlash } from 'sveltekit-flash-message/server';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
 
@@ -17,16 +18,17 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 }
 
 export const actions = {
-	delete: async ({ request, locals: { supabase } }) => {
+	delete: async ({ request, cookies, locals: { supabase } }) => {
     const formData = await request.formData();
 
-    const res = await supabase.from('tournament_teams').delete().eq('id', formData.get('tournament_team'))
+    await supabase.from('tournament_teams').delete().eq('id', formData.get('tournament_team'));
 
-    console.log(res);
+    setFlash({type: 'success', message: 'Tournoi supprimé avec succès !'}, cookies);
 	},
-	addTeam: async ({ request, locals: { supabase } }) => {
+	addTeam: async ({ request, cookies, locals: { supabase } }) => {
     const formData = await request.formData();
 
     await supabase.from('tournament_teams').insert({team: formData.get('team_id'), tournament: formData.get('tournament_id')})
+    setFlash({type: 'success', message: 'Équipe ajoutée au tournoi avec succès !'}, cookies);
 	}
 } satisfies Actions;

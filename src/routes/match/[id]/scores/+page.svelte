@@ -38,6 +38,7 @@
 						name="score_team1"
 						id="score_team1_{score.id}"
 						value={score.score_team1}
+						min="0"
 						required
 					/>
 				</label>
@@ -49,6 +50,7 @@
 						name="score_team2"
 						id="score_team2_{score.id}"
 						value={score.score_team2}
+						min="0"
 						required
 					/>
 				</label>
@@ -72,6 +74,7 @@
 					type="number"
 					name="score_team1"
 					id="new_score_team1"
+					min="0"
 					required
 				/>
 			</label>
@@ -82,6 +85,7 @@
 					type="number"
 					name="score_team2"
 					id="new_score_team2"
+					min="0"
 					required
 				/>
 			</label>

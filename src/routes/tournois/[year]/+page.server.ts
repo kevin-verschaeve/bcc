@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
 import { generateTournamentSchedule } from '$lib/MeetGenerator';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
   const { data: tournament } = await supabase.from('tournaments').select().eq('year', params.year).single();
@@ -52,17 +53,8 @@ export const actions = {
         i++;
       }
 
+      setFlash({type: 'success', message: 'Tournoi démarré avec succès !'}, cookies);
+
       redirect(301, `/tournois/${tournament.year}/rencontres`)
-    },
-    deleteMatch: async ({ request, locals: { supabase } }) => {
-      const formData = await request.formData();
-
-      const res = await supabase.from('matchs').delete().eq('id', +formData.get('match'));
-      console.log(res);
-    },
-    addTeam: async ({ request, locals: { supabase } }) => {
-      const formData = await request.formData();
-
-      await supabase.from('tournament_teams').insert({team: formData.get('team_id'), tournament: formData.get('tournament_id')});
     },
 } satisfies Actions;
