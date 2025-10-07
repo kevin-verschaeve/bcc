@@ -29,6 +29,5 @@
 	</main>
 
 	<footer>
-		<small>Belote Card Championship</small>
 	</footer>
 </div>

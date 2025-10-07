@@ -6,22 +6,20 @@ import { generateTournamentSchedule } from '$lib/MeetGenerator';
 export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
   const { data: tournament } = await supabase.from('tournaments').select().eq('year', params.year).single();
   const { data: matchs } = await supabase.from('matchs')
-    .select()
+    .select('number')
     .eq('tournament', tournament.id)
     .order('number');
 
-  const { data: teams } = await supabase.from('teams').select();
-
-  const { data: scores } = await supabase.from('match_scores')
-    .select('*, match!inner (id, tournament)')
-    .eq('match.tournament', tournament.id);
+  const { data: summary } = await supabase.from('tournament_summary')
+    .select()
+    .eq('tournament', tournament.id)
+    .order('number')
+    .order('team_name');
 
 	return {
     tournament,
-    days: Object.groupBy(matchs, ({number}) => number) ?? [],
-    matchs: matchs ?? [],
-		scores: scores ?? [],
-    teams: teams ?? [],
+    days: new Set(matchs.map(({ number }) => number)),
+    summary: Object.groupBy(summary, ({ team_name }) => team_name),
   }
 }
 

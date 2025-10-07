@@ -1,4 +1,4 @@
-:root {
+:root:not([data-theme=dark]) {
 	--color-team1: #c08f36;
 	--color-team2: #0c7f36;
 }
@@ -16,4 +16,7 @@
 /* Utility styles */
 [role='button'].outline.secondary {
 	margin-top: 1rem;
+}
+.text-center {
+	text-align: center;
 }
