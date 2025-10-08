@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getMonthFromNumber } from '$lib/month';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -7,7 +8,7 @@
 <a href="/tournois" class="secondary">← Retour</a>
 
 <hgroup>
-	<h1>Tournoi {data.tournament.year}</h1>
+	<h1>Tournoi {data.tournament.year} - {data.tournament.year + 1}</h1>
 	<p>{data.tournament.name || 'Saison ' + data.tournament.year}</p>
 </hgroup>
 
@@ -36,7 +37,7 @@
         <th scope="col" rowspan="2">Équipe</th>
         {#each data.days as number}
           <th colspan="2" class="text-center">
-            <a href="/tournois/{data.tournament.year}/jour/{number}">J{number}</a></th>
+            <a href="/tournois/{data.tournament.year}/jour/{number}">J{number} - {getMonthFromNumber(number)}</a></th>
         {/each}
       </tr>
       <tr>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Modal from '$lib/component/Modal.svelte';
+	import { getMonthFromNumber } from '$lib/month';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -19,7 +20,7 @@
 <a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
 
 <hgroup>
-	<h1>Jour {page.params.number}</h1>
+	<h1>Jour {page.params.number} - {getMonthFromNumber(+page.params.number)}</h1>
 	<p>Tournoi {data.tournament.year}</p>
 </hgroup>
 
