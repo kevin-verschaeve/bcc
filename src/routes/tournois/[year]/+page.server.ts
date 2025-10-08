@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
-import { generateTournamentSchedule } from '$lib/MeetGenerator';
+import { generateTournamentSchedule } from '$lib/MatchGenerator';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
