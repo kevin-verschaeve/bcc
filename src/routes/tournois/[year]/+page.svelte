@@ -61,6 +61,12 @@
             </td>
         {/each}
       </tr>
+      {:else}
+      <tr>
+          <td colspan="{(data.days.size * 2) + 2}" class="text-center">
+            <i>Aucun match joué pour le moment</i>
+          </td>
+      </tr>
       {/each}
     </tbody>
   </table>
@@ -87,6 +93,12 @@
           </td>
           <td>
             {summary?.map(s => s.goal_average).reduce((acc, points) => (acc += points))}
+          </td>
+      </tr>
+      {:else}
+      <tr>
+          <td colspan="3" class="text-center">
+            <i>Aucun match joué pour le moment</i>
           </td>
       </tr>
       {/each}
