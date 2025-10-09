@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 }
 
 export const actions = {
-    startTournament: async ({ request, locals: { supabase } }) => {
+    startTournament: async ({ request, cookies, locals: { supabase } }) => {
       const formData = await request.formData();
 
       const { data: tournament } = await supabase.from('tournaments')
