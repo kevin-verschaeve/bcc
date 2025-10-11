@@ -31,6 +31,9 @@
 				<td><strong>{team.name}</strong></td>
 				<td>{team.player1.name} - {team.player2.name}</td>
 				<td>
+					<section>
+					    <a href="/equipes/{team.id}/dispos" class="full-width" role="button">Modifier les disponibilités</a>
+					</section>
 					<form action="?/delete" method="POST" use:enhance>
 						<input type="hidden" name="team" value={team.id} />
 						<button type="submit" class="secondary outline">Supprimer</button>

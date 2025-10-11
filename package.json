@@ -14,6 +14,7 @@
 		"lint": "prettier --check ."
 	},
 	"devDependencies": {
+		"@event-calendar/core": "^4.6.0",
 		"@picocss/pico": "^2.1.1",
 		"@sveltejs/adapter-vercel": "^5.6.3",
 		"@sveltejs/kit": "^2.22.0",
@@ -28,8 +29,10 @@
 		"vite-plugin-devtools-json": "^1.0.0"
 	},
 	"dependencies": {
+		"@event-calendar/day-grid": "^3.12.0",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.58.0",
+		"luxon": "^3.7.2",
 		"svelecte": "^5.3.0",
 		"sveltekit-flash-message": "^2.4.6"
 	}

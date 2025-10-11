@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { matchingAvailabilities } from '$lib/availabilitiesMatcher';
 	import Modal from '$lib/component/Modal.svelte';
-	import { getMonthFromNumber } from '$lib/month';
+	import TeamAvailabilities from '$lib/component/TeamAvailabilities.svelte';
+	import TeamMatchingAvailabilities from '$lib/component/TeamMatchingAvailabilities.svelte';
+	import { getMonthFromNumber, getNumberFromMonth } from '$lib/month';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -20,11 +23,11 @@
 <a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
 
 <hgroup>
-	<h1>Jour {page.params.number} - {getMonthFromNumber(+page.params.number)}</h1>
+	<h1>Jour {page.params.number} - {getMonthFromNumber(Number(page.params.number))}</h1>
 	<p>Tournoi {data.tournament.year}</p>
 </hgroup>
 
-<table role="grid">
+<table role="grid" class="striped">
 	<thead>
 		<tr>
 			<th scope="col">Match</th>
@@ -43,6 +46,8 @@
 					<button class="team2-color as-link" onclick={() => showTeamInfo(match.team2)}>
 						{match.team2.name}
 					</button>
+
+					<TeamMatchingAvailabilities availabilities={matchingAvailabilities(match.team1.availabilities, match.team2.availabilities)} />
 				</td>
 				<td>
 					{#each matchScores[match.id] ?? [] as score}
@@ -67,8 +72,10 @@
 	{#snippet header()}
 		<h3>Numéros de téléphones de l'équipe</h3>
 	{/snippet}
+
 	{#if teamDetail}
 		<p>{teamDetail.player1.name}: {teamDetail.player1.tel}</p>
 		<p>{teamDetail.player2.name}: {teamDetail.player2.tel}</p>
+		<TeamAvailabilities availabilities={teamDetail.availabilities.filter(a => getNumberFromMonth(new Date(a.start).getMonth()) === Number(page.params.number))} />
 	{/if}
 </Modal>
