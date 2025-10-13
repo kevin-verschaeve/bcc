@@ -16,6 +16,6 @@
     </ul>
 {:else}
     <p class="text-center">
-        <small><i>L'équipe n'a pas encore renseignée ses disponibilités.</i></small>
+        <small><i>L'équipe n'a pas encore renseigné ses disponibilités.</i></small>
     </p>
 {/if}
