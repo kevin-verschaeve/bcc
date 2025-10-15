@@ -70,7 +70,7 @@
 
 <Modal bind:showModal>
 	{#snippet header()}
-		<h3>Numéros de téléphones de l'équipe</h3>
+		<h3>{teamDetail?.name}</h3>
 	{/snippet}
 
 	{#if teamDetail}
