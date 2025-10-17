@@ -13,36 +13,51 @@
 
 <a href="/" class="secondary">← Retour</a>
 
-<h1>Équipes</h1>
+<div class="page-title-container">
+	<h1 class="m-0">Équipes</h1>
+	<button onclick={() => (showModal = true)}>+ Ajouter une équipe</button>
+</div>
 
-<button onclick={() => (showModal = true)}>Ajouter une équipe</button>
-
-<table role="grid">
-	<thead>
-		<tr>
-			<th scope="col">Nom</th>
-			<th scope="col">Joueurs</th>
-			<th scope="col">Actions</th>
-		</tr>
-	</thead>
-	<tbody>
+{#if data.teams.length === 0}
+	<article class="empty-state">
+		<h3 class="empty-state-title">Aucune équipe pour le moment</h3>
+		<p class="empty-state-with-action">Créez votre première équipe pour commencer</p>
+		<button onclick={() => (showModal = true)}>Créer une équipe</button>
+	</article>
+{:else}
+	<div class="card-grid-auto">
 		{#each data.teams as team}
-			<tr>
-				<td><strong>{team.name}</strong></td>
-				<td>{team.player1.name} - {team.player2.name}</td>
-				<td>
-					<section>
-					    <a href="/equipes/{team.id}/dispos" class="full-width" role="button">Modifier les disponibilités</a>
-					</section>
-					<form action="?/delete" method="POST" use:enhance>
+			<article class="team-card">
+				<div class="team-card-header">
+					<h3 class="m-0" style="font-size: 1.3rem;">{team.name}</h3>
+				</div>
+
+				<div class="team-card-players">
+					<div class="team-card-player">
+						<span class="team-card-player-icon">👤</span>
+						<span class="team-card-player-name">{team.player1.name}</span>
+					</div>
+					<div class="team-card-player">
+						<span class="team-card-player-icon">👤</span>
+						<span class="team-card-player-name">{team.player2.name}</span>
+					</div>
+				</div>
+
+				<div class="team-card-actions">
+					<a href="/equipes/{team.id}/dispos" role="button" class="m-0 text-center">
+						Gérer les disponibilités
+					</a>
+					<form action="?/delete" method="POST" use:enhance class="m-0">
 						<input type="hidden" name="team" value={team.id} />
-						<button type="submit" class="secondary outline">Supprimer</button>
+						<button type="submit" class="secondary outline m-0 full-width">
+							Supprimer
+						</button>
 					</form>
-				</td>
-			</tr>
+				</div>
+			</article>
 		{/each}
-	</tbody>
-</table>
+	</div>
+{/if}
 
 <Modal bind:showModal>
 	{#snippet header()}

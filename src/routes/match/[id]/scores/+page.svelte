@@ -11,28 +11,47 @@
 
 <a href="/tournois/{data.match.tournament.year}/jour/{data.match.number}" class="secondary">← Retour</a>
 
-<hgroup>
-	<h2>Scores du match</h2>
-	<p>
-		<span class="team1-color">{data.match.team1.name}</span>
-		<strong>VS</strong>
-		<span class="team2-color">{data.match.team2.name}</span>
-	</p>
-</hgroup>
+<div class="match-header">
+	<hgroup class="m-0">
+		<h2 class="mb-sm">Résultat du match</h2>
+		<div class="match-vs-container">
+			<div class="match-team-box">
+				<span class="team1-color match-team-name">{data.match.team1.name}</span>
+				<div class="match-team-score">
+					{team1Wins}
+				</div>
+			</div>
+			<strong class="match-vs-text">VS</strong>
+			<div class="match-team-box">
+				<span class="team2-color match-team-name">{data.match.team2.name}</span>
+				<div class="match-team-score">
+					{team2Wins}
+				</div>
+			</div>
+		</div>
+	</hgroup>
+</div>
 
-{#each data.scores as score}
-	<article style="position: relative;">
-		<form method="POST" action="?/deleteScore" use:enhance style="position: absolute; top: 0.5rem; right: 0.5rem;">
-			<input type="hidden" name="score_id" value={score.id} />
-			<button type="submit" data-tooltip="Supprimer cette manche" class="secondary outline" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;" aria-label="Supprimer">✕</button>
-		</form>
+{#if data.scores.length > 0}
+	<h3 class="section-title">Manches jouées</h3>
+{/if}
+
+{#each data.scores as score, index}
+	<article class="score-card">
+		<div class="score-card-header">
+			<h4 class="m-0 table-cell-muted">Manche {index + 1}</h4>
+			<form method="POST" action="?/deleteScore" use:enhance class="delete-btn">
+				<input type="hidden" name="score_id" value={score.id} />
+				<button type="submit" title="Supprimer cette manche" class="secondary outline" aria-label="Supprimer">✕</button>
+			</form>
+		</div>
 
 		<form method="POST" action="?/updateScore" use:enhance>
 			<input type="hidden" name="score_id" value={score.id} />
 
-			<div class="grid">
+			<div class="score-form-grid">
 				<label for="score_team1_{score.id}">
-					Score {data.match.team1.name}
+					<span class="team1-color">{data.match.team1.name}</span>
 					<input
 						type="number"
 						name="score_team1"
@@ -40,11 +59,12 @@
 						value={score.score_team1}
 						min="0"
 						required
+						class="score-input-large"
 					/>
 				</label>
 
 				<label for="score_team2_{score.id}">
-					Score {data.match.team2.name}
+					<span class="team2-color">{data.match.team2.name}</span>
 					<input
 						type="number"
 						name="score_team2"
@@ -52,49 +72,67 @@
 						value={score.score_team2}
 						min="0"
 						required
+						class="score-input-large"
 					/>
 				</label>
 
-				<div style="display: flex; align-items: flex-end;">
-					<button type="submit">Modifier</button>
+				<div class="flex-row">
+					<button type="submit" class="m-0">Modifier</button>
 				</div>
 			</div>
+
+			{#if score.score_team1 > 1000 || score.score_team2 > 1000}
+				<div class="score-winner-badge">
+					{score.score_team1 > 1000 ? data.match.team1.name : data.match.team2.name} remportent la manche !
+				</div>
+			{/if}
 		</form>
 	</article>
 {/each}
 
 {#if canAddScore}
-	<h2>Ajouter un nouveau score</h2>
+	<article class="score-add-section">
+		<h3 class="section-title">Ajouter un nouveau score</h3>
 
-	<form method="POST" action="?/addScore" use:enhance>
-		<div class="grid">
-			<label for="new_score_team1">
-				Score {data.match.team1.name}
-				<input
-					type="number"
-					name="score_team1"
-					id="new_score_team1"
-					min="0"
-					required
-				/>
-			</label>
+		<form method="POST" action="?/addScore" use:enhance>
+			<div class="score-form-grid">
+				<label for="new_score_team1">
+					<span class="team1-color">{data.match.team1.name}</span>
+					<input
+						type="number"
+						name="score_team1"
+						id="new_score_team1"
+						min="0"
+						required
+						placeholder="0"
+						class="score-input-large"
+					/>
+				</label>
 
-			<label for="new_score_team2">
-				Score {data.match.team2.name}
-				<input
-					type="number"
-					name="score_team2"
-					id="new_score_team2"
-					min="0"
-					required
-				/>
-			</label>
+				<label for="new_score_team2">
+					<span class="team2-color">{data.match.team2.name}</span>
+					<input
+						type="number"
+						name="score_team2"
+						id="new_score_team2"
+						min="0"
+						required
+						placeholder="0"
+						class="score-input-large"
+					/>
+				</label>
 
-			<div style="display: flex; align-items: flex-end;">
-				<button type="submit">Ajouter</button>
+				<div class="flex-row">
+					<button type="submit" class="m-0">Ajouter</button>
+				</div>
 			</div>
-		</div>
-	</form>
+		</form>
+	</article>
 {:else}
-	<p><em>Le match est terminé - une équipe a déjà gagné 2 manches.</em></p>
+	<article class="score-completed-section">
+		<p class="score-completed-text">
+			<strong>Match terminé!</strong><br>
+			<span class="score-completed-subtext">Une équipe a remporté 2 manches</span>
+		</p>
+	</article>
 {/if}

@@ -7,99 +7,123 @@
 
 <a href="/tournois" class="secondary">← Retour</a>
 
-<hgroup>
-	<h1>Tournoi {data.tournament.year} - {data.tournament.year + 1}</h1>
-	<p>{data.tournament.name || 'Saison ' + data.tournament.year}</p>
-</hgroup>
+<div class="page-header">
+	<hgroup class="mb-sm">
+		<div class="badge-container">
+			<h1 class="page-header-title">Tournoi {data.tournament.year} - {data.tournament.year + 1}</h1>
+			{#if data.tournament.status === 'not_started'}
+				<span class="status-badge pending">Non démarré</span>
+			{:else if data.tournament.status === 'in_progress'}
+				<span class="status-badge active">En cours</span>
+			{/if}
+		</div>
+		<p class="page-header-subtitle page-header-large">{data.tournament.name || 'Saison ' + data.tournament.year}</p>
+	</hgroup>
 
-{#if data.tournament.status === 'not_started'}
-  <nav>
-    <ul>
-      <li>
-        <a href="/tournois/{data.tournament.year}/equipes" role="button" class="outline">
-          Équipes du tournois
-        </a>
-      </li>
-      <li>
-        <form method="POST" action="?/startTournament">
-          <input type="hidden" name="tournament" value={data.tournament.id} />
-          <button type="submit" class="contrast">Démarrer le tournoi</button>
-        </form>
-      </li>
-    </ul>
-  </nav>
-{/if}
+	{#if data.tournament.status === 'not_started'}
+	  <div class="action-flex">
+		<a href="/tournois/{data.tournament.year}/equipes" role="button" class="outline m-0">
+		  Gérer les équipes
+		</a>
+		<form method="POST" action="?/startTournament" class="m-0">
+		  <input type="hidden" name="tournament" value={data.tournament.id} />
+		  <button type="submit" class="m-0">Démarrer le tournoi</button>
+		</form>
+	  </div>
+	{/if}
+</div>
 
-<article class="overflow-auto">
-	<table class="striped" role="grid">
-    <thead>
-      <tr>
-        <th scope="col" rowspan="2">Équipe</th>
-        {#each data.days as number}
-          <th colspan="2" class="text-center">
-            <a href="/tournois/{data.tournament.year}/jour/{number}">J{number} - {getMonthFromNumber(number)}</a></th>
-        {/each}
-      </tr>
-      <tr>
-        {#each data.days as _}
-          <th>Points</th>
-          <th>Goal average</th>
-        {/each}
-      </tr>
-    </thead>
-    <tbody>
-      {#each Object.entries(data.summary) as [team_name, summary]}
-      <tr>
-          <td>
-            <strong>{team_name}</strong>
-          </td>
-          {#each data.days as number}
-            <td>
-              {summary?.find(team_summary => team_summary.number === number)?.total_points ?? '-'}
-            </td>
-            <td>
-              {summary?.find(team_summary => team_summary.number === number)?.goal_average ?? '-'}
-            </td>
-        {/each}
-      </tr>
-      {:else}
-      <tr>
-          <td colspan="{(data.days.size * 2) + 2}" class="text-center">
-            <i>Aucun match joué pour le moment</i>
-          </td>
-      </tr>
-      {/each}
-    </tbody>
-  </table>
+<article>
+	<h3 class="section-title">Résultats par jour</h3>
+	<div class="overflow-auto">
+		<table class="striped" role="grid">
+		<thead>
+		  <tr>
+			<th scope="col" rowspan="2" class="table-col-fixed">Équipe</th>
+			{#each data.days as number}
+			  <th colspan="2" class="text-center table-header-colored">
+				<a href="/tournois/{data.tournament.year}/jour/{number}" class="table-link-bold">
+					J{number} - {getMonthFromNumber(number)}
+				</a>
+			  </th>
+			{/each}
+		  </tr>
+		  <tr>
+			{#each data.days as _}
+			  <th class="table-header-light">Points</th>
+			  <th class="table-header-light">Goal avg</th>
+			{/each}
+		  </tr>
+		</thead>
+		<tbody>
+		  {#each Object.entries(data.summary) as [team_name, summary]}
+		  <tr>
+			  <td>
+				<strong class="table-cell-large">{team_name}</strong>
+			  </td>
+			  {#each data.days as number}
+				<td class="table-cell-centered">
+				  <span class="table-cell-emphasized">
+					{summary?.find(team_summary => team_summary.number === number)?.total_points ?? '-'}
+				  </span>
+				</td>
+				<td class="table-cell-centered table-cell-muted">
+				  {summary?.find(team_summary => team_summary.number === number)?.goal_average ?? '-'}
+				</td>
+			{/each}
+		  </tr>
+		  {:else}
+		  <tr>
+			  <td colspan="{(data.days.size * 2) + 1}" class="text-center">
+				<em class="table-cell-muted">Aucun match joué pour le moment</em>
+			  </td>
+		  </tr>
+		  {/each}
+		</tbody>
+	  </table>
+	</div>
 </article>
 
-<article class="overflow-auto">
-  <h3 class="text-center">Total</h3>
+<article class="mt-lg">
+  <h3 class="section-title section-title-center">Classement général</h3>
 	<table class="striped" role="grid">
     <thead>
       <tr>
+        <th scope="col" class="table-col-rank">#</th>
         <th scope="col">Équipe</th>
-        <th scope="col">Points</th>
-        <th scope="col">Goal average</th>
+        <th scope="col" class="text-center">Points</th>
+        <th scope="col" class="text-center">Goal average</th>
       </tr>
     </thead>
     <tbody>
-      {#each Object.entries(data.summary) as [team_name, summary]}
-      <tr>
+      {#each Object.entries(data.summary).sort(([, a], [, b]) => {
+		const aTotal = a?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0) || 0;
+		const bTotal = b?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0) || 0;
+		if (aTotal !== bTotal) return bTotal - aTotal;
+		const aAvg = a?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0) || 0;
+		const bAvg = b?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0) || 0;
+		return bAvg - aAvg;
+	  }) as [team_name, summary], index}
+      <tr class={index < 3 ? 'ranking-row-podium' : ''}>
+          <td class="ranking-position">
+			{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+		  </td>
           <td>
-            <strong>{team_name}</strong>
+            <strong class="ranking-team-name">{team_name}</strong>
           </td>
-          <td>
-            {summary?.map(s => s.total_points).reduce((acc, points) => (acc += points))}
+          <td class="table-cell-centered">
+            <strong class="table-cell-primary">
+				{summary?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0)}
+			</strong>
           </td>
-          <td>
-            {summary?.map(s => s.goal_average).reduce((acc, points) => (acc += points))}
+          <td class="table-cell-centered table-cell-emphasized">
+            {summary?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0)}
           </td>
       </tr>
       {:else}
       <tr>
-          <td colspan="3" class="text-center">
-            <i>Aucun match joué pour le moment</i>
+          <td colspan="4" class="text-center">
+            <em class="table-cell-muted">Aucun match joué pour le moment</em>
           </td>
       </tr>
       {/each}

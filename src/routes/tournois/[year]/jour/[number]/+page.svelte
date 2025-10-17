@@ -22,51 +22,84 @@
 
 <a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
 
-<hgroup>
-	<h1>Jour {page.params.number} - {getMonthFromNumber(Number(page.params.number))}</h1>
-	<p>Tournoi {data.tournament.year}</p>
-</hgroup>
+<div class="page-header">
+	<hgroup class="m-0">
+		<h1 class="page-header-title">Jour {page.params.number} - {getMonthFromNumber(Number(page.params.number))}</h1>
+		<p class="page-header-subtitle">Tournoi {data.tournament.year}</p>
+	</hgroup>
+</div>
 
-<table role="grid" class="striped">
-	<thead>
-		<tr>
-			<th scope="col">Match</th>
-			<th scope="col">Scores</th>
-			<th scope="col">Actions</th>
-		</tr>
-	</thead>
-	<tbody>
+<h3 class="section-title">Matchs de la journée</h3>
+
+{#if data.matchs.length === 0}
+	<article class="empty-state">
+		<h3 class="empty-state-title">Aucun match programmé</h3>
+		<p class="empty-state-text">Les matchs seront disponibles une fois le tournoi démarré</p>
+	</article>
+{:else}
+	<div class="card-grid">
 		{#each data.matchs as match}
-			<tr>
-				<td>
-					<button class="team1-color as-link" onclick={() => showTeamInfo(match.team1)}>
-						{match.team1.name}
-					</button>
-					<strong>VS</strong>
-					<button class="team2-color as-link" onclick={() => showTeamInfo(match.team2)}>
-						{match.team2.name}
-					</button>
+			<article style="padding: 1.5rem;">
+				<div class="match-card-layout">
+					<div class="match-team-right">
+						<button
+							class="team1-color as-link"
+							onclick={() => showTeamInfo(match.team1)}
+							style="font-size: 1.3rem;"
+						>
+							{match.team1.name}
+						</button>
+					</div>
 
-					<TeamMatchingAvailabilities availabilities={matchingAvailabilities(match.team1.availabilities, match.team2.availabilities)} />
-				</td>
-				<td>
-					{#each matchScores[match.id] ?? [] as score}
-						<p>
-							<span class="team1-color">{score.score_team1}</span>
-							-
-							<span class="team2-color">{score.score_team2}</span>
-						</p>
-					{:else}
-						<p><em>En attente</em></p>
-					{/each}
-				</td>
-				<td>
-					<a href="/match/{match.id}/scores">Modifier</a>
-				</td>
-			</tr>
+					<div class="match-vs-divider">
+						VS
+					</div>
+
+					<div class="match-team-left">
+						<button
+							class="team2-color as-link"
+							onclick={() => showTeamInfo(match.team2)}
+							style="font-size: 1.3rem;"
+						>
+							{match.team2.name}
+						</button>
+					</div>
+				</div>
+
+				<div class="match-info-section">
+					<div class="match-scores-display">
+						<div class="flex-1">
+							<TeamMatchingAvailabilities availabilities={matchingAvailabilities(match.team1.availabilities, match.team2.availabilities)} />
+						</div>
+						<div class="match-scores-list">
+							{#each matchScores[match.id] ?? [] as score, index}
+								<div class="match-score-badge">
+									<div class="match-score-label">
+										Manche {index + 1}
+									</div>
+									<div class="match-score-value">
+										<span class="team1-color">{score.score_team1}</span>
+										<span class="match-score-separator"> - </span>
+										<span class="team2-color">{score.score_team2}</span>
+									</div>
+								</div>
+							{:else}
+								<div class="match-pending-text">
+									En attente de scores
+								</div>
+							{/each}
+						</div>
+						<div>
+							<a href="/match/{match.id}/scores" role="button" class="m-0 whitespace-nowrap">
+								Gérer les scores
+							</a>
+						</div>
+					</div>
+				</div>
+			</article>
 		{/each}
-	</tbody>
-</table>
+	</div>
+{/if}
 
 <Modal bind:showModal>
 	{#snippet header()}
