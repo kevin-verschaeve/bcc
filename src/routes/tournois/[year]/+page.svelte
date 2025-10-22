@@ -85,48 +85,50 @@
 </article>
 
 <article class="mt-lg">
-  <h3 class="section-title section-title-center">Classement général</h3>
-	<table class="striped" role="grid">
-    <thead>
-      <tr>
-        <th scope="col" class="table-col-rank">#</th>
-        <th scope="col">Équipe</th>
-        <th scope="col" class="text-center">Points</th>
-        <th scope="col" class="text-center">Goal average</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each Object.entries(data.summary).sort(([, a], [, b]) => {
-		const aTotal = a?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0) || 0;
-		const bTotal = b?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0) || 0;
-		if (aTotal !== bTotal) return bTotal - aTotal;
-		const aAvg = a?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0) || 0;
-		const bAvg = b?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0) || 0;
-		return bAvg - aAvg;
-	  }) as [team_name, summary], index}
-      <tr class={index < 3 ? 'ranking-row-podium' : ''}>
-          <td class="ranking-position">
-			{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
-		  </td>
-          <td>
-            <strong class="ranking-team-name">{team_name}</strong>
-          </td>
-          <td class="table-cell-centered">
-            <strong class="table-cell-primary">
-				{summary?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0)}
-			</strong>
-          </td>
-          <td class="table-cell-centered table-cell-emphasized">
-            {summary?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0)}
-          </td>
-      </tr>
-      {:else}
-      <tr>
-          <td colspan="4" class="text-center">
-            <em class="table-cell-muted">Aucun match joué pour le moment</em>
-          </td>
-      </tr>
-      {/each}
-    </tbody>
-  </table>
+  	<h3 class="section-title section-title-center">Classement général</h3>
+	<div class="overflow-auto">
+		<table class="striped" role="grid">
+		<thead>
+		<tr>
+			<th scope="col" class="table-col-rank">#</th>
+			<th scope="col">Équipe</th>
+			<th scope="col" class="text-center">Points</th>
+			<th scope="col" class="text-center">Goal average</th>
+		</tr>
+		</thead>
+		<tbody>
+		{#each Object.entries(data.summary).sort(([, a], [, b]) => {
+			const aTotal = a?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0) || 0;
+			const bTotal = b?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0) || 0;
+			if (aTotal !== bTotal) return bTotal - aTotal;
+			const aAvg = a?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0) || 0;
+			const bAvg = b?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0) || 0;
+			return bAvg - aAvg;
+		}) as [team_name, summary], index}
+		<tr class={index < 3 ? 'ranking-row-podium' : ''}>
+			<td class="ranking-position">
+				{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+			</td>
+			<td>
+				<strong class="ranking-team-name">{team_name}</strong>
+			</td>
+			<td class="table-cell-centered">
+				<strong class="table-cell-primary">
+					{summary?.map(s => s.total_points).reduce((acc, points) => (acc += points), 0)}
+				</strong>
+			</td>
+			<td class="table-cell-centered table-cell-emphasized">
+				{summary?.map(s => s.goal_average).reduce((acc, points) => (acc += points), 0)}
+			</td>
+		</tr>
+		{:else}
+		<tr>
+			<td colspan="4" class="text-center">
+				<em class="table-cell-muted">Aucun match joué pour le moment</em>
+			</td>
+		</tr>
+		{/each}
+		</tbody>
+	</table>
+  </div>
 </article>
