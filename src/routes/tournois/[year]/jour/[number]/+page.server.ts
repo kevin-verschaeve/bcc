@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
     .select('*, match!inner(*, team1(*), team2(*))')
     .eq('match.tournament', tournament.id)
     .eq('match.number', +params.number)
-    .order('created_at', { ascending: false });
+    .order('created_at');
 
   return {
     tournament,
