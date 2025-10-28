@@ -10,15 +10,11 @@
 
 	const flash = getFlash(page);
 
-    flash.subscribe(($flash) => {
-        if (!$flash) return;
-        if ($flash.type === 'success') {
-            toast.success($flash.message);
-        } else {
-            toast.error($flash.message);
-        }
-        flash.set(undefined);
-    });
+	$effect(() => {
+		if ($flash) {
+			toast.success($flash.message);
+		}
+	});
 
 	const isActive = (path: string) => {
 		return page.url.pathname.startsWith(path);

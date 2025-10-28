@@ -317,7 +317,6 @@ dialog {
 .header-main {
 	margin-bottom: 0;
 	background: rgba(255, 255, 255, 0.5);
-	backdrop-filter: blur(10px);
 }
 
 .header-nav {
@@ -456,7 +455,14 @@ dialog {
 .tournament-card {
 	cursor: pointer;
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
-	padding: 1.5rem;
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+
+.tournament-card:hover {
+	transform: translateY(-2px);
+	text-decoration: none;
 }
 
 .tournament-card-content {
@@ -464,6 +470,7 @@ dialog {
 	justify-content: space-between;
 	align-items: start;
 	gap: 1rem;
+	padding: 1.5rem;
 }
 
 .tournament-card-info {
@@ -491,6 +498,12 @@ dialog {
 .tournament-card-actions {
 	display: flex;
 	gap: 0.5rem;
+	position: relative;
+	z-index: 1;
+}
+
+.tournament-card-actions * {
+	pointer-events: auto;
 }
 
 /* Team card */

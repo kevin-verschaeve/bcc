@@ -1,13 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import type { Tables } from '../../../database.types';
-	import { goto } from '$app/navigation';
 
 	let { data }: PageProps = $props();
-
-	const showTournament = (tournament: Tables<'tournaments'>) => {
-		goto(`/tournois/${tournament.year}`);
-	};
 </script>
 
 <a href="/" class="secondary">← Retour</a>
@@ -24,13 +18,12 @@
 {:else}
 	<div class="card-grid">
 		{#each data.tournaments as tournament}
-			<article
+			<a
+				href="/tournois/{tournament.year}"
 				class="tournament-card"
-				onclick={() => showTournament(tournament)}
-				onmouseover={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-				onmouseout={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+				data-sveltekit-preload-data="hover"
 			>
-				<div class="tournament-card-content">
+				<article class="tournament-card-content">
 					<div class="tournament-card-info">
 						<div class="tournament-card-header">
 							<h3 class="tournament-card-title">
@@ -46,15 +39,15 @@
 							{tournament.name || `Tournoi ${tournament.year}`}
 						</p>
 					</div>
-					<div class="tournament-card-actions" onclick={(e) => e.stopPropagation()}>
+					<div class="tournament-card-actions">
 						<form action="?/delete" method="POST">
 							<button type="submit" class="secondary outline m-0">
 								Supprimer
 							</button>
 						</form>
 					</div>
-				</div>
-			</article>
+				</article>
+			</a>
 		{/each}
 	</div>
 {/if}

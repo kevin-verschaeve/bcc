@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
-  const { data: teams } = await supabase.from('teams').select('*, player1(*), player2(*)');
+  const { data: teams } = await supabase.from('teams').select('id, name, player1(*), player2(*)');
   const { data: players } = await supabase.from('players').select('*');
 
   return {
