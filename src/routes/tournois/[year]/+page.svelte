@@ -2,6 +2,8 @@
 	import { getMonthFromNumber } from '$lib/month';
 	import type { PageProps } from './$types';
 
+	export const config = { runtime: 'edge' };
+
 	let { data }: PageProps = $props();
 
 	let rankedTeams = $derived(
