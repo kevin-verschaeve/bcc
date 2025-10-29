@@ -8,12 +8,9 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: adapter({
-			// Use Node.js runtime with optimal memory settings
-			runtime: 'nodejs20.x',
-			// Reduce cold start by limiting memory (smaller = faster boot)
-			memory: 1024,
-			// Set max duration for serverless functions
-			maxDuration: 10
+			// Use Node.js runtime (latest stable version)
+			runtime: 'nodejs20.x'
+			// Note: memory and maxDuration require Vercel Pro plan
 		})
 	}
 };
