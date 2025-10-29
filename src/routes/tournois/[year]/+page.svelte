@@ -4,8 +4,9 @@
 
 	let { data }: PageProps = $props();
 
+	// Pre-compute team totals and rankings using $derived for optimal performance
 	let rankedTeams = $derived(
-		Object.entries(data.summary)
+		Object.entries(data.summary ?? {})
 			.map(([team_name, summary]) => {
 				const totalPoints = summary?.map(s => s.total_points).reduce((acc, points) => acc + points, 0) || 0;
 				const totalGoalAverage = summary?.map(s => s.goal_average).reduce((acc, avg) => acc + avg, 0) || 0;
