@@ -23,20 +23,10 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
     .order('number')
     .order('team_name');
 
-  // Group summary by team_name (compatible alternative to Object.groupBy)
-  const groupedSummary = summary?.reduce((acc, item) => {
-    const key = item.team_name;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(item);
-    return acc;
-  }, {} as Record<string, typeof summary>) ?? {};
-
 	return {
     tournament,
     days: new Set(matchs.map(({ number }) => number)),
-    summary: groupedSummary,
+    summary: Object.groupBy(summary, ({ team_name }) => team_name),
   }
 }
 
