@@ -11,8 +11,14 @@
 	const flash = getFlash(page);
 
 	$effect(() => {
-		if ($flash) {
-			toast.success($flash.message);
+		const currentFlash = $flash;
+		if (currentFlash) {
+			if (currentFlash.type === 'success') {
+				toast.success(currentFlash.message);
+			} else if (currentFlash.type === 'error') {
+				toast.error(currentFlash.message);
+			}
+			flash.set(undefined);
 		}
 	});
 
