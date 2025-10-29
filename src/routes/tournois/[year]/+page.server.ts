@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
 import { generateTournamentSchedule } from '$lib/MatchGenerator';
@@ -6,6 +6,12 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
   const { data: tournament } = await supabase.from('tournaments').select().eq('year', params.year).single();
+
+  // Handle tournament not found
+  if (!tournament) {
+    error(404, 'Tournoi introuvable');
+  }
+
   const { data: matchs } = await supabase.from('matchs')
     .select('number')
     .eq('tournament', tournament.id)
@@ -19,8 +25,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 
 	return {
     tournament,
-    days: new Set(matchs.map(({ number }) => number)),
-    summary: Object.groupBy(summary, ({ team_name }) => team_name),
+    days: new Set(matchs?.map(({ number }) => number) ?? []),
+    summary: Object.groupBy(summary ?? [], ({ team_name }) => team_name),
   }
 }
 
