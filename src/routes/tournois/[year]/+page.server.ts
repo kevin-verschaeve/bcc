@@ -25,8 +25,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 
 	return {
     tournament,
-    days: new Set(matchs.map(({ number }) => number)),
-    summary: Object.groupBy(summary, ({ team_name }) => team_name),
+    days: new Set(matchs?.map(({ number }) => number) ?? []),
+    summary: Object.groupBy(summary ?? [], ({ team_name }) => team_name),
   }
 }
 

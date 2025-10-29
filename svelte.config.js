@@ -7,11 +7,7 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter({
-			// Use Node.js runtime (latest stable version)
-			runtime: 'nodejs20.x'
-			// Note: memory and maxDuration require Vercel Pro plan
-		})
+		adapter: adapter()
 	}
 };
 
