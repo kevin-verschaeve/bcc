@@ -29,17 +29,17 @@
 
 	<div>
 		{#if currentDay > 1}
-			<a href="/tournois/{data.tournament.year}/jour/{currentDay - 1}">&larr; Jour {currentDay - 1}</a>
+			<a href="/tournois/{data.tournament.year}/jour/{currentDay - 1}">&larr; {getMonthFromNumber(currentDay - 1)}</a>
 		{/if}
 		{#if nextDay <= maxDay}
-			<a href="/tournois/{data.tournament.year}/jour/{nextDay}">Jour {nextDay} &rarr;</a>
+			<a href="/tournois/{data.tournament.year}/jour/{nextDay}">{getMonthFromNumber(nextDay)} &rarr;</a>
 		{/if}
 	</div>
 </div>
 
 <div class="page-header">
 	<hgroup class="m-0">
-		<h1 class="page-header-title">Jour {page.params.number} - {getMonthFromNumber(Number(page.params.number))}</h1>
+		<h1 class="page-header-title">Jour {page.params.number} - {getMonthFromNumber(currentDay)}</h1>
 		<p class="page-header-subtitle">Tournoi {data.tournament.year}</p>
 	</hgroup>
 </div>
