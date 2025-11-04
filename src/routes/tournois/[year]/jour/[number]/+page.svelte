@@ -11,6 +11,10 @@
 
 	const matchScores = $state(data.scores);
 
+	const currentDay: number = $derived(Number(page.params.number));
+	const nextDay: number = $derived(currentDay + 1);
+	const maxDay: number= 7; // todo find dynamically
+
 	let showModal: boolean = $state(false);
 
 	let teamDetail = $state(null);
@@ -20,7 +24,18 @@
 	}
 </script>
 
-<a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
+<div class="prev-next">
+	<a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
+
+	<div>
+		{#if currentDay > 1}
+			<a href="/tournois/{data.tournament.year}/jour/{currentDay - 1}">&larr; Jour {currentDay - 1}</a>
+		{/if}
+		{#if nextDay <= maxDay}
+			<a href="/tournois/{data.tournament.year}/jour/{nextDay}">Jour {nextDay} &rarr;</a>
+		{/if}
+	</div>
+</div>
 
 <div class="page-header">
 	<hgroup class="m-0">
