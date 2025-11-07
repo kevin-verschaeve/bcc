@@ -1,6 +1,6 @@
 import type { PageServerLoad } from '../$types'
 
-export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
+export const load: PageServerLoad = async ({ params, locals: { supabase }, setHeaders }) => {
   const { data: tournament } = await supabase.from('tournaments').select('id, year').eq('year', params.year).single();
   const { data: matchs } = await supabase.from('matchs')
     .select(`
@@ -38,6 +38,10 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
     .eq('match.tournament', tournament.id)
     .eq('match.number', +params.number)
     .order('created_at');
+
+  setHeaders({
+    'cache-control': 'public, max-age=30, s-maxage=60'
+  });
 
   return {
     tournament,

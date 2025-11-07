@@ -5,8 +5,24 @@
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	// Register service worker for PWA - only once on mount
+	onMount(() => {
+		if ('serviceWorker' in navigator) {
+			// Always register from root scope
+			navigator.serviceWorker
+				.register('/sw.js', { scope: '/' })
+				.then((registration) => {
+					console.log('✅ Service Worker registered:', registration.scope);
+				})
+				.catch((error) => {
+					console.error('❌ Service Worker registration error:', error);
+				});
+		}
+	});
 
 	const flash = getFlash(page);
 

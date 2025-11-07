@@ -4,6 +4,12 @@ import type { Actions } from './$types';
 import { generateTournamentSchedule } from '$lib/MatchGenerator';
 import { setFlash } from 'sveltekit-flash-message/server';
 
+export const config = {
+  isr: {
+    expiration: 60,
+  }
+};
+
 export const load: PageServerLoad = async ({ params, locals: { supabase } }) => {
   const { data: tournament } = await supabase.from('tournaments').select().eq('year', params.year).single();
 
