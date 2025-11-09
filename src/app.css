@@ -114,10 +114,6 @@ table tbody tr {
 	transition: background-color 0.15s ease;
 }
 
-table tbody tr:hover {
-	background-color: var(--card-background-color);
-}
-
 table.striped tbody tr:nth-child(even) {
 	background-color: rgba(0, 0, 0, 0.02);
 }
@@ -321,7 +317,6 @@ dialog {
 /* Header styles */
 .header-main {
 	margin-bottom: 0;
-	background: rgba(255, 255, 255, 0.5);
 }
 
 .header-nav {
@@ -856,6 +851,23 @@ dialog {
 
 .whitespace-nowrap {
 	white-space: nowrap;
+}
+
+/* Dark mode specific improvements */
+@media (prefers-color-scheme: dark) {
+	.table-header-colored {
+		background: var(--pico-background-color);
+	}
+
+	.table-header-light {
+		background: var(--pico-background-color);
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	table tbody tr:hover {
+		background-color: var(--card-background-color);
+	}
 }
 
 /* Responsive improvements */
