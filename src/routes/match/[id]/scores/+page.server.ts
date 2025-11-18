@@ -42,7 +42,7 @@ export const actions = {
     setFlash({type: 'success', message: 'Score modifié avec succès !'}, cookies);
   },
 
-  deleteScore: async ({ request, locals: { supabase } }) => {
+  deleteScore: async ({ request, locals: { supabase }, cookies }) => {
     const formData = await request.formData();
     const scoreId = +formData.get('score_id');
 
