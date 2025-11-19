@@ -10,7 +10,9 @@
 			.map(([team_name, summary]) => {
 				const totalPoints = summary?.map(s => s.total_points).reduce((acc, points) => acc + points, 0) || 0;
 				const totalGoalAverage = summary?.map(s => s.goal_average).reduce((acc, avg) => acc + avg, 0) || 0;
-				return { team_name, summary, totalPoints, totalGoalAverage };
+				const matchCount = summary?.length;
+
+				return { team_name, totalPoints, totalGoalAverage, matchCount };
 			})
 			.sort((a, b) => {
 				// Sort by total points first (descending)
@@ -113,10 +115,11 @@
 			<th scope="col">Équipe</th>
 			<th scope="col" class="text-center">Points</th>
 			<th scope="col" class="text-center">Goal average</th>
+			<th scope="col" class="text-center">Matchs joués</th>
 		</tr>
 		</thead>
 		<tbody>
-		{#each rankedTeams as { team_name, summary, totalPoints, totalGoalAverage }, index}
+		{#each rankedTeams as { team_name, totalPoints, totalGoalAverage, matchCount }, index}
 		<tr class={index < 3 ? 'ranking-row-podium' : ''}>
 			<td class="ranking-position">
 				{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
@@ -131,6 +134,9 @@
 			</td>
 			<td class="table-cell-centered table-cell-emphasized">
 				{totalGoalAverage}
+			</td>
+			<td class="table-cell-centered table-cell-emphasized">
+				{matchCount}
 			</td>
 		</tr>
 		{:else}
