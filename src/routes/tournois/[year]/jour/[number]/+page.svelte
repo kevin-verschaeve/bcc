@@ -9,11 +9,11 @@
 
 	let { data }: PageProps = $props();
 
-	const matchScores = $state(data.scores);
+	const matchScores = $derived(data.scores);
 
 	const currentDay: number = $derived(Number(page.params.number));
 	const nextDay: number = $derived(currentDay + 1);
-	const maxDay: number= 7; // todo find dynamically
+	const maxDay: number = 7; // todo find dynamically
 
 	let showModal: boolean = $state(false);
 
