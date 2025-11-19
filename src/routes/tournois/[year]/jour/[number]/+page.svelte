@@ -13,7 +13,7 @@
 
 	const currentDay: number = $derived(Number(page.params.number));
 	const nextDay: number = $derived(currentDay + 1);
-	const maxDay: number = 7; // todo find dynamically
+	const maxDay: number = $derived(data.lastDay);
 
 	let showModal: boolean = $state(false);
 

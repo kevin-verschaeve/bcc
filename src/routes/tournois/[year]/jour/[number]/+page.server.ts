@@ -39,12 +39,24 @@ export const load: PageServerLoad = async ({ params, locals: { supabase }, setHe
     .eq('match.number', +params.number)
     .order('created_at');
 
+
+  const { data, error } = await supabase
+    .from('matchs')
+    .select('number')
+    .eq('tournament', tournament.id)
+    .order('number', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const lastDay = data?.number ?? 1;
+
   setHeaders({
     'cache-control': 'public, max-age=30, s-maxage=60'
   });
 
   return {
     tournament,
+    lastDay,
     matchs: matchs ?? [],
     scores: scores.length ? Object.groupBy(scores, ({match}) => match?.id) : [],
   }
