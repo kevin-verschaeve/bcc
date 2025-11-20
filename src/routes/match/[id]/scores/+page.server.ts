@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 
   return {
     match,
-    scores: scores ?? [],
+    scores: scores ? scores.reverse() : [],
   }
 }
 

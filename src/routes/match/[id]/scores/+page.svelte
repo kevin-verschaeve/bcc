@@ -2,11 +2,13 @@
 	import { enhance } from '$app/forms';
 	import type { PageProps } from './$types';
 
+	const WINNING_SCORE = 1000;
+
 	let { data }: PageProps = $props();
 
-    const team1Wins = data.scores.filter(s => s.score_team1 > 1000).length;
-	const team2Wins = data.scores.filter(s => s.score_team2 > 1000).length;
-	const canAddScore = team1Wins < 2 && team2Wins < 2;
+	const team1Wins = $derived(data.scores.filter(s => s.score_team1 >= WINNING_SCORE	).length);
+	const team2Wins = $derived(data.scores.filter(s => s.score_team2 >= WINNING_SCORE).length);
+	const canAddScore = $derived(team1Wins < 2 && team2Wins < 2);
 </script>
 
 <a href="/tournois/{data.match.tournament.year}/jour/{data.match.number}" class="secondary">← Retour</a>
@@ -81,9 +83,9 @@
 				</div>
 			</div>
 
-			{#if score.score_team1 > 1000 || score.score_team2 > 1000}
+			{#if score.score_team1 >= WINNING_SCORE || score.score_team2 >= WINNING_SCORE}
 				<div class="score-winner-badge">
-					{score.score_team1 > 1000 ? data.match.team1.name : data.match.team2.name} remportent la manche !
+					{score.score_team1 >= WINNING_SCORE ? data.match.team1.name : data.match.team2.name} remportent la manche !
 				</div>
 			{/if}
 		</form>
@@ -131,8 +133,10 @@
 {:else}
 	<article class="score-completed-section">
 		<p class="score-completed-text">
-			<strong>Match terminé!</strong><br>
-			<span class="score-completed-subtext">Une équipe a remporté 2 manches</span>
+			<strong>Match terminé !</strong><br>
+			<span class="score-completed-subtext">
+				{team1Wins ? data.match.team1.name : data.match.team2.name} ont remporté 2 manches
+			</span>
 		</p>
 	</article>
 {/if}
