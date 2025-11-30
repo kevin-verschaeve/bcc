@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '@picocss/pico/css/pico.min.css';
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { page } from '$app/state';
