@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageProps } from './$types';
-
-	const WINNING_SCORE = 1000;
+	import { WINNING_SCORE } from '$lib/scoreUtils';
 
 	let { data }: PageProps = $props();
 
@@ -11,7 +10,14 @@
 	const canAddScore = $derived(team1Wins < 2 && team2Wins < 2);
 </script>
 
-<a href="/tournois/{data.match.tournament.year}/jour/{data.match.number}" class="secondary">← Retour</a>
+<div class="flex-between">
+	<a href="/tournois/{data.match.tournament.year}/jour/{data.match.number}" class="secondary">← Retour</a>
+	{#if canAddScore}
+	<a href="/match/{data.match.id}/comptage" role="button" class="secondary whitespace-nowrap">
+		Compter les points
+	</a>
+	{/if}
+</div>
 
 <div class="match-header">
 	<hgroup class="m-0">

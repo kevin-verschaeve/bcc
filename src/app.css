@@ -170,7 +170,7 @@ header nav > div a:hover span:first-child {
 	transform: rotate(10deg);
 }
 
-.prev-next {
+.flex-between {
 	display: flex;
 	justify-content: space-between;
 }

@@ -5,6 +5,7 @@
 	import TeamAvailabilities from '$lib/component/TeamAvailabilities.svelte';
 	import TeamMatchingAvailabilities from '$lib/component/TeamMatchingAvailabilities.svelte';
 	import { getMonthFromNumber, getNumberFromMonth } from '$lib/month';
+	import { WINNING_SCORE } from '$lib/scoreUtils';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -22,9 +23,24 @@
 		teamDetail = team;
 		showModal = true;
 	}
+
+	const isFinished = (rounds) => {
+		if (rounds.length < 2) {
+			return false;
+		}
+
+		if (rounds.length === 3) {
+			return true;
+		}
+
+		const team1WonRounds = rounds.filter(round => round.score_team1 >= WINNING_SCORE).length;
+		const team2WonRounds = rounds.filter(round => round.score_team2 >= WINNING_SCORE).length;
+
+		return team1WonRounds === 2 || team2WonRounds === 2;
+	}
 </script>
 
-<div class="prev-next">
+<div class="flex-between">
 	<a href="/tournois/{data.tournament.year}" class="secondary">← Retour</a>
 
 	<div>
@@ -105,9 +121,18 @@
 							{/each}
 						</div>
 						<div>
-							<a href="/match/{match.id}/scores" role="button" class="m-0 whitespace-nowrap">
-								Gérer les scores
-							</a>
+							{#if !isFinished(matchScores[match.id] ?? [])}
+								<div>
+									<a href="/match/{match.id}/comptage" role="button" class="secondary full-width whitespace-nowrap">
+										Compter les points
+									</a>
+								</div>
+							{/if}
+							<div>
+								<a href="/match/{match.id}/scores" role="button" class="m-0 full-width whitespace-nowrap">
+									Gérer les scores
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
