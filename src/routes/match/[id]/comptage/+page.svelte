@@ -57,8 +57,16 @@
 		}
 	});
 
-	function selectTaker(name: string) {
+	function selectTaker(name: string, team: 'team1' | 'team2') {
 		taker = taker === name ? null : name;
+
+		if (selectedTeam !== team) {
+			selectTeam(team);
+		}
+
+		if (!taker) {
+			selectedTeam = null;
+		}
 	}
 
 	function selectSuit(suit: string) {
@@ -185,13 +193,13 @@
 						type="button"
 						class="player-btn"
 						class:selected={taker === data.match.team1.player1.name}
-						onclick={() => selectTaker(data.match.team1.player1.name)}
+						onclick={() => selectTaker(data.match.team1.player1.name, 'team1')}
 					>{data.match.team1.player1.name}</button>
 					<button
 						type="button"
 						class="player-btn"
 						class:selected={taker === data.match.team1.player2.name}
-						onclick={() => selectTaker(data.match.team1.player2.name)}
+						onclick={() => selectTaker(data.match.team1.player2.name, 'team1')}
 					>{data.match.team1.player2.name}</button>
 				</div>
 			</div>
@@ -202,13 +210,13 @@
 						type="button"
 						class="player-btn"
 						class:selected={taker === data.match.team2.player1.name}
-						onclick={() => selectTaker(data.match.team2.player1.name)}
+						onclick={() => selectTaker(data.match.team2.player1.name, 'team2')}
 					>{data.match.team2.player1.name}</button>
 					<button
 						type="button"
 						class="player-btn"
 						class:selected={taker === data.match.team2.player2.name}
-						onclick={() => selectTaker(data.match.team2.player2.name)}
+						onclick={() => selectTaker(data.match.team2.player2.name, 'team2')}
 					>{data.match.team2.player2.name}</button>
 				</div>
 			</div>
