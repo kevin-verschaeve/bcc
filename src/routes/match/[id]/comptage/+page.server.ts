@@ -47,8 +47,6 @@ export const actions = {
     const matchId = Number(params.id);
     const canAdd = await canAddScore(supabase, matchId);
     if (!canAdd.allowed) {
-      console.log({canAdd});
-
       setFlash({type: 'error', message: canAdd.error!}, cookies);
       return fail(400, {message: canAdd.error});
     }

@@ -30,9 +30,10 @@
 	let taker: string | null = $state(initial?.taker ?? null);
 	let selectedSuit: string | null = $state(initial?.selectedSuit ?? null);
 	let selectedPoints: string | null = $state(initial?.selectedPoints ?? null);
-	let selectedTeam: 'team1' | 'team2' | null = $state(null);
-	let pointInput = $state(null);
-	let showSelection = $state(true);
+	let selectedTeam: 'team1' | 'team2' | null = $state(initial?.selectedTeam ?? null);
+	let teamBelote: 'team1' | 'team2' | null = $state(initial?.teamBelote ?? null);
+	let pointInput: number | null = $state(Number(selectedPoints)); // + (teamBelote === null ? 0 : 20)
+	let showSelection: boolean = $state(true);
 
 	const suits = ['♥', '♠', '♦', '♣', 'TA', 'SA'];
 	const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150', 'Capot', 'Générale'];
@@ -52,7 +53,9 @@
 				team2Points,
 				taker,
 				selectedSuit,
-				selectedPoints
+				selectedPoints,
+				selectedTeam,
+				teamBelote,
 			}));
 		}
 	});
@@ -60,6 +63,7 @@
 	function selectTaker(name: string, team: 'team1' | 'team2') {
 		taker = taker === name ? null : name;
 
+		// todo: fix selected team is not set on refresh
 		if (selectedTeam !== team) {
 			selectTeam(team);
 		}
@@ -75,7 +79,7 @@
 
 	function selectPoints(points: string) {
 		selectedPoints = selectedPoints === points ? null : points;
-		pointInput = selectedPoints;
+		pointInput = Number(selectedPoints);
 	}
 
 	function selectTeam(team: 'team1' | 'team2') {
@@ -87,16 +91,15 @@
 		selectedSuit = null;
 		selectedPoints = null;
 		selectedTeam = null;
+		teamBelote = null;
 	}
 
 	function addPointTeam1(value: number) {
 		team1Points = [...team1Points, value];
-		resetSelection();
 	}
 
 	function addPointTeam2(value: number) {
 		team2Points = [...team2Points, value];
-		resetSelection();
 	}
 
 	function removePointTeam1(index: number) {
@@ -123,24 +126,51 @@
 	function addPoints() {
 		const value = parseInt(pointInput);
 
-		if (value < 80) {
-			toast.error('Le score ne peut pas être inférieur à 80 !');
+		if (value < 80 && value !== 20) {
+			toast.error('Le score ne peut pas être inférieur à 80 (sauf 20 pour la belote) !');
 			return;
 		}
 
 		if (selectedPoints !== null && !isNaN(Number(selectedPoints)) && value < Number(selectedPoints)) {
-			toast.error('Le score semble plus bas que le contrat !');
+			toast.error('Le score ne peux pas être différent du contrat !');
 			return;
 		}
 
 		if (!isNaN(value) && value > 0 && selectedTeam) {
-			if (selectedTeam === 'team1') {
-				addPointTeam1(value);
-			} else {
-				addPointTeam2(value);
-			}
-			pointInput = null;
+			doAddPoints(selectedTeam, value);
 		}
+	}
+
+	function setDedans() {
+		if (selectedTeam === null) {
+			toast.error('Sélectionner une équipe !');
+			return;
+		}
+
+		doAddPoints(selectedTeam === 'team1' ? 'team2' : 'team1', 160);
+	}
+
+	function doAddPoints(team: 'team1' | 'team2', points: number) {
+		if (team === 'team1') {
+			addPointTeam1(points + (teamBelote === 'team1' ? 20 : 0));
+		} else {
+			addPointTeam2(points + (teamBelote === 'team2' ? 20 : 0));
+		}
+		pointInput = null;
+
+		if (teamBelote !== null && teamBelote !== team) {
+			if (teamBelote === 'team1') {
+				addPointTeam1(20);
+			} else {
+				addPointTeam2(20);
+			}
+		}
+
+		resetSelection();
+	}
+
+	function setBelote(team: 'team1' | 'team2' | null) {
+		teamBelote = (teamBelote === team ? null : team);
 	}
 
 	function handlePointInputKeydown(e: KeyboardEvent) {
@@ -284,7 +314,14 @@
 			class:selected={selectedTeam === 'team1'}
 			onclick={() => selectTeam('team1')}
 		>
-			<div class="team-name-short">{data.match.team1.name}</div>
+			<div class="team-name-short">
+				{data.match.team1.name}
+				{#if teamBelote === 'team1'}
+					<span class="belote-badge team1">
+						&#8383;
+					</span>
+				{/if}
+			</div>
 			<div class="team-total-sticky">{team1Total}</div>
 		</button>
 		<div class="vs">-</div>
@@ -294,12 +331,24 @@
 			class:selected={selectedTeam === 'team2'}
 			onclick={() => selectTeam('team2')}
 		>
-			<div class="team-name-short">{data.match.team2.name}</div>
+			<div class="team-name-short">
+				{data.match.team2.name}
+				{#if teamBelote === 'team2'}
+					<span class="belote-badge team2">
+						&#8383;
+					</span>
+				{/if}
+			</div>
 			<div class="team-total-sticky">{team2Total}</div>
 		</button>
 	</div>
 
 	{#if !hasWinner}
+		<div class="mt-sm flex-between gap">
+			<button type="button" onclick={() => setBelote('team1')} class="outline">&larr; Belote</button>
+			<button type="button" onclick={setDedans} class="flex-full secondary">Dedans</button>
+			<button type="button" onclick={() => setBelote('team2')} class="outline">Belote &rarr;</button>
+		</div>
 		<div class="point-input-section">
 			<input
 				type="number"
@@ -380,6 +429,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		position: relative;
 		flex: 1;
 		gap: 0.25rem;
 		background: var(--pico-card-background-color);
@@ -488,6 +538,22 @@
 			0 0 0 3px var(--pico-primary-background),
 			0 4px 12px rgba(0, 0, 0, 0.2);
 		transform: translateY(-2px);
+	}
+
+	.belote-badge {
+		position: absolute;
+		top: 35%;
+		right: 5%;
+		color: white;
+		padding: 5px 10px;
+		font-weight: bold;
+		border-radius: 30px;
+	}
+	.belote-badge.team1 {
+		background-color: var(--color-team1);
+	}
+	.belote-badge.team2 {
+		background-color: var(--color-team2);
 	}
 
 	@media (min-width: 768px) {
