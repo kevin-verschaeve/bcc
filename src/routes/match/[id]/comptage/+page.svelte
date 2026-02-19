@@ -23,6 +23,17 @@
 		return null;
 	}
 
+	function isValidDealerOrder(order: unknown): order is string[] {
+		if (!Array.isArray(order) || order.length !== 4) return false;
+		const validNames = [
+			data.match.team1.player1.name,
+			data.match.team1.player2.name,
+			data.match.team2.player1.name,
+			data.match.team2.player2.name,
+		];
+		return order.every((n) => validNames.includes(n)) && new Set(order).size === 4;
+	}
+
 	const initial = loadFromStorage();
 
 	let team1Points: number[] = $state(initial?.team1Points ?? []);
@@ -34,12 +45,19 @@
 	let pointInput = $state(null);
 	let showSelection = $state(true);
 
+	// Dealer state
+	let dealerOrder: string[] = $state(isValidDealerOrder(initial?.dealerOrder) ? initial.dealerOrder : []);
+	let dealerIndex: number = $state(initial?.dealerIndex ?? 0);
+	let settingUpDealer: boolean = $state(false);
+	let dealerSetupSelections: string[] = $state([]);
+
 	const suits = ['♥', '♠', '♦', '♣', 'TA', 'SA'];
 	const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150', 'Capot', 'Générale'];
 
 	const team1Total = $derived(team1Points.reduce((sum, p) => sum + p, 0));
 	const team2Total = $derived(team2Points.reduce((sum, p) => sum + p, 0));
 	const hasWinner = $derived(team1Total >= WINNING_SCORE || team2Total >= WINNING_SCORE);
+	const currentDealer = $derived(dealerOrder.length === 4 ? dealerOrder[dealerIndex % 4] : null);
 
 	$effect(() => {
 		showSelection = (!taker || !selectedSuit || !selectedPoints) && !hasWinner;
@@ -52,10 +70,61 @@
 				team2Points,
 				taker,
 				selectedSuit,
-				selectedPoints
+				selectedPoints,
+				dealerOrder,
+				dealerIndex,
 			}));
 		}
 	});
+
+	function getPlayerTeam(playerName: string): 'team1' | 'team2' | null {
+		if (playerName === data.match.team1.player1.name || playerName === data.match.team1.player2.name) return 'team1';
+		if (playerName === data.match.team2.player1.name || playerName === data.match.team2.player2.name) return 'team2';
+		return null;
+	}
+
+	function advanceDealer() {
+		if (dealerOrder.length === 4) {
+			dealerIndex = (dealerIndex + 1) % 4;
+		}
+	}
+
+	function startDealerSetup() {
+		settingUpDealer = true;
+		dealerSetupSelections = [];
+	}
+
+	function cancelDealerSetup() {
+		settingUpDealer = false;
+		dealerSetupSelections = [];
+	}
+
+	function addToDealerSetup(playerName: string) {
+		if (dealerSetupSelections.includes(playerName)) return;
+
+		if (dealerSetupSelections.length > 0) {
+			const lastPlayer = dealerSetupSelections[dealerSetupSelections.length - 1];
+			const lastTeam = getPlayerTeam(lastPlayer);
+			const thisTeam = getPlayerTeam(playerName);
+			if (lastTeam === thisTeam) return;
+		}
+
+		dealerSetupSelections = [...dealerSetupSelections, playerName];
+
+		if (dealerSetupSelections.length === 4) {
+			dealerOrder = [...dealerSetupSelections];
+			dealerIndex = 0;
+			settingUpDealer = false;
+			dealerSetupSelections = [];
+		}
+	}
+
+	function isDealerSetupPlayerDisabled(_playerName: string, team: 'team1' | 'team2'): boolean {
+		if (dealerSetupSelections.length === 0) return false;
+		const lastPlayer = dealerSetupSelections[dealerSetupSelections.length - 1];
+		const lastTeam = getPlayerTeam(lastPlayer);
+		return lastTeam === team;
+	}
 
 	function selectTaker(name: string, team: 'team1' | 'team2') {
 		taker = taker === name ? null : name;
@@ -140,6 +209,7 @@
 				addPointTeam2(value);
 			}
 			pointInput = null;
+			advanceDealer();
 		}
 	}
 
@@ -194,13 +264,23 @@
 						class="player-btn"
 						class:selected={taker === data.match.team1.player1.name}
 						onclick={() => selectTaker(data.match.team1.player1.name, 'team1')}
-					>{data.match.team1.player1.name}</button>
+					>
+						{data.match.team1.player1.name}
+						{#if currentDealer === data.match.team1.player1.name}
+							<span class="dealer-badge">D</span>
+						{/if}
+					</button>
 					<button
 						type="button"
 						class="player-btn"
 						class:selected={taker === data.match.team1.player2.name}
 						onclick={() => selectTaker(data.match.team1.player2.name, 'team1')}
-					>{data.match.team1.player2.name}</button>
+					>
+						{data.match.team1.player2.name}
+						{#if currentDealer === data.match.team1.player2.name}
+							<span class="dealer-badge">D</span>
+						{/if}
+					</button>
 				</div>
 			</div>
 			<div class="player-group">
@@ -211,13 +291,23 @@
 						class="player-btn"
 						class:selected={taker === data.match.team2.player1.name}
 						onclick={() => selectTaker(data.match.team2.player1.name, 'team2')}
-					>{data.match.team2.player1.name}</button>
+					>
+						{data.match.team2.player1.name}
+						{#if currentDealer === data.match.team2.player1.name}
+							<span class="dealer-badge">D</span>
+						{/if}
+					</button>
 					<button
 						type="button"
 						class="player-btn"
 						class:selected={taker === data.match.team2.player2.name}
 						onclick={() => selectTaker(data.match.team2.player2.name, 'team2')}
-					>{data.match.team2.player2.name}</button>
+					>
+						{data.match.team2.player2.name}
+						{#if currentDealer === data.match.team2.player2.name}
+							<span class="dealer-badge">D</span>
+						{/if}
+					</button>
 				</div>
 			</div>
 		</div>
@@ -276,6 +366,68 @@
 	{/if}
 </article>
 
+{#if settingUpDealer}
+	<article class="dealer-setup-article">
+		<h4 class="dealer-setup-title">Ordre de donne ({dealerSetupSelections.length}/4)</h4>
+		<p class="dealer-setup-hint">
+			Sélectionnez les 4 joueurs dans l'ordre. Les joueurs d'une même équipe ne peuvent pas se succéder.
+		</p>
+		<div class="dealer-setup-grid">
+			<div class="setup-team-group">
+				<span class="team-label team1-color">{data.match.team1.name}</span>
+				<div class="player-buttons">
+					{#each [
+						{ name: data.match.team1.player1.name, team: 'team1' as const },
+						{ name: data.match.team1.player2.name, team: 'team1' as const },
+					] as player}
+						{@const selIdx = dealerSetupSelections.indexOf(player.name)}
+						{@const isSetupSelected = selIdx !== -1}
+						{@const isSetupDisabled = !isSetupSelected && isDealerSetupPlayerDisabled(player.name, player.team)}
+						<button
+							type="button"
+							class="player-btn"
+							class:setup-selected={isSetupSelected}
+							disabled={isSetupDisabled}
+							onclick={() => addToDealerSetup(player.name)}
+						>
+							{player.name}
+							{#if isSetupSelected}
+								<span class="setup-order-badge">{selIdx + 1}</span>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			</div>
+			<div class="setup-team-group">
+				<span class="team-label team2-color">{data.match.team2.name}</span>
+				<div class="player-buttons">
+					{#each [
+						{ name: data.match.team2.player1.name, team: 'team2' as const },
+						{ name: data.match.team2.player2.name, team: 'team2' as const },
+					] as player}
+						{@const selIdx = dealerSetupSelections.indexOf(player.name)}
+						{@const isSetupSelected = selIdx !== -1}
+						{@const isSetupDisabled = !isSetupSelected && isDealerSetupPlayerDisabled(player.name, player.team)}
+						<button
+							type="button"
+							class="player-btn"
+							class:setup-selected={isSetupSelected}
+							disabled={isSetupDisabled}
+							onclick={() => addToDealerSetup(player.name)}
+						>
+							{player.name}
+							{#if isSetupSelected}
+								<span class="setup-order-badge">{selIdx + 1}</span>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			</div>
+		</div>
+		<button type="button" class="secondary outline" onclick={cancelDealerSetup}>Annuler</button>
+	</article>
+{/if}
+
 <article>
 	<div class="scores-row">
 		<button
@@ -297,6 +449,37 @@
 			<div class="team-name-short">{data.match.team2.name}</div>
 			<div class="team-total-sticky">{team2Total}</div>
 		</button>
+	</div>
+
+	<div class="dealer-bar">
+		{#if dealerOrder.length === 4}
+			<div class="dealer-current-info">
+				<span class="dealer-bar-label">Donneur :</span>
+				<span class="dealer-bar-name">{currentDealer}</span>
+				<span class="dealer-badge">D</span>
+			</div>
+			<div class="dealer-bar-actions">
+				<button type="button" class="secondary outline dealer-next-btn" onclick={advanceDealer}>
+					Suivant
+				</button>
+				<button
+					type="button"
+					class="secondary outline dealer-config-btn"
+					onclick={startDealerSetup}
+					title="Modifier l'ordre de donne"
+					aria-label="Modifier l'ordre de donne"
+				>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+						<circle cx="12" cy="12" r="3"/>
+					</svg>
+				</button>
+			</div>
+		{:else}
+			<button type="button" class="secondary outline dealer-setup-trigger" onclick={startDealerSetup}>
+				Définir l'ordre de donne
+			</button>
+		{/if}
 	</div>
 
 	{#if !hasWinner}
@@ -426,6 +609,141 @@
 		font-weight: bold;
 		opacity: 0.5;
 		padding: 0 0.25rem;
+	}
+
+	/* Dealer bar */
+	.dealer-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.5rem 0;
+		border-top: 1px solid var(--pico-muted-border-color);
+		margin-top: 0.5rem;
+		gap: 0.5rem;
+	}
+
+	.dealer-current-info {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.9em;
+	}
+
+	.dealer-bar-label {
+		opacity: 0.7;
+	}
+
+	.dealer-bar-name {
+		font-weight: bold;
+	}
+
+	.dealer-bar-actions {
+		display: flex;
+		gap: 0.4rem;
+		align-items: center;
+	}
+
+	.dealer-next-btn {
+		padding: 0.3rem 0.8rem;
+		font-size: 0.85em;
+		margin: 0;
+	}
+
+	.dealer-config-btn {
+		padding: 0.3rem 0.5rem;
+		font-size: 0.85em;
+		margin: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.dealer-config-btn svg {
+		width: 16px;
+		height: 16px;
+		display: block;
+	}
+
+	.dealer-setup-trigger {
+		margin: 0;
+		font-size: 0.9em;
+		padding: 0.3rem 0.8rem;
+	}
+
+	/* Dealer badge */
+	.dealer-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--pico-primary);
+		color: var(--pico-primary-inverse, #fff);
+		border-radius: 50%;
+		width: 1.3em;
+		height: 1.3em;
+		font-size: 0.72em;
+		font-weight: bold;
+		vertical-align: middle;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+
+	/* Dealer setup article */
+	.dealer-setup-article {
+		padding: var(--pico-card-sectioning-background-color, 1rem);
+	}
+
+	.dealer-setup-title {
+		margin: 0 0 0.25rem 0;
+	}
+
+	.dealer-setup-hint {
+		font-size: 0.85em;
+		opacity: 0.75;
+		margin-bottom: 1rem;
+	}
+
+	.dealer-setup-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	@media (min-width: 768px) {
+		.dealer-setup-grid {
+			flex-direction: row;
+			gap: 2rem;
+		}
+	}
+
+	.setup-team-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		flex: 1;
+	}
+
+	/* Setup order badge */
+	.setup-order-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--pico-secondary, #6c757d);
+		color: #fff;
+		border-radius: 50%;
+		width: 1.3em;
+		height: 1.3em;
+		font-size: 0.72em;
+		font-weight: bold;
+		vertical-align: middle;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+
+	.player-btn.setup-selected {
+		border-width: 3px;
+		border-color: var(--pico-secondary, #6c757d);
+		opacity: 0.85;
 	}
 
 	.point-input-section {
@@ -611,6 +929,10 @@
 		transition: all 0.2s ease;
 		flex: 1;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.3em;
 	}
 
 	.player-btn:hover {
