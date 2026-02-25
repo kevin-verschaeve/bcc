@@ -50,6 +50,16 @@
 	let dealerIndex: number = $state(initial?.dealerIndex ?? 0);
 	let settingUpDealer: boolean = $state(false);
 	let dealerSetupSelections: string[] = $state([]);
+	let dealerDialogEl: HTMLDialogElement | null = $state(null);
+
+	$effect(() => {
+		if (!dealerDialogEl) return;
+		if (settingUpDealer) {
+			dealerDialogEl.showModal();
+		} else if (dealerDialogEl.open) {
+			dealerDialogEl.close();
+		}
+	});
 
 	const suits = ['♥', '♠', '♦', '♣', 'TA', 'SA'];
 	const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150', 'Capot', 'Générale'];
@@ -57,7 +67,7 @@
 	const team1Total = $derived(team1Points.reduce((sum, p) => sum + p, 0));
 	const team2Total = $derived(team2Points.reduce((sum, p) => sum + p, 0));
 	const hasWinner = $derived(team1Total >= WINNING_SCORE || team2Total >= WINNING_SCORE);
-	const currentDealer = $derived(dealerOrder.length === 4 ? dealerOrder[dealerIndex % 4] : null);
+	let currentDealer = $derived(dealerOrder.length === 4 ? dealerOrder[dealerIndex % 4] : null);
 
 	$effect(() => {
 		showSelection = (!taker || !selectedSuit || !selectedPoints) && !hasWinner;
@@ -156,6 +166,7 @@
 		selectedSuit = null;
 		selectedPoints = null;
 		selectedTeam = null;
+		currentDealer = null;
 	}
 
 	function addPointTeam1(value: number) {
@@ -229,6 +240,39 @@
 <div class="page-header">
 	<h2 class="m-0">Comptage des points</h2>
 </div>
+
+<article class="dealer-bar">
+	{#if currentDealer}
+	<div class="dealer-current-info">
+		<span class="dealer-bar-label">Donneur :</span>
+		<span class="dealer-bar-name">{currentDealer}</span>
+		<span class="dealer-badge">D</span>
+	</div>
+	{/if}
+	{#if dealerOrder.length === 4}
+		<div class="dealer-bar-actions">
+			<button type="button" class="secondary outline dealer-next-btn" onclick={advanceDealer}>
+				Suivant
+			</button>
+			<button
+				type="button"
+				class="secondary dealer-config-btn"
+				onclick={startDealerSetup}
+				title="Modifier l'ordre de donne"
+				aria-label="Modifier l'ordre de donne"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+					<circle cx="12" cy="12" r="3"/>
+				</svg>
+			</button>
+		</div>
+	{:else}
+		<button type="button" class="secondary outline dealer-setup-trigger" onclick={startDealerSetup}>
+			Définir l'ordre de donne
+		</button>
+	{/if}
+</article>
 
 <article>
 	{#if showSelection}
@@ -366,9 +410,12 @@
 	{/if}
 </article>
 
-{#if settingUpDealer}
-	<article class="dealer-setup-article">
-		<h4 class="dealer-setup-title">Ordre de donne ({dealerSetupSelections.length}/4)</h4>
+<dialog bind:this={dealerDialogEl} onclose={cancelDealerSetup}>
+	<article>
+		<header>
+			<button type="button" aria-label="Fermer" rel="prev" onclick={cancelDealerSetup}></button>
+			<h4>Ordre de donne ({dealerSetupSelections.length}/4)</h4>
+		</header>
 		<p class="dealer-setup-hint">
 			Sélectionnez les 4 joueurs dans l'ordre. Les joueurs d'une même équipe ne peuvent pas se succéder.
 		</p>
@@ -424,9 +471,8 @@
 				</div>
 			</div>
 		</div>
-		<button type="button" class="secondary outline" onclick={cancelDealerSetup}>Annuler</button>
 	</article>
-{/if}
+</dialog>
 
 <article>
 	<div class="scores-row">
@@ -449,37 +495,6 @@
 			<div class="team-name-short">{data.match.team2.name}</div>
 			<div class="team-total-sticky">{team2Total}</div>
 		</button>
-	</div>
-
-	<div class="dealer-bar">
-		{#if dealerOrder.length === 4}
-			<div class="dealer-current-info">
-				<span class="dealer-bar-label">Donneur :</span>
-				<span class="dealer-bar-name">{currentDealer}</span>
-				<span class="dealer-badge">D</span>
-			</div>
-			<div class="dealer-bar-actions">
-				<button type="button" class="secondary outline dealer-next-btn" onclick={advanceDealer}>
-					Suivant
-				</button>
-				<button
-					type="button"
-					class="secondary outline dealer-config-btn"
-					onclick={startDealerSetup}
-					title="Modifier l'ordre de donne"
-					aria-label="Modifier l'ordre de donne"
-				>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-						<circle cx="12" cy="12" r="3"/>
-					</svg>
-				</button>
-			</div>
-		{:else}
-			<button type="button" class="secondary outline dealer-setup-trigger" onclick={startDealerSetup}>
-				Définir l'ordre de donne
-			</button>
-		{/if}
 	</div>
 
 	{#if !hasWinner}
@@ -616,7 +631,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.5rem 0;
+		padding: 0.5rem 0.5rem;
 		border-top: 1px solid var(--pico-muted-border-color);
 		margin-top: 0.5rem;
 		gap: 0.5rem;
@@ -650,7 +665,7 @@
 	}
 
 	.dealer-config-btn {
-		padding: 0.3rem 0.5rem;
+		padding: 0.6rem;
 		font-size: 0.85em;
 		margin: 0;
 		display: inline-flex;
@@ -687,13 +702,12 @@
 		flex-shrink: 0;
 	}
 
-	/* Dealer setup article */
-	.dealer-setup-article {
-		padding: var(--pico-card-sectioning-background-color, 1rem);
+	dialog article {
+		margin: 0;
 	}
 
-	.dealer-setup-title {
-		margin: 0 0 0.25rem 0;
+	dialog h4 {
+		margin: 0;
 	}
 
 	.dealer-setup-hint {
