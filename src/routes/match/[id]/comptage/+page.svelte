@@ -4,6 +4,7 @@
 	import type { PageProps } from './$types';
 	import { WINNING_SCORE } from '$lib/scoreUtils';
 	import { toast } from 'svelte-sonner';
+	import pointsTaSa from '$lib/assets/points_ta_sa.webp';
 
 	let { data }: PageProps = $props();
 
@@ -52,6 +53,17 @@
 	let settingUpDealer: boolean = $state(false);
 	let dealerSetupSelections: string[] = $state([]);
 	let dealerDialogEl: HTMLDialogElement | null = $state(null);
+	let pointsImageDialogEl: HTMLDialogElement | null = $state(null);
+	let pointsModalOpened: boolean = $state(false);
+
+	$effect(() => {
+		if (!pointsImageDialogEl) return;
+		if (pointsModalOpened) {
+			pointsImageDialogEl.showModal();
+		} else if (pointsImageDialogEl.open) {
+			pointsImageDialogEl.close();
+		}
+	});
 
 	$effect(() => {
 		if (!dealerDialogEl) return;
@@ -267,6 +279,9 @@
 
 <div class="page-header">
 	<h2 class="m-0">Comptage des points</h2>
+	<button type="button" class="secondary outline points-info-btn" onclick={() => pointsModalOpened = true} aria-label="Tableau des points TA/SA">
+		Points TA / SA
+	</button>
 </div>
 
 <article class="dealer-bar">
@@ -502,6 +517,20 @@
 	</article>
 </dialog>
 
+<dialog
+	bind:this={pointsImageDialogEl}
+	onclose={() => pointsModalOpened = false}
+	onclick={(e) => { if (e.target === pointsImageDialogEl) pointsModalOpened = false; }}
+>
+	<article>
+		<header>
+			<button type="button" aria-label="Fermer" rel="prev" onclick={() => pointsModalOpened = false}></button>
+			<h4>Points Tout Atout / Sans Atout</h4>
+		</header>
+		<img src={pointsTaSa} alt="Tableau des points TA et SA" style="width: 100%; height: auto; display: block;" />
+	</article>
+</dialog>
+
 <article>
 	<div class="scores-row">
 		<button
@@ -608,6 +637,13 @@
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 1rem;
+	}
+
+	.points-info-btn {
+		padding: 0.3rem 0.7rem;
+		font-size: 0.9em;
+		font-weight: bold;
+		margin: 0;
 	}
 
 	.reset-btn {
