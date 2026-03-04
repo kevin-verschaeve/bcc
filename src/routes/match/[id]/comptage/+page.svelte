@@ -43,7 +43,7 @@
 	let selectedPoints: string | null = $state(initial?.selectedPoints ?? null);
 	let selectedTeam: 'team1' | 'team2' | null = $state(initial?.selectedTeam ?? null);
 	let teamBelote: 'team1' | 'team2' | null = $state(initial?.teamBelote ?? null);
-	let pointInput: number | null = $state(Number(selectedPoints)); // + (teamBelote === null ? 0 : 20)
+	let pointInput: number | null = $state(Number(selectedPoints));
 	let showSelection: boolean = $state(true);
 
 	// Dealer state
@@ -142,7 +142,6 @@
 	function selectTaker(name: string, team: 'team1' | 'team2') {
 		taker = taker === name ? null : name;
 
-		// todo: fix selected team is not set on refresh
 		if (selectedTeam !== team) {
 			selectTeam(team);
 		}
@@ -170,7 +169,6 @@
 		selectedSuit = null;
 		selectedPoints = null;
 		selectedTeam = null;
-		currentDealer = null;
 		teamBelote = null;
 	}
 
