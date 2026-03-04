@@ -82,6 +82,10 @@
 	const hasWinner = $derived(team1Total >= WINNING_SCORE || team2Total >= WINNING_SCORE);
 	let currentDealer = $derived(dealerOrder.length === 4 ? dealerOrder[dealerIndex % 4] : null);
 
+	let taWithBelote: number = $state(0);
+	let taWithoutBelote: number = $state(0);
+	let sa: number = $state(0);
+
 	$effect(() => {
 		showSelection = (!taker || !selectedSuit || !selectedPoints) && !hasWinner;
 	});
@@ -528,6 +532,25 @@
 			<h4>Points Tout Atout / Sans Atout</h4>
 		</header>
 		<img src={pointsTaSa} alt="Tableau des points TA et SA" style="width: 100%; height: auto; display: block;" />
+		<footer>
+			<div class="ta-sa-grid">
+				<div class="ta-sa-col">
+					<span class="ta-sa-label">TA avec belote</span>
+					<input type="number" bind:value={taWithBelote} placeholder="0" inputmode="numeric" />
+					<span class="ta-sa-result">{taWithBelote ? Math.round(taWithBelote * 0.65) : '—'}</span>
+				</div>
+				<div class="ta-sa-col">
+					<span class="ta-sa-label">TA sans belote</span>
+					<input type="number" bind:value={taWithoutBelote} placeholder="0" inputmode="numeric" />
+					<span class="ta-sa-result">{taWithoutBelote ? Math.round(taWithoutBelote * 0.63) : '—'}</span>
+				</div>
+				<div class="ta-sa-col">
+					<span class="ta-sa-label">SA avec belote</span>
+					<input type="number" bind:value={sa} placeholder="0" inputmode="numeric" />
+					<span class="ta-sa-result">{sa ? Math.round(sa * 1.35) : '—'}</span>
+				</div>
+			</div>
+		</footer>
 	</article>
 </dialog>
 
@@ -1185,6 +1208,42 @@
 	.delete-btn:hover {
 		background: var(--pico-del-color);
 		color: white;
+	}
+
+	.ta-sa-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.75rem;
+		margin: 0;
+	}
+
+	.ta-sa-col {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.ta-sa-label {
+		font-size: 0.75em;
+		font-weight: 600;
+		text-align: center;
+		opacity: 0.75;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.ta-sa-col input {
+		width: 100%;
+		margin: 0;
+		text-align: center;
+		font-size: 1em;
+		padding: 0.3rem 0.4rem;
+	}
+
+	.ta-sa-result {
+		font-size: 1.3em;
+		font-weight: bold;
 	}
 
 	.winner-section {
