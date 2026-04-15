@@ -5,6 +5,7 @@
 	import { WINNING_SCORE } from '$lib/scoreUtils';
 	import { toast } from 'svelte-sonner';
 	import pointsTaSa from '$lib/assets/points_ta_sa.webp';
+	import { slide } from 'svelte/transition';
 
 	let { data }: PageProps = $props();
 
@@ -272,6 +273,56 @@
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			addPoints();
+		}
+	}
+
+	// --- Scan des plis ---
+	type ScanCard = { rank: string; suit: string };
+	type ScanResult = { cards: ScanCard[]; points: number };
+
+	let scanOpen: boolean = $state(false);
+	let scanLoading: boolean = $state(false);
+	let scanResult = $state<ScanResult | null>(null);
+	let scanError = $state<string | null>(null);
+	let scanFileInput = $state<HTMLInputElement | null>(null);
+
+	function toggleScan() {
+		if (!selectedSuit) {
+			toast.error('Sélectionner la couleur d\'atout d\'abord !');
+			return;
+		}
+
+		scanResult = null;
+		scanError = null;
+		scanOpen = !scanOpen;
+	}
+
+	async function analyzePhoto() {
+		if (!scanFileInput?.files?.[0]) {
+			toast.error('Veuillez sélectionner une photo');
+			return;
+		}
+
+		scanLoading = true;
+		scanError = null;
+		scanResult = null;
+
+		const formData = new FormData();
+		formData.append('image', scanFileInput.files[0]);
+		formData.append('atout', selectedSuit!);
+
+		try {
+			const res = await fetch('/api/scan-cards', { method: 'POST', body: formData });
+			if (!res.ok) {
+				const body = await res.json().catch(() => null);
+				scanError = body?.message ?? "Erreur lors de l'analyse";
+			} else {
+				scanResult = await res.json();
+			}
+		} catch {
+			scanError = 'Erreur réseau, réessayez';
+		} finally {
+			scanLoading = false;
 		}
 	}
 </script>
@@ -599,6 +650,12 @@
 			<button type="button" onclick={() => setBelote('team2')} class="outline">Belote &rarr;</button>
 		</div>
 		<div class="point-input-section">
+			<button type="button" class="scan-btn secondary outline" class:active={scanOpen} onclick={toggleScan} aria-label="Scanner les plis">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+					<circle cx="12" cy="13" r="4"/>
+				</svg>
+			</button>
 			<input
 				type="number"
 				bind:value={pointInput}
@@ -610,6 +667,35 @@
 			/>
 			<button type="button" onclick={addPoints} disabled={!selectedTeam || !pointInput}>+</button>
 		</div>
+
+		{#if scanOpen}
+			<div class="scan-inline" transition:slide>
+				<div class="scan-input-row">
+					<input type="file" accept="image/*" capture="environment" bind:this={scanFileInput} class="scan-file-input" />
+					<button type="button" onclick={analyzePhoto} disabled={scanLoading} aria-busy={scanLoading} class="scan-count-btn">
+						{scanLoading ? '...' : 'Compter'}
+					</button>
+				</div>
+				{#if scanError}
+					<div class="scan-error">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+						<span>{scanError}</span>
+					</div>
+				{/if}
+				{#if scanResult}
+					<div class="scan-result">
+						<p class="scan-cards">
+							{#each scanResult.cards as card}
+								<span class="scan-card" class:red={card.suit === '♥' || card.suit === '♦'}>
+									{card.rank}{card.suit}
+								</span>
+							{/each}
+						</p>
+						<p class="scan-total">{scanResult.points} points</p>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	{/if}
 </article>
 
@@ -654,6 +740,7 @@
 		{/if}
 	</tbody>
 </table>
+
 
 <style>
 	.page-header {
@@ -1263,5 +1350,107 @@
 
 	.winner-section button {
 		margin: 0;
+	}
+
+	/* Scan modal */
+	.scan-btn {
+		margin: 0;
+		padding: 0.5rem 0.75rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.scan-btn svg {
+		width: 20px;
+		height: 20px;
+		display: block;
+	}
+
+	.scan-btn.active {
+		background: var(--pico-primary);
+		border-color: var(--pico-primary);
+		color: var(--pico-primary-inverse);
+	}
+
+	.scan-btn.active svg {
+		stroke: var(--pico-primary-inverse);
+	}
+
+	.scan-inline {
+		margin-top: 0.75rem;
+		background: var(--pico-card-background-color);
+	}
+
+	.scan-input-row {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+	}
+
+	.scan-file-input {
+		flex: 1;
+		margin: 0;
+		font-size: 0.9em;
+	}
+
+	.scan-count-btn {
+		margin: 0;
+		flex-shrink: 0;
+		padding: 0.5rem 1rem;
+	}
+
+	.scan-error {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+		padding: 0.6rem 0.75rem;
+		background: color-mix(in srgb, var(--pico-del-color) 10%, transparent);
+		border: 1px solid color-mix(in srgb, var(--pico-del-color) 40%, transparent);
+		border-radius: 6px;
+		color: var(--pico-del-color);
+		font-size: 0.9em;
+	}
+
+	.scan-error svg {
+		width: 18px;
+		height: 18px;
+		flex-shrink: 0;
+		margin-top: 1px;
+	}
+
+	.scan-result {
+		margin-top: 1rem;
+		text-align: center;
+	}
+
+	.scan-cards {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+		justify-content: center;
+		margin-bottom: 0.75rem;
+	}
+
+	.scan-card {
+		font-size: 1em;
+		font-weight: 600;
+		background: var(--pico-card-background-color);
+		border: 1px solid var(--pico-muted-border-color);
+		border-radius: 4px;
+		padding: 0.2rem 0.4rem;
+		color: #000;
+	}
+
+	.scan-card.red {
+		color: #e53935;
+	}
+
+	.scan-total {
+		font-size: 2em;
+		font-weight: bold;
+		margin: 0.25rem 0;
 	}
 </style>

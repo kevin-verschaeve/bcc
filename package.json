@@ -7,7 +7,7 @@
 		"node": ">=20.0.0"
 	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --port=5174",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -37,6 +37,7 @@
 	},
 	"dependencies": {
 		"@event-calendar/day-grid": "^3.12.0",
+		"@google/generative-ai": "^0.24.1",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.58.0",
 		"luxon": "^3.7.2",
