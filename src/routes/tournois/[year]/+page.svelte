@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getMonthFromNumber } from '$lib/month';
+	import { getMonthFromNumber, getNumberFromMonth } from '$lib/month';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -39,6 +39,7 @@
 			{/if}
 		</div>
 		<p class="page-header-subtitle page-header-large">{data.tournament.name || 'Saison ' + data.tournament.year}</p>
+		<a href="/tournois/{data.tournament.year}/jour/{getNumberFromMonth(new Date().getMonth())}" role="button" class="text-white">Match du mois</a>
 	</hgroup>
 
 	{#if data.tournament.status === 'not_started'}
