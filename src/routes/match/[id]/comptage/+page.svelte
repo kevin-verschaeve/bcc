@@ -533,6 +533,7 @@
 		</header>
 		<img src={pointsTaSa} alt="Tableau des points TA et SA" style="width: 100%; height: auto; display: block;" />
 		<footer>
+			<p class="text-center">Ou, entrer le score avec le comptage normal</p>
 			<div class="ta-sa-grid">
 				<div class="ta-sa-col">
 					<span class="ta-sa-label">TA avec belote</span>
@@ -545,7 +546,7 @@
 					<span class="ta-sa-result">{taWithoutBelote ? Math.round(taWithoutBelote * 0.63) : '—'}</span>
 				</div>
 				<div class="ta-sa-col">
-					<span class="ta-sa-label">SA avec belote</span>
+					<span class="ta-sa-label">SA</span>
 					<input type="number" bind:value={sa} placeholder="0" inputmode="numeric" />
 					<span class="ta-sa-result">{sa ? Math.round(sa * 1.35) : '—'}</span>
 				</div>
