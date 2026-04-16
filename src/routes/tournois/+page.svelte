@@ -1,13 +1,23 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import Modal from '$lib/component/Modal.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+
+	let showCreateModal: boolean = $state(false);
+
+	const months = Array.from({ length: 12 }, (_, i) => ({
+		value: i,
+		label: new Date(2000, i, 1).toLocaleDateString('fr-FR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase()),
+	}));
 </script>
 
 <a href="/" class="secondary">← Retour</a>
 
 <div class="page-title-container">
 	<h1 class="m-0">Tournois</h1>
+	<button onclick={() => (showCreateModal = true)}>Nouveau tournoi</button>
 </div>
 
 {#if data.tournaments.length === 0}
@@ -39,15 +49,33 @@
 							{tournament.name || `Tournoi ${tournament.year}`}
 						</p>
 					</div>
-					<div class="tournament-card-actions">
-						<form action="?/delete" method="POST">
-							<button type="submit" class="secondary outline m-0">
-								Supprimer
-							</button>
-						</form>
-					</div>
+					<span class="tournament-card-arrow">›</span>
 				</article>
 			</a>
 		{/each}
 	</div>
 {/if}
+
+<Modal bind:showModal={showCreateModal}>
+	{#snippet header()}
+		<h3>Nouveau tournoi</h3>
+	{/snippet}
+
+	<form method="POST" action="?/create" use:enhance={() => ({ result }) => { if (result.type === 'success') showCreateModal = false; }}>
+		<label for="name">
+			Nom <small>(optionnel)</small>
+			<input type="text" name="name" id="name" />
+		</label>
+
+		<label for="month_start">
+			Mois de début
+			<select name="month_start" id="month_start">
+				{#each months as month}
+					<option value={month.value} selected={month.value === 8}>{month.label}</option>
+				{/each}
+			</select>
+		</label>
+
+		<button type="submit">Créer</button>
+	</form>
+</Modal>

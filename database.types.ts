@@ -34,47 +34,97 @@ export type Database = {
   }
   public: {
     Tables: {
-      matchs: {
+      match_scores: {
         Row: {
           created_at: string
           id: number
-          month: number
-          score_team1: number
-          score_team2: number
-          team1: number
-          team2: number
+          match: number | null
+          score_team1: number | null
+          score_team2: number | null
         }
         Insert: {
           created_at?: string
           id?: number
-          month: number
-          score_team1: number
-          score_team2: number
-          team1: number
-          team2: number
+          match?: number | null
+          score_team1?: number | null
+          score_team2?: number | null
         }
         Update: {
           created_at?: string
           id?: number
-          month?: number
-          score_team1?: number
-          score_team2?: number
-          team1?: number
-          team2?: number
+          match?: number | null
+          score_team1?: number | null
+          score_team2?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "matchs_team1_fkey"
+            foreignKeyName: "match_scores_match_fkey"
+            columns: ["match"]
+            isOneToOne: false
+            referencedRelation: "matchs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matchs: {
+        Row: {
+          created_at: string
+          id: number
+          number: number
+          team1: number
+          team2: number
+          tournament: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          number: number
+          team1: number
+          team2: number
+          tournament: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          number?: number
+          team1?: number
+          team2?: number
+          tournament?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "day_team1_fkey"
             columns: ["team1"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "matchs_team2_fkey"
+            foreignKeyName: "day_team1_fkey"
+            columns: ["team1"]
+            isOneToOne: false
+            referencedRelation: "tournament_summary"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "day_team2_fkey"
             columns: ["team2"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "day_team2_fkey"
+            columns: ["team2"]
+            isOneToOne: false
+            referencedRelation: "tournament_summary"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "day_tournament_fkey"
+            columns: ["tournament"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
             referencedColumns: ["id"]
           },
         ]
@@ -102,28 +152,28 @@ export type Database = {
       }
       teams: {
         Row: {
+          availabilities: Json | null
           created_at: string
           id: number
           name: string
           player1: number | null
           player2: number | null
-          tournament: number | null
         }
         Insert: {
+          availabilities?: Json | null
           created_at?: string
           id?: number
           name?: string
           player1?: number | null
           player2?: number | null
-          tournament?: number | null
         }
         Update: {
+          availabilities?: Json | null
           created_at?: string
           id?: number
           name?: string
           player1?: number | null
           player2?: number | null
-          tournament?: number | null
         }
         Relationships: [
           {
@@ -140,8 +190,44 @@ export type Database = {
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      tournament_teams: {
+        Row: {
+          created_at: string
+          id: number
+          team: number
+          tournament: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          team: number
+          tournament?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          team?: number
+          tournament?: number | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "teams_tournament_fkey"
+            foreignKeyName: "tournament_teams_team_fkey"
+            columns: ["team"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_teams_team_fkey"
+            columns: ["team"]
+            isOneToOne: false
+            referencedRelation: "tournament_summary"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "tournament_teams_tournament_fkey"
             columns: ["tournament"]
             isOneToOne: false
             referencedRelation: "tournaments"
@@ -153,32 +239,56 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          month_start: number | null
           name: string | null
+          status: Database["public"]["Enums"]["tournament_status"]
           year: number
         }
         Insert: {
           created_at?: string
           id?: number
+          month_start?: number | null
           name?: string | null
+          status?: Database["public"]["Enums"]["tournament_status"]
           year: number
         }
         Update: {
           created_at?: string
           id?: number
+          month_start?: number | null
           name?: string | null
+          status?: Database["public"]["Enums"]["tournament_status"]
           year?: number
         }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      tournament_summary: {
+        Row: {
+          goal_average: number | null
+          number: number | null
+          team_id: number | null
+          team_name: string | null
+          total_points: number | null
+          tournament: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "day_tournament_fkey"
+            columns: ["tournament"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      tournament_status: "not_started" | "started" | "finished"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -308,6 +418,9 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      tournament_status: ["not_started", "started", "finished"],
+    },
   },
 } as const
+

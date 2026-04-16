@@ -40,15 +40,20 @@ export const actions = {
     startTournament: async ({ request, cookies, locals: { supabase } }) => {
       const formData = await request.formData();
 
+      const { data: teams } = await supabase.from('tournament_teams')
+        .select()
+        .eq('tournament', formData.get('tournament'));
+
+      if (!teams?.length) {
+        setFlash({type: 'error', message: 'Sélectionner des teams !'}, cookies);
+        return;
+      }
+
       const { data: tournament } = await supabase.from('tournaments')
         .update({status: 'started'})
         .eq('id', formData.get('tournament'))
         .select()
         .single();
-
-      const { data: teams } = await supabase.from('tournament_teams')
-        .select()
-        .eq('tournament', formData.get('tournament'));
 
       const schedule = generateTournamentSchedule(tournament, teams);
 
@@ -66,7 +71,5 @@ export const actions = {
       }
 
       setFlash({type: 'success', message: 'Tournoi démarré avec succès !'}, cookies);
-
-      redirect(301, `/tournois/${tournament.year}/rencontres`)
     },
 } satisfies Actions;

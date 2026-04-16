@@ -1,7 +1,7 @@
 import type { PageServerLoad } from '../$types'
 
 export const load: PageServerLoad = async ({ params, locals: { supabase }, setHeaders }) => {
-  const { data: tournament } = await supabase.from('tournaments').select('id, year').eq('year', params.year).single();
+  const { data: tournament } = await supabase.from('tournaments').select('id, year, month_start').eq('year', params.year).single();
   const { data: matchs } = await supabase.from('matchs')
     .select(`
       id,

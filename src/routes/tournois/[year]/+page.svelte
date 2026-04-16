@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { getMonthFromNumber, getNumberFromMonth } from '$lib/month';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+
 
 	// Pre-compute team totals and rankings using $derived for optimal performance
 	let rankedTeams = $derived(
@@ -39,7 +41,7 @@
 			{/if}
 		</div>
 		<p class="page-header-subtitle page-header-large">{data.tournament.name || 'Saison ' + data.tournament.year}</p>
-		<a href="/tournois/{data.tournament.year}/jour/{getNumberFromMonth(new Date().getMonth())}" role="button" class="text-white">Match du mois</a>
+		<a href="/tournois/{data.tournament.year}/jour/{getNumberFromMonth(new Date().getMonth(), data.tournament.month_start)}" role="button" class="text-white">Match du mois</a>
 	</hgroup>
 
 	{#if data.tournament.status === 'not_started'}
@@ -47,7 +49,7 @@
 		<a href="/tournois/{data.tournament.year}/equipes" role="button" class="outline m-0">
 		  Gérer les équipes
 		</a>
-		<form method="POST" action="?/startTournament" class="m-0">
+		<form method="POST" action="?/startTournament" use:enhance class="m-0">
 		  <input type="hidden" name="tournament" value={data.tournament.id} />
 		  <button type="submit" class="m-0">Démarrer le tournoi</button>
 		</form>
@@ -65,7 +67,7 @@
 			{#each data.days as number}
 			  <th colspan="2" class="text-center table-header-colored">
 				<a href="/tournois/{data.tournament.year}/jour/{number}" class="table-link-bold">
-					J{number} - {getMonthFromNumber(number)}
+					J{number} - {getMonthFromNumber(number, data.tournament.month_start)}
 				</a>
 			  </th>
 			{/each}

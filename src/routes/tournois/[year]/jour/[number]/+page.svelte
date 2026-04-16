@@ -45,17 +45,17 @@
 
 	<div>
 		{#if currentDay > 1}
-			<a href="/tournois/{data.tournament.year}/jour/{currentDay - 1}">&larr; {getMonthFromNumber(currentDay - 1)}</a>
+			<a href="/tournois/{data.tournament.year}/jour/{currentDay - 1}">&larr; {getMonthFromNumber(currentDay - 1, data.tournament.month_start)}</a>
 		{/if}
 		{#if nextDay <= maxDay}
-			<a href="/tournois/{data.tournament.year}/jour/{nextDay}">{getMonthFromNumber(nextDay)} &rarr;</a>
+			<a href="/tournois/{data.tournament.year}/jour/{nextDay}">{getMonthFromNumber(nextDay, data.tournament.month_start)} &rarr;</a>
 		{/if}
 	</div>
 </div>
 
 <div class="page-header">
 	<hgroup class="m-0">
-		<h1 class="page-header-title">Jour {page.params.number} - {getMonthFromNumber(currentDay)}</h1>
+		<h1 class="page-header-title">Jour {page.params.number} - {getMonthFromNumber(currentDay, data.tournament.month_start)}</h1>
 		<p class="page-header-subtitle">Tournoi {data.tournament.year}</p>
 	</hgroup>
 </div>
@@ -149,6 +149,6 @@
 	{#if teamDetail}
 		<p>{teamDetail.player1.name}: {teamDetail.player1.tel}</p>
 		<p>{teamDetail.player2.name}: {teamDetail.player2.tel}</p>
-		<TeamAvailabilities availabilities={teamDetail.availabilities.filter(a => getNumberFromMonth(new Date(a.start).getMonth()) === Number(page.params.number))} />
+		<TeamAvailabilities availabilities={teamDetail.availabilities.filter(a => getNumberFromMonth(new Date(a.start).getMonth(), data.tournament.month_start) === Number(page.params.number))} />
 	{/if}
 </Modal>

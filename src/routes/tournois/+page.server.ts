@@ -1,4 +1,5 @@
-import type { PageServerLoad } from './$types'
+import { setFlash } from 'sveltekit-flash-message/server';
+import type { PageServerLoad, Actions } from './$types'
 
 export const config = {
   isr: {
@@ -13,3 +14,18 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
     tournaments: tournaments ?? []
   }
 }
+
+export const actions = {
+  create: async ({ request, cookies, locals: { supabase } }) => {
+    const formData = await request.formData();
+
+    await supabase.from('tournaments').insert({
+      name: (formData.get('name') as string) || null,
+      month_start: Number(formData.get('month_start')),
+      year: new Date().getFullYear(),
+      status: 'not_started',
+    });
+    setFlash({ type: 'success', message: 'Tournoi créé avec succès !' }, cookies);
+  },
+
+} satisfies Actions;

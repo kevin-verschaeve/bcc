@@ -505,6 +505,18 @@ dialog {
 	font-size: 1.1rem;
 }
 
+.tournament-card-arrow {
+	font-size: 1.8rem;
+	color: var(--muted-color);
+	align-self: center;
+	transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.tournament-card:hover .tournament-card-arrow {
+	transform: translateX(4px);
+	color: var(--primary);
+}
+
 .tournament-card-actions {
 	display: flex;
 	gap: 0.5rem;
