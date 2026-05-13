@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@picocss/pico/css/pico.min.css';
-	import '../app.css';
+	import '../brutalist.css';
 	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
@@ -72,7 +72,7 @@
 			<div>
 				<strong class="header-logo">
 					<a href="/" class="header-logo-link">
-						<span class="header-logo-icon">&#x2660;</span>
+						<span class="header-logo-icon">♠</span>
 						<span class="header-logo-text">Coinche me if you can</span>
 					</a>
 				</strong>
@@ -89,22 +89,22 @@
 			<ul class="header-nav-list" class:mobile-menu-open={mobileMenuOpen}>
 				<li>
 					<a href="https://www.notion.so/BCC-Tournament-bddfd1ac300c40bd9c41deec65a15bba" target="_blank" class="nav-link nav-link-secondary" onclick={closeMobileMenu}>
-						📖 Règles
+						Règles
 					</a>
 				</li>
 				<li>
 					<a href="/tournois" class={getNavLinkClass('/tournois')} onclick={closeMobileMenu}>
-						🏆 Tournois
+						Tournois
 					</a>
 				</li>
 				<li>
 					<a href="/equipes" class={getNavLinkClass('/equipes')} onclick={closeMobileMenu}>
-						👥 Équipes
+						Équipes
 					</a>
 				</li>
 				<li>
 					<a href="/joueurs" class={getNavLinkClass('/joueurs')} onclick={closeMobileMenu}>
-						🃏 Joueurs
+						Joueurs
 					</a>
 				</li>
 			</ul>

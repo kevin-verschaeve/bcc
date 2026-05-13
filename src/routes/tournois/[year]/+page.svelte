@@ -5,151 +5,186 @@
 
 	let { data }: PageProps = $props();
 
-
-	// Pre-compute team totals and rankings using $derived for optimal performance
 	let rankedTeams = $derived(
 		Object.entries(data.summary ?? {})
 			.map(([team_name, summary]) => {
 				const totalPoints = summary?.map(s => s.total_points).reduce((acc, points) => acc + points, 0) || 0;
 				const totalGoalAverage = summary?.map(s => s.goal_average).reduce((acc, avg) => acc + avg, 0) || 0;
 				const matchCount = summary?.length;
-
 				return { team_name, totalPoints, totalGoalAverage, matchCount };
 			})
 			.sort((a, b) => {
-				// Sort by total points first (descending)
-				if (a.totalPoints !== b.totalPoints) {
-					return b.totalPoints - a.totalPoints;
-				}
-
-				// Then by goal average (descending)
+				if (a.totalPoints !== b.totalPoints) return b.totalPoints - a.totalPoints;
 				return b.totalGoalAverage - a.totalGoalAverage;
 			})
 	);
+
+	const currentMonth = new Date().getMonth();
+	const currentDayNumber = $derived(getNumberFromMonth(currentMonth, data.tournament.month_start));
+	const days = $derived([...data.days].sort((a, b) => a - b));
 </script>
 
 <a href="/tournois" class="secondary">← Retour</a>
 
 <div class="page-header">
-	<hgroup class="mb-sm">
-		<div class="badge-container">
-			<h1 class="page-header-title">Tournoi {data.tournament.year} - {data.tournament.year + 1}</h1>
-			{#if data.tournament.status === 'not_started'}
-				<span class="status-badge pending">Non démarré</span>
-			{:else if data.tournament.status === 'in_progress'}
-				<span class="status-badge active">En cours</span>
-			{/if}
-		</div>
-		<p class="page-header-subtitle page-header-large">{data.tournament.name || 'Saison ' + data.tournament.year}</p>
-		<a href="/tournois/{data.tournament.year}/jour/{getNumberFromMonth(new Date().getMonth(), data.tournament.month_start)}" role="button" class="text-white">Match du mois</a>
-	</hgroup>
+	<div class="badge-container">
+		<span class="badge">SAISON {data.tournament.year}/{(data.tournament.year + 1).toString().slice(2)}</span>
+		{#if data.tournament.status === 'not_started'}
+			<span class="status-badge pending">Non démarré</span>
+		{:else if data.tournament.status === 'in_progress'}
+			<span class="status-badge active">En cours</span>
+		{/if}
+	</div>
+	<h1 class="page-header-title">{data.tournament.name || `Saison ${data.tournament.year}`}</h1>
+	<p class="page-header-subtitle">Tournoi {data.tournament.year} – {data.tournament.year + 1}</p>
+
+	{#if data.tournament.status === 'in_progress'}
+		<a href="/tournois/{data.tournament.year}/jour/{currentDayNumber}" role="button">
+			ZAP MATCHS DU MOIS →
+		</a>
+	{/if}
 
 	{#if data.tournament.status === 'not_started'}
-	  <div class="action-flex">
-		<a href="/tournois/{data.tournament.year}/equipes" role="button" class="outline m-0">
-		  Gérer les équipes
-		</a>
-		<form method="POST" action="?/startTournament" use:enhance class="m-0">
-		  <input type="hidden" name="tournament" value={data.tournament.id} />
-		  <button type="submit" class="m-0">Démarrer le tournoi</button>
-		</form>
-	  </div>
+		<div class="action-flex" style="margin-top: 1rem;">
+			<a href="/tournois/{data.tournament.year}/equipes" role="button" class="outline m-0">Gérer les équipes</a>
+			<form method="POST" action="?/startTournament" use:enhance class="m-0">
+				<input type="hidden" name="tournament" value={data.tournament.id} />
+				<button type="submit" class="m-0">Démarrer →</button>
+			</form>
+		</div>
 	{/if}
 </div>
+
+{#if days.length > 0}
+	<h3 class="section-title">Jours de tournoi</h3>
+	<div class="day-strip">
+		{#each days as number}
+			{@const isLive = number === currentDayNumber && data.tournament.status === 'in_progress'}
+			<a href="/tournois/{data.tournament.year}/jour/{number}" class="day-cell" class:live={isLive}>
+				<div class="day-cell-num">J{number}</div>
+				<div class="day-cell-month">{getMonthFromNumber(number, data.tournament.month_start).slice(0, 3).toUpperCase()}</div>
+			</a>
+		{/each}
+	</div>
+{/if}
 
 <article>
 	<h3 class="section-title">Résultats par jour</h3>
 	<div class="overflow-auto">
 		<table class="striped" role="grid">
-		<thead>
-		  <tr>
-			<th scope="col" rowspan="2" class="table-col-fixed">Équipe</th>
-			{#each data.days as number}
-			  <th colspan="2" class="text-center table-header-colored">
-				<a href="/tournois/{data.tournament.year}/jour/{number}" class="table-link-bold">
-					J{number} - {getMonthFromNumber(number, data.tournament.month_start)}
-				</a>
-			  </th>
-			{/each}
-		  </tr>
-		  <tr>
-			{#each data.days as _}
-			  <th class="table-header-light">Points</th>
-			  <th class="table-header-light">Goal avg</th>
-			{/each}
-		  </tr>
-		</thead>
-		<tbody>
-		  {#each Object.entries(data.summary) as [team_name, summary]}
-		  <tr>
-			  <td>
-				<strong class="table-cell-large">{team_name}</strong>
-			  </td>
-			  {#each data.days as number}
-				<td class="table-cell-centered">
-				  <span class="table-cell-emphasized">
-					{summary?.find(team_summary => team_summary.number === number)?.total_points ?? '-'}
-				  </span>
-				</td>
-				<td class="table-cell-centered table-cell-muted">
-				  {summary?.find(team_summary => team_summary.number === number)?.goal_average ?? '-'}
-				</td>
-			{/each}
-		  </tr>
-		  {:else}
-		  <tr>
-			  <td colspan="{(data.days.size * 2) + 1}" class="text-center">
-				<em class="table-cell-muted">Aucun match joué pour le moment</em>
-			  </td>
-		  </tr>
-		  {/each}
-		</tbody>
-	  </table>
+			<thead>
+				<tr>
+					<th scope="col" rowspan="2" class="table-col-fixed">Équipe</th>
+					{#each days as number}
+						<th colspan="2" class="text-center table-header-colored">
+							<a href="/tournois/{data.tournament.year}/jour/{number}" class="table-link-bold">
+								J{number} · {getMonthFromNumber(number, data.tournament.month_start).slice(0, 3)}
+							</a>
+						</th>
+					{/each}
+				</tr>
+				<tr>
+					{#each days as _}
+						<th class="table-header-light">PTS</th>
+						<th class="table-header-light">GA</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each Object.entries(data.summary) as [team_name, summary]}
+					<tr>
+						<td><strong class="table-cell-large">{team_name}</strong></td>
+						{#each days as number}
+							<td class="text-center">
+								<span class="table-cell-emphasized">
+									{summary?.find(s => s.number === number)?.total_points ?? '–'}
+								</span>
+							</td>
+							<td class="text-center table-cell-muted">
+								{summary?.find(s => s.number === number)?.goal_average ?? '–'}
+							</td>
+						{/each}
+					</tr>
+				{:else}
+					<tr><td colspan="{(days.length * 2) + 1}" class="text-center"><em class="table-cell-muted">Aucun match joué</em></td></tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
 </article>
 
 <article class="mt-lg">
-  	<h3 class="section-title section-title-center">Classement général</h3>
+	<h3 class="section-title section-title-center">Classement général</h3>
 	<div class="overflow-auto">
 		<table class="striped" role="grid">
-		<thead>
-		<tr>
-			<th scope="col" class="table-col-rank">#</th>
-			<th scope="col">Équipe</th>
-			<th scope="col" class="text-center">Points</th>
-			<th scope="col" class="text-center">Goal average</th>
-			<th scope="col" class="text-center">Matchs joués</th>
-		</tr>
-		</thead>
-		<tbody>
-		{#each rankedTeams as { team_name, totalPoints, totalGoalAverage, matchCount }, index}
-		<tr class={index < 3 ? 'ranking-row-podium' : ''}>
-			<td class="ranking-position">
-				{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
-			</td>
-			<td>
-				<strong class="ranking-team-name">{team_name}</strong>
-			</td>
-			<td class="table-cell-centered">
-				<strong class="table-cell-primary">
-					{totalPoints}
-				</strong>
-			</td>
-			<td class="table-cell-centered table-cell-emphasized">
-				{totalGoalAverage}
-			</td>
-			<td class="table-cell-centered table-cell-emphasized">
-				{matchCount}
-			</td>
-		</tr>
-		{:else}
-		<tr>
-			<td colspan="4" class="text-center">
-				<em class="table-cell-muted">Aucun match joué pour le moment</em>
-			</td>
-		</tr>
-		{/each}
-		</tbody>
-	</table>
-  </div>
+			<thead>
+				<tr>
+					<th class="table-col-rank">#</th>
+					<th>Équipe</th>
+					<th class="text-center">Pts</th>
+					<th class="text-center">Goal avg</th>
+					<th class="text-center">Matchs</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each rankedTeams as { team_name, totalPoints, totalGoalAverage, matchCount }, index}
+					<tr class={index < 3 ? 'ranking-row-podium' : ''}>
+						<td class="ranking-position">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}</td>
+						<td><strong class="ranking-team-name">{team_name}</strong></td>
+						<td class="text-center"><strong class="table-cell-primary">{totalPoints}</strong></td>
+						<td class="text-center table-cell-emphasized" style:color={totalGoalAverage < 0 ? 'var(--b-red)' : 'var(--b-ink)'}>
+							{totalGoalAverage > 0 ? '+' : ''}{totalGoalAverage}
+						</td>
+						<td class="text-center table-cell-emphasized">{matchCount}</td>
+					</tr>
+				{:else}
+					<tr><td colspan="5" class="text-center"><em class="table-cell-muted">Aucun match joué</em></td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </article>
+
+<style>
+	.day-strip {
+		display: flex;
+		gap: 8px;
+		overflow-x: auto;
+		padding-bottom: 6px;
+		margin-bottom: 1.5rem;
+	}
+	.day-cell {
+		flex-shrink: 0;
+		width: 64px;
+		height: 72px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-decoration: none !important;
+		background: var(--b-bg);
+		border: var(--b-border);
+		color: var(--b-ink) !important;
+		transition: transform 0.08s ease, box-shadow 0.08s ease;
+	}
+	.day-cell:hover {
+		transform: translate(-1px, -1px);
+		box-shadow: 3px 3px 0 var(--b-ink);
+	}
+	.day-cell.live {
+		background: var(--b-yellow);
+		box-shadow: 3px 3px 0 var(--b-ink);
+	}
+	.day-cell-num {
+		font-family: var(--font-display);
+		font-size: 1.5rem;
+		line-height: 1;
+	}
+	.day-cell-month {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 1px;
+		margin-top: 4px;
+	}
+</style>
