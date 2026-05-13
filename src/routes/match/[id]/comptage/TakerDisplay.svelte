@@ -5,109 +5,131 @@
 </script>
 
 {#if game.taker || game.selectedSuit || game.selectedPoints}
-	<div class="taker-display">
-		{#if game.selectedPoints}
-			<span class="points-card">{game.selectedPoints}</span>
-		{/if}
-		{#if game.selectedSuit}
-			<span
-				class="suit-card"
-				class:red={game.selectedSuit === '♥' || game.selectedSuit === '♦'}
-			>{game.selectedSuit}</span>
-		{/if}
-		{#if game.taker}
-			<div class="taker-info">
-				<span class="taker-label">Preneur</span>
-				<span class="taker-name">{game.taker}</span>
+	<div class="contract-recap" class:recap-edge={!game.showSelection}>
+		<div class="recap-cells">
+			<div class="recap-cell">
+				<span class="recap-label">CONTRAT</span>
+				<span class="recap-value">{game.selectedPoints ?? '—'}</span>
 			</div>
-		{/if}
+			<div class="recap-cell">
+				<span class="recap-label">ATOUT</span>
+				<span
+					class="recap-value suit-display"
+					class:red={game.selectedSuit === '♥' || game.selectedSuit === '♦'}
+				>{game.selectedSuit ?? '—'}</span>
+			</div>
+			<div class="recap-cell recap-cell-name">
+				<span class="recap-label">PRENEUR</span>
+				<span class="recap-value recap-name">{game.taker ?? '—'}</span>
+			</div>
+		</div>
 		{#if !game.showSelection}
 			<button
 				type="button"
-				class="secondary edit-btn"
+				class="recap-edit"
 				onclick={() => (game.showSelection = true)}
 				aria-label="Modifier"
-			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<path
-						d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-					/>
-					<circle cx="12" cy="12" r="3" />
-				</svg>
-			</button>
+			>✎ MODIFIER</button>
 		{/if}
 	</div>
 {/if}
 
 <style>
-	.taker-display {
+	.contract-recap {
+		background: var(--b-ink);
+		color: var(--b-bg);
+		padding: 0.75rem 1rem;
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 1rem;
-		padding: 1rem;
-		background: var(--pico-background-color);
-		border: 1px solid var(--pico-muted-border-color);
-		border-radius: 8px;
+		gap: 0.75rem;
+		flex-wrap: wrap;
 		margin-top: 1rem;
 	}
-
-	.points-card {
-		font-size: 2rem;
-		font-weight: bold;
-		background: var(--pico-background-color);
+	/* When taking up the full bottom of the contract panel after edits */
+	.recap-edge {
+		margin: -1rem -1rem -1rem;
 	}
-
-	.suit-card {
-		font-size: 3rem;
-		line-height: 1;
-		padding: 0.5rem;
-		background: var(--pico-background-color);
-		border: 2px solid var(--pico-muted-border-color);
-		border-radius: 8px;
+	.recap-cells {
+		display: flex;
+		gap: 1rem;
+		flex: 1;
+		flex-wrap: wrap;
+		min-width: 0;
 	}
-
-	.suit-card.red {
-		color: #e53935;
-	}
-
-	.taker-info {
+	.recap-cell {
 		display: flex;
 		flex-direction: column;
-		text-align: left;
+		gap: 2px;
+		min-width: 0;
+	}
+	.recap-cell-name {
+		flex: 1;
 	}
 
-	.taker-label {
-		font-size: 0.8em;
-		opacity: 0.7;
+	@media (max-width: 480px) {
+		.recap-cell-name {
+			max-width: 160px;
+		}
+	}
+	.recap-label {
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 1.2px;
+		color: var(--b-yellow);
+	}
+	.recap-value {
+		font-family: var(--font-display);
+		font-size: 1rem;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: -0.3px;
+		color: var(--b-bg);
+	}
+	.recap-value.suit-display {
+		font-size: 1.4rem;
+		line-height: 1;
+	}
+	.recap-value.suit-display.red {
+		color: var(--b-red);
+	}
+	.recap-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.recap-edit {
+		font-family: var(--font-mono) !important;
+		font-size: 0.7rem !important;
+		font-weight: 700;
+		letter-spacing: 1px;
+		padding: 6px 10px !important;
+		background: var(--b-yellow) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-yellow) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+	.recap-edit:hover {
+		background: var(--b-bg) !important;
+		border-color: var(--b-bg) !important;
+		transform: none !important;
+		box-shadow: none !important;
 	}
 
-	.taker-name {
-		font-size: 1.3em;
-		font-weight: bold;
-	}
-
-	.edit-btn {
-		padding: 0.8rem;
-		margin: 0;
-		min-width: auto;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.edit-btn svg {
-		width: 20px;
-		height: 20px;
-		display: block;
+	@media (max-width: 480px) {
+		.contract-recap {
+			padding: 0.75rem;
+		}
+		.recap-cells {
+			width: 100%;
+			justify-content: space-between;
+			gap: 0.5rem;
+		}
+		.recap-edit {
+			width: 100%;
+			margin-top: 6px !important;
+		}
 	}
 </style>

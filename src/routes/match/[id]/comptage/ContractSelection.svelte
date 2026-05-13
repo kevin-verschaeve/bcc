@@ -18,34 +18,51 @@
 	]);
 </script>
 
-<div class="points-container">
-	{#each pointOptions as points}
-		<button
-			type="button"
-			class="point-btn"
-			class:selected={game.selectedPoints === points}
-			onclick={() => game.selectPoints(points)}
-		>{points}</button>
-	{/each}
+<div class="contract-step">
+	<div class="step-header">
+		<span class="step-num">1</span>
+		<span class="step-label">CONTRAT</span>
+	</div>
+	<div class="points-grid">
+		{#each pointOptions as points}
+			<button
+				type="button"
+				class="contract-btn"
+				class:special={points === 'Capot' || points === 'Générale'}
+				class:selected={game.selectedPoints === points}
+				onclick={() => game.selectPoints(points)}
+			>{points}</button>
+		{/each}
+	</div>
 </div>
 
-<div class="suits-container">
-	{#each suits as suit}
-		<button
-			type="button"
-			class="suit-btn"
-			class:selected={game.selectedSuit === suit}
-			class:red={suit === '♥' || suit === '♦'}
-			onclick={() => game.selectSuit(suit)}
-		>{suit}</button>
-	{/each}
+<div class="contract-step">
+	<div class="step-header">
+		<span class="step-num">2</span>
+		<span class="step-label">ATOUT</span>
+	</div>
+	<div class="suits-grid">
+		{#each suits as suit}
+			<button
+				type="button"
+				class="suit-btn"
+				class:selected={game.selectedSuit === suit}
+				class:red={suit === '♥' || suit === '♦'}
+				onclick={() => game.selectSuit(suit)}
+			>{suit}</button>
+		{/each}
+	</div>
 </div>
 
-<div class="players-selection">
-	{#each teams as team}
-		<div class="player-group">
-			<span class="team-label {team.key}-color">{team.name}</span>
-			<div class="player-buttons">
+<div class="contract-step">
+	<div class="step-header">
+		<span class="step-num">3</span>
+		<span class="step-label">PRENEUR</span>
+	</div>
+	<div class="players-row">
+		{#each teams as team}
+			<div class="players-team">
+				<span class="players-team-label {team.key}-color">{team.name}</span>
 				{#each team.players as player}
 					<button
 						type="button"
@@ -53,206 +70,200 @@
 						class:selected={game.taker === player.name}
 						onclick={() => game.selectTaker(player.name, team.key)}
 					>
-						{player.name}
+						<span class="player-name">{player.name}</span>
 						{#if game.currentDealer === player.name}
-							<span class="dealer-badge">D</span>
+							<span class="dealer-badge-mini" title="Donneur">D</span>
 						{/if}
 					</button>
 				{/each}
 			</div>
-		</div>
-	{/each}
+		{/each}
+	</div>
 </div>
 
 <style>
-	.points-container {
+	.contract-step {
+		margin-bottom: 1.25rem;
+	}
+	.contract-step:last-child {
+		margin-bottom: 0;
+	}
+	.step-header {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 8px;
+	}
+	.step-num {
+		font-family: var(--font-display);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		background: var(--b-ink);
+		color: var(--b-yellow);
+		font-size: 0.95rem;
+		line-height: 1;
+	}
+	.step-label {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 1.5px;
+		color: var(--b-ink);
+	}
+
+	/* --- Points (contrat) --- */
+	.points-grid {
 		display: grid;
 		grid-template-columns: repeat(5, 1fr);
-		gap: 0.4rem;
-		margin-bottom: 1rem;
+		gap: 6px;
 	}
-
-	.point-btn {
-		font-size: 0.9rem;
-		padding: 0.4rem 0.3rem;
-		background: var(--pico-card-background-color);
-		border: 2px solid var(--pico-muted-border-color);
-		border-radius: 6px;
+	.contract-btn {
+		font-family: var(--font-display) !important;
+		font-size: 1.05rem !important;
+		padding: 10px 4px !important;
+		background: var(--b-bg) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
 		cursor: pointer;
-		margin: 0;
-		transition: all 0.2s ease;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		color: var(--pico-contrast);
+		min-height: 44px;
+		text-transform: uppercase;
+		letter-spacing: 0.3px;
+	}
+	.contract-btn:hover {
+		background: var(--b-ink) !important;
+		color: var(--b-yellow) !important;
+		transform: none !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
+	}
+	.contract-btn.special {
+		background: var(--b-ink) !important;
+		color: var(--b-bg) !important;
+		font-size: 0.85rem !important;
+		grid-column: span 2;
+	}
+	.contract-btn.special:hover {
+		background: var(--b-red) !important;
+		color: var(--b-bg) !important;
+	}
+	.contract-btn.selected {
+		background: var(--b-yellow) !important;
+		color: var(--b-ink) !important;
+		transform: translate(-1px, -1px) !important;
+		box-shadow: 3px 3px 0 var(--b-ink) !important;
 	}
 
-	.point-btn:hover {
-		border-color: var(--pico-primary);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-	}
-
-	.point-btn.selected {
-		border-width: 3px;
-		border-color: var(--pico-primary);
-		background: var(--pico-card-background-color);
-		box-shadow:
-			0 0 0 3px var(--pico-primary-background),
-			0 4px 12px rgba(0, 0, 0, 0.2);
-		transform: translateY(-2px);
-	}
-
-	@media (min-width: 768px) {
-		.points-container {
-			display: flex;
-			justify-content: center;
-			gap: 0.5rem;
-			flex-wrap: wrap;
-		}
-
-		.point-btn {
-			font-size: 1rem;
-			padding: 0.5rem 0.8rem;
-			min-width: 4rem;
-		}
-	}
-
-	.suits-container {
+	/* --- Suits --- */
+	.suits-grid {
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
-		gap: 0.4rem;
-		margin-bottom: 1rem;
+		gap: 6px;
 	}
-
 	.suit-btn {
-		font-size: 1.3rem;
-		padding: 0.4rem 0.5rem;
-		background: var(--pico-card-background-color);
-		border: 2px solid var(--pico-muted-border-color);
-		border-radius: 6px;
+		font-family: var(--font-display) !important;
+		font-size: 1.5rem !important;
+		padding: 8px 4px !important;
+		background: var(--b-bg) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
 		cursor: pointer;
-		margin: 0;
-		transition: all 0.2s ease;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		color: #000000;
+		min-height: 52px;
 	}
-
+	.suit-btn.red { color: var(--b-red) !important; }
 	.suit-btn:hover {
-		border-color: var(--pico-primary);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+		background: var(--b-ink) !important;
+		color: var(--b-yellow) !important;
+		transform: none !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
 	}
-
+	.suit-btn.red:hover { color: var(--b-red) !important; }
 	.suit-btn.selected {
-		border-width: 3px;
-		border-color: var(--pico-primary);
-		background: var(--pico-card-background-color);
-		box-shadow:
-			0 0 0 3px var(--pico-primary-background),
-			0 4px 12px rgba(0, 0, 0, 0.2);
-		transform: translateY(-2px);
+		background: var(--b-yellow) !important;
+		transform: translate(-1px, -1px) !important;
+		box-shadow: 3px 3px 0 var(--b-ink) !important;
 	}
+	.suit-btn.red.selected { color: var(--b-red) !important; }
 
-	.suit-btn.red {
-		color: #e53935;
+	/* --- Players (preneur) --- */
+	.players-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
 	}
-
-	@media (min-width: 768px) {
-		.suits-container {
-			display: flex;
-			justify-content: center;
-			gap: 1rem;
-		}
-
-		.suit-btn {
-			font-size: 2rem;
-			padding: 0.5rem 1rem;
-			min-width: 3.5rem;
-		}
-	}
-
-	.players-selection {
+	.players-team {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		margin-bottom: 1rem;
+		gap: 6px;
 	}
-
-	@media (min-width: 768px) {
-		.players-selection {
-			flex-direction: row;
-			gap: 2rem;
-		}
+	.players-team-label {
+		font-family: var(--font-mono) !important;
+		font-size: 0.7rem !important;
+		font-weight: 700;
+		letter-spacing: 1.2px;
+		text-transform: uppercase;
+		margin-bottom: 2px;
 	}
-
-	.player-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	@media (min-width: 768px) {
-		.player-group {
-			flex: 1;
-		}
-	}
-
-	.team-label {
-		font-weight: 600;
-		font-size: 0.9em;
-	}
-
-	.player-buttons {
-		display: flex;
-		gap: 0.5rem;
-	}
-
 	.player-btn {
-		background: var(--pico-card-background-color);
-		border: 2px solid var(--pico-muted-border-color);
-		padding: 0.5rem 1rem;
-		border-radius: 4px;
+		font-family: var(--font-mono) !important;
+		font-size: 0.85rem !important;
+		font-weight: 700;
+		padding: 10px 8px !important;
+		background: var(--b-bg) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
 		cursor: pointer;
-		font-size: inherit;
-		color: var(--pico-contrast);
-		margin: 0;
-		transition: all 0.2s ease;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 6px;
+		min-height: 44px;
+		text-transform: uppercase;
+	}
+	.player-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
 		flex: 1;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.3em;
+		text-align: left;
 	}
-
 	.player-btn:hover {
-		border-color: var(--pico-primary);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+		background: var(--b-ink) !important;
+		color: var(--b-yellow) !important;
+		transform: none !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
 	}
-
 	.player-btn.selected {
-		border-width: 3px;
-		border-color: var(--pico-primary);
-		background: var(--pico-card-background-color);
-		box-shadow:
-			0 0 0 3px var(--pico-primary-background),
-			0 4px 12px rgba(0, 0, 0, 0.2);
-		transform: translateY(-2px);
+		background: var(--b-yellow) !important;
+		color: var(--b-ink) !important;
+		transform: translate(-1px, -1px) !important;
+		box-shadow: 3px 3px 0 var(--b-ink) !important;
 	}
-
-	.dealer-badge {
+	.dealer-badge-mini {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--pico-primary);
-		color: var(--pico-primary-inverse, #fff);
+		background: var(--b-red);
+		color: var(--b-bg);
+		font-family: var(--font-display);
+		font-size: 0.68rem;
+		width: 18px;
+		height: 18px;
 		border-radius: 50%;
-		width: 1.3em;
-		height: 1.3em;
-		font-size: 0.72em;
-		font-weight: bold;
-		vertical-align: middle;
-		line-height: 1;
 		flex-shrink: 0;
+	}
+
+	@media (max-width: 380px) {
+		.contract-btn { font-size: 0.95rem !important; padding: 8px 2px !important; }
+		.contract-btn.special { font-size: 0.78rem !important; }
+		.suit-btn { font-size: 1.3rem !important; }
 	}
 </style>

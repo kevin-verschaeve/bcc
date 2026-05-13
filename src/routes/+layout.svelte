@@ -87,6 +87,9 @@
 
 			<!-- Navigation menu -->
 			<ul class="header-nav-list" class:mobile-menu-open={mobileMenuOpen}>
+				<li class="drawer-close-item">
+					<button class="drawer-close-btn" onclick={closeMobileMenu}>✕ Fermer</button>
+				</li>
 				<li>
 					<a href="https://www.notion.so/BCC-Tournament-bddfd1ac300c40bd9c41deec65a15bba" target="_blank" class="nav-link nav-link-secondary" onclick={closeMobileMenu}>
 						Règles
@@ -110,6 +113,11 @@
 			</ul>
 		</nav>
 	</header>
+
+	{#if mobileMenuOpen}
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+		<div class="menu-overlay" onclick={closeMobileMenu}></div>
+	{/if}
 
 	<main>
 		{@render children?.()}

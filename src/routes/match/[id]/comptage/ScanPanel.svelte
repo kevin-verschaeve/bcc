@@ -17,131 +17,174 @@
 </script>
 
 {#if game.scanOpen}
-	<div class="scan-inline" transition:slide>
-		<div class="scan-input-row">
+	<div class="scan-panel" transition:slide>
+		<div class="scan-head">
+			<span class="scan-head-tag">📷 SCAN DES PLIS</span>
+		</div>
+		<div class="scan-row">
 			<input
 				type="file"
 				accept="image/*"
 				capture="environment"
 				bind:this={scanFileInput}
-				class="scan-file-input"
+				class="scan-file"
 			/>
 			<button
 				type="button"
 				onclick={handleAnalyze}
 				disabled={game.scanLoading}
 				aria-busy={game.scanLoading}
-				class="scan-count-btn"
+				class="scan-go"
 			>
-				{game.scanLoading ? '...' : 'Compter'}
+				{game.scanLoading ? '...' : 'COMPTER'}
 			</button>
 		</div>
 		{#if game.scanError}
-			<div class="scan-error">
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<circle cx="12" cy="12" r="10" />
-					<line x1="12" y1="8" x2="12" y2="12" />
-					<line x1="12" y1="16" x2="12.01" y2="16" />
+			<div class="scan-err">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="10"/>
+					<line x1="12" y1="8" x2="12" y2="12"/>
+					<line x1="12" y1="16" x2="12.01" y2="16"/>
 				</svg>
 				<span>{game.scanError}</span>
 			</div>
 		{/if}
 		{#if game.scanResult}
-			<div class="scan-result">
-				<p class="scan-cards">
+			<div class="scan-ok">
+				<div class="scan-cards-row">
 					{#each game.scanResult.cards as card}
-						<span class="scan-card" class:red={card.suit === '♥' || card.suit === '♦'}>
+						<span class="scan-card-pill" class:red={card.suit === '♥' || card.suit === '♦'}>
 							{card.rank}{card.suit}
 						</span>
 					{/each}
-				</p>
-				<p class="scan-total">{game.scanResult.points} points</p>
+				</div>
+				<div class="scan-total">
+					{game.scanResult.points}
+					<small>POINTS</small>
+				</div>
 			</div>
 		{/if}
 	</div>
 {/if}
 
 <style>
-	.scan-inline {
-		margin-top: 0.75rem;
-		background: var(--pico-card-background-color);
+	.scan-panel {
+		background: var(--b-bg);
+		border: var(--b-border-thick);
+		box-shadow: var(--b-shadow);
+		padding: 0.75rem;
+		margin-bottom: 1rem;
 	}
-
-	.scan-input-row {
+	.scan-head {
+		margin-bottom: 8px;
+	}
+	.scan-head-tag {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 1.5px;
+		background: var(--b-ink);
+		color: var(--b-yellow);
+		padding: 3px 8px;
+		display: inline-block;
+	}
+	.scan-row {
 		display: flex;
-		gap: 0.5rem;
+		gap: 8px;
 		align-items: center;
 	}
-
-	.scan-file-input {
+	.scan-file {
 		flex: 1;
-		margin: 0;
-		font-size: 0.9em;
+		margin: 0 !important;
+		font-family: var(--font-mono) !important;
+		font-size: 0.78rem !important;
+		padding: 6px !important;
+		min-height: 40px;
+		background: var(--b-bg) !important;
+		border: 2px solid var(--b-ink) !important;
+		box-shadow: none !important;
+	}
+	.scan-go {
+		font-family: var(--font-mono) !important;
+		font-size: 0.78rem !important;
+		font-weight: 700;
+		letter-spacing: 1.2px;
+		padding: 10px 14px !important;
+		background: var(--b-ink) !important;
+		color: var(--b-yellow) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+		text-transform: uppercase;
+	}
+	.scan-go:hover {
+		background: var(--b-yellow) !important;
+		color: var(--b-ink) !important;
+		transform: none !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
+	}
+	.scan-go:disabled {
+		opacity: 0.5 !important;
 	}
 
-	.scan-count-btn {
-		margin: 0;
-		flex-shrink: 0;
-		padding: 0.5rem 1rem;
-	}
-
-	.scan-error {
+	.scan-err {
+		margin-top: 8px;
+		padding: 10px;
+		background: var(--b-red);
+		color: var(--b-bg);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.5px;
 		display: flex;
-		align-items: flex-start;
-		gap: 0.5rem;
-		margin-top: 0.75rem;
-		padding: 0.6rem 0.75rem;
-		background: color-mix(in srgb, var(--pico-del-color) 10%, transparent);
-		border: 1px solid color-mix(in srgb, var(--pico-del-color) 40%, transparent);
-		border-radius: 6px;
-		color: var(--pico-del-color);
-		font-size: 0.9em;
+		gap: 8px;
+		align-items: center;
 	}
-
-	.scan-error svg {
+	.scan-err svg {
 		width: 18px;
 		height: 18px;
 		flex-shrink: 0;
-		margin-top: 1px;
 	}
 
-	.scan-result {
-		margin-top: 1rem;
+	.scan-ok {
+		margin-top: 10px;
 		text-align: center;
+		padding: 10px;
+		background: var(--b-yellow);
+		border: 2px solid var(--b-ink);
 	}
-
-	.scan-cards {
+	.scan-cards-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.3rem;
+		gap: 4px;
 		justify-content: center;
-		margin-bottom: 0.75rem;
+		margin-bottom: 8px;
 	}
-
-	.scan-card {
-		font-size: 1em;
-		font-weight: 600;
-		background: var(--pico-card-background-color);
-		border: 1px solid var(--pico-muted-border-color);
-		border-radius: 4px;
-		padding: 0.2rem 0.4rem;
-		color: #000;
+	.scan-card-pill {
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		font-weight: 700;
+		padding: 4px 8px;
+		background: var(--b-bg);
+		color: var(--b-ink);
+		border: 1.5px solid var(--b-ink);
 	}
-
-	.scan-card.red {
-		color: #e53935;
+	.scan-card-pill.red {
+		color: var(--b-red);
 	}
-
 	.scan-total {
-		font-size: 2em;
-		font-weight: bold;
-		margin: 0.25rem 0;
+		font-family: var(--font-display);
+		font-size: 2.2rem;
+		line-height: 1;
+		color: var(--b-ink);
+		letter-spacing: -1px;
+	}
+	.scan-total small {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 1.5px;
+		color: var(--b-ink-soft);
+		margin-left: 6px;
 	}
 </style>

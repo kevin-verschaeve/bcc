@@ -77,7 +77,14 @@ a { color: var(--b-ink); text-underline-offset: 3px; }
 a:hover { color: var(--b-blue); }
 
 /* ============== Header / Nav ============== */
-.header-main { margin-bottom: var(--spacing-md); }
+.header-main {
+    margin-bottom: var(--spacing-md);
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    background: var(--b-bg);
+    padding-bottom: 6px; /* espace pour l'ombre du header-nav */
+}
 
 .header-nav {
 	background: var(--b-ink);
@@ -155,9 +162,31 @@ a:hover { color: var(--b-blue); }
 }
 .nav-link-secondary { color: var(--b-bg) !important; opacity: 0.8; }
 
+/* Caché sur desktop, visible uniquement dans le drawer mobile */
+.drawer-close-item { display: none; }
+
 /* Burger */
-.burger-line { background-color: var(--b-yellow) !important; height: 3px !important; }
-.burger-menu { box-shadow: none !important; }
+.burger-menu {
+    display: none !important; /* caché sur desktop, affiché via media query mobile */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    background: transparent !important;
+    border: 2px solid var(--b-bg) !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.burger-line {
+    background-color: var(--b-bg) !important;
+    height: 2px !important;
+    width: 22px;
+    display: block;
+}
 
 /* ============== Page header ============== */
 .page-header {
@@ -395,6 +424,8 @@ table thead {
 	border-bottom: var(--b-border-thick);
 }
 table thead th {
+	background: var(--b-ink) !important;
+	background-color: var(--b-ink) !important;
 	color: var(--b-bg) !important;
 	font-family: var(--font-display);
 	font-size: 0.75rem !important;
@@ -742,11 +773,45 @@ dialog, dialog article {
 
 /* ============== Responsive ============== */
 @media (max-width: 768px) {
-	.header-nav { flex-wrap: wrap; padding: 12px 14px; }
+	.header-main { padding-bottom: 0; }
+	.header-nav {
+		flex-wrap: nowrap;
+		padding: 10px 14px;
+		margin-top: 0;
+		gap: 1rem;
+	}
 	.header-logo-text { font-size: 0.78rem; }
 
-	/* Burger drawer */
-	.burger-menu { display: flex !important; order: 2; z-index: 9999; }
+	/* Burger — visible sur mobile */
+	.burger-menu { display: flex !important; }
+
+	/* Overlay fermeture */
+	.menu-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 9997;
+	}
+
+	/* Bouton fermer dans le drawer */
+	.drawer-close-item { display: block; list-style: none; margin-bottom: 0.5rem; }
+	.drawer-close-btn {
+		background: transparent !important;
+		border: 2px solid rgba(255,255,255,0.3) !important;
+		box-shadow: none !important;
+		color: var(--b-bg) !important;
+		font-size: 0.8rem !important;
+		padding: 6px 12px !important;
+		width: 100%;
+		text-align: left !important;
+	}
+	.drawer-close-btn:hover {
+		background: rgba(255,255,255,0.1) !important;
+		transform: none !important;
+		box-shadow: none !important;
+	}
+
+	/* Drawer latéral */
 	.header-nav-list {
 		display: none;
 		flex-direction: column;
@@ -759,18 +824,50 @@ dialog, dialog article {
 		box-shadow: -6px 0 0 var(--b-yellow);
 		padding: 4rem 1rem 1rem;
 		gap: 6px;
-		z-index: 9998;
+		z-index: 9998; /* sous le header sticky (z-index: 10000) */
 		overflow-y: auto;
 		margin: 0;
 	}
 	.header-nav-list.mobile-menu-open { display: flex; }
 	.header-nav-list .nav-link {
-		display: block;
-		width: 100%;
-		text-align: left;
-		padding: 12px 14px !important;
-		font-size: 0.9rem !important;
+		display: block !important;
+		width: 100% !important;
+		text-align: left !important;
+		padding: 10px 14px !important;
+		font-size: 0.85rem !important;
+		white-space: nowrap !important;
+		border: none !important;
+		border-left: 3px solid transparent !important;
+		border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+		box-shadow: none !important;
+		background: transparent !important;
+		color: var(--b-bg) !important;
+		transform: none !important;
 	}
+	.header-nav-list .nav-link:hover {
+		border-left-color: var(--b-yellow) !important;
+		background: rgba(255,255,255,0.05) !important;
+		color: var(--b-yellow) !important;
+		transform: none !important;
+		box-shadow: none !important;
+	}
+	.header-nav-list .nav-link.nav-link-active {
+		border-left-color: var(--b-yellow) !important;
+		background: rgba(255,230,0,0.15) !important;
+		color: var(--b-yellow) !important;
+	}
+
+	.action-buttons {
+		display: flex;
+		gap: 0.4rem;
+		flex-wrap: wrap;
+	}
+	.action-buttons button {
+		padding: 6px 10px !important;
+		font-size: 0.75rem !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
+	}
+	.tel-cell { white-space: nowrap; }
 
 	.match-card-layout { grid-template-columns: 1fr; text-align: center; }
 	.match-team-left, .match-team-right { text-align: center !important; }

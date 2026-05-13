@@ -22,38 +22,40 @@
 
 <button onclick={() => (showAddModal = true)}>Ajouter un joueur</button>
 
-<table role="grid">
-	<thead>
-		<tr>
-			<th scope="col">Nom</th>
-			<th scope="col">Téléphone</th>
-			<th scope="col">Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-		{#each data.players as player}
+<div class="overflow-auto">
+	<table role="grid">
+		<thead>
 			<tr>
-				<td><strong>{player.name}</strong></td>
-				<td>{player.tel}</td>
-				<td>
-					<div style="display: flex; gap: 0.5rem;">
-						<button
-							type="button"
-							class="outline"
-							onclick={() => openEditModal(player)}
-						>
-							Modifier
-						</button>
-						<form action="?/delete" method="POST" use:enhance>
-							<input type="hidden" name="id" value={player.id} />
-							<button type="submit" class="secondary outline">Supprimer</button>
-						</form>
-					</div>
-				</td>
+				<th scope="col">Nom</th>
+				<th scope="col">Téléphone</th>
+				<th scope="col">Actions</th>
 			</tr>
-		{/each}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			{#each data.players as player}
+				<tr>
+					<td><strong>{player.name}</strong></td>
+					<td class="tel-cell">{player.tel}</td>
+					<td>
+						<div class="action-buttons">
+							<button
+								type="button"
+								class="outline"
+								onclick={() => openEditModal(player)}
+							>
+								Modifier
+							</button>
+							<form action="?/delete" method="POST" use:enhance>
+								<input type="hidden" name="id" value={player.id} />
+								<button type="submit" class="secondary outline">Supprimer</button>
+							</form>
+						</div>
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
 
 <Modal bind:showModal={showAddModal}>
 	{#snippet header()}

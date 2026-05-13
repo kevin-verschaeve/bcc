@@ -28,56 +28,36 @@
 	]);
 </script>
 
-<!-- Dealer bar -->
-<article class="dealer-bar">
+<!-- Dealer strip -->
+<div class="dealer-strip">
 	{#if game.currentDealer}
-		<div class="dealer-current-info">
-			<span class="dealer-bar-label">Donneur :</span>
-			<span class="dealer-bar-name">{game.currentDealer}</span>
-			<span class="dealer-badge">D</span>
+		<div class="dealer-info">
+			<span class="dealer-tag">DONNEUR</span>
+			<span class="dealer-name">{game.currentDealer}</span>
 		</div>
-	{/if}
-	{#if game.dealerOrder.length === 4}
-		<div class="dealer-bar-actions">
-			<button
-				type="button"
-				class="secondary outline dealer-next-btn"
-				onclick={() => game.advanceDealer()}
-			>
-				Suivant
+		<div class="dealer-actions">
+			<button type="button" class="dealer-btn" onclick={() => game.advanceDealer()}>
+				SUIVANT →
 			</button>
 			<button
 				type="button"
-				class="secondary dealer-config-btn"
+				class="dealer-btn icon-only"
 				onclick={() => game.startDealerSetup()}
 				title="Modifier l'ordre de donne"
 				aria-label="Modifier l'ordre de donne"
 			>
-				<svg
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<path
-						d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-					/>
-					<circle cx="12" cy="12" r="3" />
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="3"/>
+					<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
 				</svg>
 			</button>
 		</div>
 	{:else}
-		<button
-			type="button"
-			class="secondary outline dealer-setup-trigger"
-			onclick={() => game.startDealerSetup()}
-		>
-			Définir l'ordre de donne
+		<button type="button" class="dealer-setup-btn" onclick={() => game.startDealerSetup()}>
+			🎴 DÉFINIR L'ORDRE DE DONNE
 		</button>
 	{/if}
-</article>
+</div>
 
 <!-- Dealer setup dialog -->
 <dialog bind:this={dialogEl} onclose={() => game.cancelDealerSetup()}>
@@ -89,16 +69,15 @@
 				{...{ rel: 'prev' }}
 				onclick={() => game.cancelDealerSetup()}
 			></button>
-			<h4>Ordre de donne ({game.dealerSetupSelections.length}/4)</h4>
+			<h4>Ordre de donne <span class="setup-count">{game.dealerSetupSelections.length}/4</span></h4>
 		</header>
-		<p class="dealer-setup-hint">
-			Sélectionnez les 4 joueurs dans l'ordre. Les joueurs d'une même équipe ne peuvent pas se
-			succéder.
+		<p class="dealer-hint">
+			Sélectionne les 4 joueurs dans l'ordre. Deux joueurs d'une même équipe ne peuvent pas se suivre.
 		</p>
 		<div class="dealer-setup-grid">
 			{#each teams as team}
 				<div class="setup-team-group">
-					<span class="team-label {team.key}-color">{team.name}</span>
+					<span class="setup-team-label {team.key}-color">{team.name}</span>
 					<div class="player-buttons">
 						{#each team.players as player}
 							{@const selIdx = game.dealerSetupSelections.indexOf(player.name)}
@@ -107,14 +86,14 @@
 								!isSetupSelected && game.isDealerSetupPlayerDisabled(player.name, team.key)}
 							<button
 								type="button"
-								class="player-btn"
+								class="setup-player"
 								class:setup-selected={isSetupSelected}
 								disabled={isSetupDisabled}
 								onclick={() => game.addToDealerSetup(player.name)}
 							>
-								{player.name}
+								<span class="setup-player-name">{player.name}</span>
 								{#if isSetupSelected}
-									<span class="setup-order-badge">{selIdx + 1}</span>
+									<span class="setup-num">{selIdx + 1}</span>
 								{/if}
 							</button>
 						{/each}
@@ -126,170 +105,221 @@
 </dialog>
 
 <style>
-	/* --- Dealer bar --- */
-	.dealer-bar {
+	.dealer-strip {
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
-		padding: 0.5rem 0.5rem;
-		border-top: 1px solid var(--pico-muted-border-color);
-		margin-top: 0.5rem;
+		align-items: center;
 		gap: 0.5rem;
+		padding: 10px 14px;
+		background: var(--b-bg);
+		border: var(--b-border-thick);
+		box-shadow: var(--b-shadow);
+		margin-bottom: 1.25rem;
 	}
-
-	.dealer-current-info {
+	.dealer-info {
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
-		font-size: 0.9em;
+		gap: 10px;
+		flex: 1;
+		min-width: 0;
 	}
-
-	.dealer-bar-label {
-		opacity: 0.7;
+	.dealer-tag {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 1.5px;
+		background: var(--b-ink);
+		color: var(--b-yellow);
+		padding: 3px 8px;
+		flex-shrink: 0;
 	}
-
-	.dealer-bar-name {
-		font-weight: bold;
+	.dealer-name {
+		font-family: var(--font-display);
+		font-size: 1.1rem;
+		text-transform: uppercase;
+		letter-spacing: -0.5px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		color: var(--b-ink);
 	}
-
-	.dealer-bar-actions {
+	.dealer-actions {
 		display: flex;
-		gap: 0.4rem;
-		align-items: center;
+		gap: 6px;
+		flex-shrink: 0;
 	}
-
-	.dealer-next-btn {
-		padding: 0.3rem 0.8rem;
-		font-size: 0.85em;
-		margin: 0;
+	.dealer-btn {
+		font-family: var(--font-mono) !important;
+		font-size: 0.7rem !important;
+		font-weight: 700;
+		letter-spacing: 1px;
+		padding: 6px 10px !important;
+		background: var(--b-bg) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+		text-transform: uppercase;
 	}
-
-	.dealer-config-btn {
-		padding: 0.6rem;
-		font-size: 0.85em;
-		margin: 0;
+	.dealer-btn:hover {
+		background: var(--b-yellow) !important;
+		transform: none !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
+	}
+	.dealer-btn.icon-only {
+		padding: 6px 8px !important;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 	}
-
-	.dealer-config-btn svg {
-		width: 16px;
-		height: 16px;
+	.dealer-btn.icon-only svg {
+		width: 14px;
+		height: 14px;
 		display: block;
 	}
 
-	.dealer-setup-trigger {
-		margin: 0;
-		font-size: 0.9em;
-		padding: 0.3rem 0.8rem;
+	.dealer-setup-btn {
+		flex: 1;
+		font-family: var(--font-mono) !important;
+		font-size: 0.78rem !important;
+		font-weight: 700;
+		letter-spacing: 1.2px;
+		padding: 10px 14px !important;
+		background: var(--b-yellow) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+		text-transform: uppercase;
 	}
-
-	.dealer-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--pico-primary);
-		color: var(--pico-primary-inverse, #fff);
-		border-radius: 50%;
-		width: 1.3em;
-		height: 1.3em;
-		font-size: 0.72em;
-		font-weight: bold;
-		vertical-align: middle;
-		line-height: 1;
-		flex-shrink: 0;
+	.dealer-setup-btn:hover {
+		transform: translate(-1px, -1px) !important;
+		box-shadow: 3px 3px 0 var(--b-ink) !important;
 	}
 
 	/* --- Setup dialog --- */
 	dialog article {
 		margin: 0;
+		padding: 1.25rem;
+		background: var(--b-bg);
+		border: var(--b-border-thick);
+		box-shadow: 8px 8px 0 var(--b-ink);
+		border-radius: 0;
 	}
-
 	dialog h4 {
+		font-family: var(--font-display);
+		text-transform: uppercase;
+		letter-spacing: -0.5px;
 		margin: 0;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.setup-count {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		letter-spacing: 1.2px;
+		background: var(--b-yellow);
+		color: var(--b-ink);
+		padding: 4px 8px;
+		border: 2px solid var(--b-ink);
 	}
 
-	.dealer-setup-hint {
-		font-size: 0.85em;
-		opacity: 0.75;
-		margin-bottom: 1rem;
+	.dealer-hint {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		letter-spacing: 0.3px;
+		color: var(--b-ink-soft);
+		margin: 0 0 1rem;
+		padding: 8px 10px;
+		background: rgba(0, 0, 0, 0.04);
+		border-left: 3px solid var(--b-yellow);
 	}
 
 	.dealer-setup-grid {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		margin-bottom: 1rem;
+		margin-bottom: 0;
 	}
 
 	@media (min-width: 768px) {
 		.dealer-setup-grid {
 			flex-direction: row;
-			gap: 2rem;
+			gap: 1rem;
 		}
 	}
 
 	.setup-team-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 6px;
 		flex: 1;
 	}
-
-	.team-label {
-		font-weight: 600;
-		font-size: 0.9em;
+	.setup-team-label {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 1.5px;
+		text-transform: uppercase;
+		margin-bottom: 2px;
 	}
-
 	.player-buttons {
 		display: flex;
-		gap: 0.5rem;
+		gap: 6px;
+		flex-direction: column;
 	}
-
-	.player-btn {
-		background: var(--pico-card-background-color);
-		border: 2px solid var(--pico-muted-border-color);
-		padding: 0.5rem 1rem;
-		border-radius: 4px;
+	.setup-player {
+		font-family: var(--font-mono) !important;
+		font-size: 0.85rem !important;
+		font-weight: 700;
+		padding: 12px 10px !important;
+		background: var(--b-bg) !important;
+		color: var(--b-ink) !important;
+		border: 2px solid var(--b-ink) !important;
+		margin: 0 !important;
+		box-shadow: none !important;
 		cursor: pointer;
-		font-size: inherit;
-		color: var(--pico-contrast);
-		margin: 0;
-		transition: all 0.2s ease;
-		flex: 1;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 6px;
+		min-height: 44px;
+		text-transform: uppercase;
+	}
+	.setup-player:hover:not(:disabled) {
+		background: var(--b-ink) !important;
+		color: var(--b-yellow) !important;
+		transform: none !important;
+		box-shadow: 2px 2px 0 var(--b-ink) !important;
+	}
+	.setup-player:disabled {
+		opacity: 0.3 !important;
+		cursor: not-allowed;
+	}
+	.setup-player.setup-selected {
+		background: var(--b-yellow) !important;
+		color: var(--b-ink) !important;
+		transform: translate(-1px, -1px) !important;
+		box-shadow: 3px 3px 0 var(--b-ink) !important;
+	}
+	.setup-player-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
+	}
+	.setup-num {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.3em;
-	}
-
-	.player-btn:hover {
-		border-color: var(--pico-primary);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-	}
-
-	.player-btn.setup-selected {
-		border-width: 3px;
-		border-color: var(--pico-secondary, #6c757d);
-		opacity: 0.85;
-	}
-
-	.setup-order-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--pico-secondary, #6c757d);
-		color: #fff;
+		background: var(--b-ink);
+		color: var(--b-yellow);
+		font-family: var(--font-display);
+		font-size: 0.78rem;
+		width: 22px;
+		height: 22px;
 		border-radius: 50%;
-		width: 1.3em;
-		height: 1.3em;
-		font-size: 0.72em;
-		font-weight: bold;
-		vertical-align: middle;
-		line-height: 1;
 		flex-shrink: 0;
 	}
 </style>
