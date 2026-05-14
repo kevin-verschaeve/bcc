@@ -548,6 +548,12 @@ input:focus, select:focus, textarea:focus {
 	font-family: var(--font-display);
 	text-shadow: none !important;
 }
+.score-card .team1-color,
+.score-add-section .team1-color,
+.score-card .team2-color,
+.score-add-section .team2-color {
+	color: var(--b-ink) !important;
+}
 .match-team-score {
 	font-family: var(--font-display) !important;
 	font-size: 4rem !important;
