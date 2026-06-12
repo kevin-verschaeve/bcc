@@ -36,8 +36,16 @@
 			<span class="dealer-name">{game.currentDealer}</span>
 		</div>
 		<div class="dealer-actions">
-			<button type="button" class="dealer-btn" onclick={() => game.advanceDealer()}>
-				SUIVANT →
+			<button
+				type="button"
+				class="dealer-btn icon-only"
+				onclick={() => game.advanceDealer()}
+				title="Donneur suivant"
+				aria-label="Donneur suivant"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="9 18 15 12 9 6"/>
+				</svg>
 			</button>
 			<button
 				type="button"

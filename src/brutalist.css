@@ -632,7 +632,6 @@ input:focus, select:focus, textarea:focus {
 	display: grid;
 	grid-template-columns: 1fr 1fr auto;
 	gap: var(--spacing-sm);
-	align-items: end;
 }
 .score-input-large {
 	font-family: var(--font-display) !important;
@@ -768,6 +767,65 @@ dialog, dialog article {
 
 /* ============== Toast ============== */
 .toast-container > section { margin: 0 !important; }
+
+[data-sonner-toaster] {
+	--normal-bg: var(--b-ink);
+	--normal-border: var(--b-ink);
+	--normal-text: var(--b-bg);
+	--success-bg: var(--b-yellow);
+	--success-border: var(--b-ink);
+	--success-text: var(--b-ink);
+	--error-bg: var(--b-red);
+	--error-border: var(--b-ink);
+	--error-text: var(--b-bg);
+	--border-radius: 0px;
+	--font-family: var(--font-mono);
+	--font-size: 0.85rem;
+}
+
+[data-sonner-toast] {
+	border: 2.5px solid var(--b-ink) !important;
+	border-radius: 0 !important;
+	box-shadow: 4px 4px 0 var(--b-ink) !important;
+	font-family: var(--font-mono) !important;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.8px !important;
+	text-transform: uppercase !important;
+	padding: 14px 16px !important;
+}
+
+[data-sonner-toast][data-type='success'] {
+	background: var(--b-yellow) !important;
+	color: var(--b-ink) !important;
+	box-shadow: 4px 4px 0 var(--b-ink) !important;
+}
+
+[data-sonner-toast][data-type='error'] {
+	background: var(--b-red) !important;
+	color: var(--b-bg) !important;
+	box-shadow: 4px 4px 0 var(--b-ink) !important;
+}
+
+[data-sonner-toast] [data-title] {
+	font-family: var(--font-mono) !important;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.8px !important;
+	text-transform: uppercase !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+	border: 2px solid currentColor !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	background: transparent !important;
+}
+
+[data-sonner-toast] [data-icon] svg {
+	width: 16px !important;
+	height: 16px !important;
+}
 
 /* ============== Score card layout helpers (existing) ============== */
 .score-card .delete-btn { margin: 0; }
