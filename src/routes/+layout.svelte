@@ -1,6 +1,8 @@
 <script lang="ts">
-	import '@picocss/pico/css/pico.min.css';
-	import '../brutalist.css';
+	import './../pico.css';
+	import baseCssUrl from '../base.css?url';
+	import appThemeUrl from '../theme-app.css?url';
+	import brutalistThemeUrl from '../theme-brutalist.css?url';
 	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
@@ -9,8 +11,20 @@
 
 	let { children } = $props();
 
+	type Theme = 'app' | 'brutalist';
+	let theme = $state<Theme>('brutalist');
+
+	const themeUrl = $derived(theme === 'brutalist' ? brutalistThemeUrl : appThemeUrl);
+
+	const toggleTheme = () => {
+		theme = theme === 'brutalist' ? 'app' : 'brutalist';
+		localStorage.setItem('bcc-theme', theme);
+	};
+
 	// Register service worker for PWA - only once on mount
 	onMount(() => {
+		theme = (localStorage.getItem('bcc-theme') as Theme) || 'brutalist';
+
 		if ('serviceWorker' in navigator) {
 			// Always register from root scope
 			navigator.serviceWorker
@@ -61,6 +75,8 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<title>BCC - Coinche</title>
+	<link rel="stylesheet" href={baseCssUrl} />
+	<link rel="stylesheet" href={themeUrl} />
 </svelte:head>
 
 <div class="container">
@@ -79,7 +95,7 @@
 			</div>
 
 			<!-- Burger menu button for mobile -->
-			<button class="burger-menu" onclick={toggleMobileMenu} aria-label="Toggle menu">
+			<button class="burger-menu" class:burger-open={mobileMenuOpen} onclick={toggleMobileMenu} aria-label="Toggle menu">
 				<span class="burger-line"></span>
 				<span class="burger-line"></span>
 				<span class="burger-line"></span>
@@ -87,9 +103,6 @@
 
 			<!-- Navigation menu -->
 			<ul class="header-nav-list" class:mobile-menu-open={mobileMenuOpen}>
-				<li class="drawer-close-item">
-					<button class="drawer-close-btn" onclick={closeMobileMenu}>✕ Fermer</button>
-				</li>
 				<li>
 					<a href="https://www.notion.so/BCC-Tournament-bddfd1ac300c40bd9c41deec65a15bba" target="_blank" class="nav-link nav-link-secondary" onclick={closeMobileMenu}>
 						Règles
@@ -109,6 +122,11 @@
 					<a href="/joueurs" class={getNavLinkClass('/joueurs')} onclick={closeMobileMenu}>
 						Joueurs
 					</a>
+				</li>
+				<li>
+					<button class="theme-toggle" onclick={toggleTheme} aria-label="Changer le thème" title={theme === 'brutalist' ? 'Passer au thème classique' : 'Passer au thème brutal'}>
+						{theme === 'brutalist' ? '🎨' : '🔲'}
+					</button>
 				</li>
 			</ul>
 		</nav>

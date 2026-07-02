@@ -1,0 +1,6 @@
+/* ===========================================================
+   BCC Coinche — Pico, scoped to a low-priority cascade layer.
+   Our own styles (base.css + theme files) stay unlayered, so
+   they always win over Pico WITHOUT needing `!important`.
+   =========================================================== */
+@import '@picocss/pico/css/pico.min.css' layer(pico);

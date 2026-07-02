@@ -1,0 +1,229 @@
+/* ===========================================================
+   BCC Coinche — App (modern / clean) theme.
+   ONLY variable definitions. No selectors, no !important.
+   Same token set as theme-brutalist.css, different values.
+   =========================================================== */
+
+:root {
+	/* ---- Palette (semantic roles, not colour names) ---- */
+	--surface: #ffffff; /* page & card background */
+	--surface-subtle: #f8f9fa; /* muted panels, striped rows */
+	--ink: #374151; /* primary text */
+	--ink-muted: #6c757d; /* secondary text */
+	--accent: rgba(24, 144, 255, 0.12); /* highlight / attention / selection */
+	--danger: #e03131; /* live, delete, error */
+	--link: #0d6efd; /* interactive links */
+	--success: #2f9e44; /* winning / confirm */
+	--on-ink: #ffffff; /* text/marks placed on ink-dark fills */
+
+	/* ---- Pico compatibility ---- */
+	--primary: var(--pico-primary);
+	--primary-focus: #0d6efd;
+	--contrast: #ffffff;
+	--muted-color: #6c757d;
+	--muted-border-color: #dee2e6;
+	--card-background-color: #f8f9fa;
+	--color-team1: #c08f36;
+	--color-team2: #0c7f36;
+
+	/* ---- Typography ---- */
+	--font-display: system-ui, sans-serif;
+	--font-mono: system-ui, sans-serif;
+	--font-body: system-ui, sans-serif;
+	--heading-weight: 700;
+	--text-transform-ui: none;
+	--letter-spacing-label: 0.3px;
+	--letter-spacing-heading: -0.025em;
+
+	/* ---- Borders / shadows / radius ---- */
+	--border: none;
+	--border-strong: none;
+	--shadow-xs: none;
+	--shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+	--shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+	--radius: 12px;
+	--radius-sm: 8px;
+	--radius-pill: 20px;
+
+	/* ---- Motion ---- */
+	--transition-ui: all 0.2s ease;
+	--link-transition: all 0.2s ease;
+
+	/* ---- Buttons ---- */
+	--btn-bg: var(--pico-primary);
+	--btn-color: #ffffff;
+	--btn-font-weight: 600;
+	--btn-shadow: none;
+	--btn-hover-transform: translateY(-1px);
+	--btn-active-transform: translateY(0);
+	--btn-hover-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+	--btn-active-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	--btn-submit-bg: var(--btn-bg);
+	--btn-outline-bg: transparent;
+	--btn-outline-color: var(--primary);
+	--btn-outline-border: 2px solid var(--primary);
+	--btn-outline-shadow: none;
+	--btn-secondary-bg: transparent;
+	--btn-secondary-color: var(--muted-color);
+	--btn-secondary-shadow: none;
+
+	/* Selectable controls (contract / suit / player / setup grids) */
+	--control-hover-bg: var(--accent);
+	--control-hover-color: #ffffff;
+
+	/* ---- Inputs ---- */
+	--input-focus-bg: transparent;
+	--input-focus-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+	--input-focus-transform: none;
+
+	/* ---- Header / nav ---- */
+	--header-main-bg: transparent;
+	--nav-bg: rgba(255, 255, 255, 0.95);
+	--nav-text: inherit;
+	--nav-border: none;
+	--nav-border-bottom: 1px solid var(--muted-border-color);
+	--nav-backdrop: blur(8px);
+	--nav-icon-color: var(--ink);
+	--logo-color: var(--pico-secondary);
+	--logo-text-weight: 700;
+	--logo-icon-bg: transparent;
+	--logo-icon-color: var(--ink);
+	--logo-icon-border: none;
+	--logo-icon-size: auto;
+	--logo-icon-font: 2rem;
+	--nav-link-font: 0.95rem;
+	--nav-link-padding: 0.6rem 1.25rem;
+	--nav-link-weight: 500;
+	--nav-link-spacing: normal;
+	--nav-link-radius: 8px;
+	--nav-link-border-color: var(--primary);
+	--nav-link-hover-bg: var(--primary);
+	--nav-link-hover-color: #ffffff;
+	--nav-link-hover-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+	--nav-link-active-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+	--nav-link-active-weight: 600;
+	--nav-link-secondary-color: var(--muted-color);
+	--nav-link-secondary-opacity: 1;
+	--nav-link-secondary-border-color: transparent;
+
+	/* ---- Mobile drawer ---- */
+	--drawer-bg: var(--contrast);
+	--drawer-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+	--drawer-link-hover-bg: rgba(24, 144, 255, 0.08);
+	--drawer-link-hover-color: var(--primary);
+	--drawer-link-active-bg: rgba(24, 144, 255, 0.12);
+	--drawer-accent: var(--primary);
+
+	/* ---- Page header ---- */
+	--page-header-bg: rgba(24, 144, 255, 0.08);
+	--page-header-title-color: var(--ink);
+	--page-header-sub-color: var(--muted-color);
+	--pageheader-btn-bg: var(--pico-primary);
+	--pageheader-btn-color: #ffffff;
+	--pageheader-btn-border: none;
+	--pageheader-btn-shadow: none;
+	--pageheader-btn-radius: 8px;
+
+	/* ---- Cards ---- */
+	--card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	--card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+	--card-hover-transform: translateY(-2px);
+	--card-clip: hidden;
+
+	/* ---- Tables ---- */
+	--table-head-bg: var(--card-background-color);
+	--table-head-text: inherit;
+	--table-head-link: var(--primary);
+	--table-head-border-bottom: 2px solid var(--primary);
+	--table-cell-border: 1px solid var(--muted-border-color);
+	--table-row-hover-bg: var(--card-background-color);
+	--table-stripe-bg: rgba(0, 0, 0, 0.02);
+	--table-clip: hidden;
+
+	/* ---- Badges ---- */
+	--badge-bg: hsl(195, 85%, 95%);
+	--badge-color: var(--primary);
+	--badge-border: none;
+	--badge-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	--badge-radius: 20px;
+	--status-badge-border: none;
+	--status-badge-radius: 20px;
+	--status-badge-font: 0.72rem;
+	--status-active-bg: rgba(47, 158, 68, 0.12);
+	--status-active-color: #2f9e44;
+	--status-active-dot: #2f9e44;
+	--status-pending-bg: rgba(234, 179, 8, 0.12);
+	--status-pending-color: #a16207;
+	--status-pulse: none;
+
+	/* ---- Section titles ---- */
+	--section-title-border: none;
+	--section-underline-display: none;
+
+	/* ---- Match / score display ---- */
+	--team1-display-color: var(--color-team1);
+	--team2-display-color: var(--color-team2);
+	--match-vs-color: var(--muted-color);
+	--accent-text: var(--muted-color);
+	--match-header-bg: linear-gradient(90deg, rgba(192, 143, 54, 0.1) 0%, rgba(12, 127, 54, 0.1) 100%);
+	--match-info-border: 1px solid var(--muted-border-color);
+	--score-badge-bg: rgba(24, 144, 255, 0.05);
+	--score-badge-color: var(--ink);
+	--score-badge-border: 1px solid var(--muted-border-color);
+	--score-badge-radius: 8px;
+	--score-separator-color: var(--muted-color);
+	--score-completed-bg: rgba(255, 215, 0, 0.1);
+	--score-completed-border: 4px solid gold;
+	--score-winner-bg: rgba(24, 144, 255, 0.1);
+	--score-winner-border: none;
+	--score-winner-radius: 8px;
+	--winner-inset-display: none;
+	--round-cell-bg: var(--card-background-color);
+	--round-cell-text: inherit;
+	--round-win-color: var(--primary);
+	--dealer-badge-bg: var(--primary);
+	--ta-trigger-border-color: var(--primary);
+
+	/* ---- Back link (a.secondary) ---- */
+	--backlink-border: none;
+	--backlink-padding: 0;
+	--backlink-bg: transparent;
+	--backlink-color: var(--ink);
+	--backlink-weight: 500;
+	--backlink-spacing: normal;
+	--backlink-decoration: underline;
+	--backlink-font-size: inherit;
+	--backlink-hover-bg: transparent;
+	--backlink-hover-gap: 0.75rem;
+
+	/* ---- Comptage recap ---- */
+	--contract-recap-bg: var(--card-background-color);
+	--contract-recap-text: inherit;
+
+	/* ---- Misc surfaces ---- */
+	--podium-bg: rgba(24, 144, 255, 0.08);
+	--highlight-bg: var(--card-background-color);
+	--dialog-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+	/* ---- Toasts ---- */
+	--toast-normal-bg: #1e293b;
+	--toast-normal-border: #1e293b;
+	--toast-normal-text: #ffffff;
+	--toast-success-bg: #f0fdf4;
+	--toast-success-border: #bbf7d0;
+	--toast-success-text: #166534;
+	--toast-error-bg: #fef2f2;
+	--toast-error-border: #fecaca;
+	--toast-error-text: #dc2626;
+	--toast-border: 1px solid var(--muted-border-color);
+	--toast-radius: 12px;
+	--toast-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+	--toast-success-shadow: 0 4px 16px rgba(47, 158, 68, 0.1);
+	--toast-error-shadow: 0 4px 16px rgba(220, 38, 38, 0.1);
+	--toast-font: system-ui, sans-serif;
+	--toast-font-size: 0.875rem;
+	--toast-weight: 500;
+	--toast-spacing: normal;
+	--toast-transform: none;
+}

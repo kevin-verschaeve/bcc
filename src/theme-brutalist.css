@@ -1,0 +1,231 @@
+/* ===========================================================
+   BCC Coinche — Brutalist / Arcade theme.
+   ONLY variable definitions. No selectors, no !important.
+   base.css consumes every token defined here.
+   =========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+	/* ---- Palette (semantic roles, not colour names) ---- */
+	--surface: #faf7ee; /* page & card background */
+	--surface-subtle: #f4ecd8; /* muted panels, striped rows */
+	--ink: #0a0a0a; /* primary text, borders, dark fills */
+	--ink-muted: #3a3a3a; /* secondary text */
+	--accent: #ffe600; /* highlight / attention / selection */
+	--danger: #ff3b3b; /* live, delete, error */
+	--link: #2b5bff; /* interactive links */
+	--success: #00b86b; /* winning / confirm */
+	--on-ink: var(--accent); /* text/marks placed on ink-dark fills */
+
+	/* ---- Pico compatibility ---- */
+	--primary: var(--ink);
+	--primary-focus: var(--link);
+	--contrast: var(--surface);
+	--muted-color: var(--ink-muted);
+	--muted-border-color: var(--ink);
+	--card-background-color: var(--surface-subtle);
+	--color-team1: var(--ink);
+	--color-team2: var(--link);
+
+	/* ---- Typography ---- */
+	--font-display: 'Archivo Black', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+	--font-body: 'Inter', system-ui, sans-serif;
+	--heading-weight: 400;
+	--text-transform-ui: uppercase;
+	--letter-spacing-label: 1.2px;
+	--letter-spacing-heading: -0.02em;
+
+	/* ---- Borders / shadows / radius ---- */
+	--border: 2.5px solid var(--ink);
+	--border-strong: 3px solid var(--ink);
+	--shadow-xs: 2px 2px 0 var(--ink);
+	--shadow-sm: 3px 3px 0 var(--ink);
+	--shadow-md: 4px 4px 0 var(--ink);
+	--shadow-lg: 5px 5px 0 var(--ink);
+	--radius: 0;
+	--radius-sm: 0;
+	--radius-pill: 0;
+
+	/* ---- Motion ---- */
+	--transition-ui: transform 0.08s ease, box-shadow 0.08s ease;
+	--link-transition: none;
+
+	/* ---- Buttons ---- */
+	--btn-bg: var(--accent);
+	--btn-color: var(--ink);
+	--btn-font-weight: 400;
+	--btn-shadow: var(--shadow-sm);
+	--btn-hover-transform: translate(-1px, -1px);
+	--btn-active-transform: translate(2px, 2px);
+	--btn-hover-shadow: var(--shadow-lg);
+	--btn-active-shadow: 1px 1px 0 var(--ink);
+	--btn-submit-bg: var(--success);
+	--btn-outline-bg: var(--surface);
+	--btn-outline-color: var(--ink);
+	--btn-outline-border: var(--border-strong);
+	--btn-outline-shadow: var(--btn-shadow);
+	--btn-secondary-bg: var(--surface);
+	--btn-secondary-color: var(--ink);
+	--btn-secondary-shadow: var(--btn-shadow);
+
+	/* Selectable controls (contract / suit / player / setup grids) */
+	--control-hover-bg: var(--ink);
+	--control-hover-color: var(--accent);
+
+	/* ---- Inputs ---- */
+	--input-focus-bg: var(--accent);
+	--input-focus-shadow: none;
+	--input-focus-transform: translate(-1px, -1px);
+
+	/* ---- Header / nav ---- */
+	--header-main-bg: var(--surface);
+	--nav-bg: var(--ink);
+	--nav-text: var(--surface);
+	--nav-border: var(--border-strong);
+	--nav-border-bottom: none;
+	--nav-backdrop: none;
+	--nav-icon-color: var(--surface);
+	--logo-color: var(--nav-text);
+	--logo-text-weight: 400;
+	--logo-icon-bg: var(--accent);
+	--logo-icon-color: var(--ink);
+	--logo-icon-border: 2px solid var(--surface);
+	--logo-icon-size: 34px;
+	--logo-icon-font: 1.2rem;
+	--nav-link-font: 0.78rem;
+	--nav-link-padding: 8px 14px;
+	--nav-link-weight: 400;
+	--nav-link-spacing: 0.8px;
+	--nav-link-radius: 0;
+	--nav-link-border-color: var(--nav-icon-color);
+	--nav-link-hover-bg: var(--accent);
+	--nav-link-hover-color: var(--ink);
+	--nav-link-hover-shadow: 2px 2px 0 var(--surface);
+	--nav-link-active-shadow: none;
+	--nav-link-active-weight: 400;
+	--nav-link-secondary-color: var(--nav-icon-color);
+	--nav-link-secondary-opacity: 0.8;
+	--nav-link-secondary-border-color: var(--nav-icon-color);
+
+	/* ---- Mobile drawer ---- */
+	--drawer-bg: var(--nav-bg);
+	--drawer-shadow: -6px 0 0 var(--accent);
+	--drawer-link-hover-bg: rgba(255, 255, 255, 0.05);
+	--drawer-link-hover-color: var(--accent);
+	--drawer-link-active-bg: rgba(255, 230, 0, 0.15);
+	--drawer-accent: var(--accent);
+
+	/* ---- Page header ---- */
+	--page-header-bg: var(--nav-bg);
+	--page-header-title-color: var(--nav-text);
+	--page-header-sub-color: var(--accent);
+	--pageheader-btn-bg: var(--accent);
+	--pageheader-btn-color: var(--ink);
+	--pageheader-btn-border: 2px solid var(--surface);
+	--pageheader-btn-shadow: var(--shadow-sm);
+	--pageheader-btn-radius: 0;
+
+	/* ---- Cards ---- */
+	--card-shadow: var(--shadow-md);
+	--card-shadow-hover: var(--shadow-lg);
+	--card-hover-transform: translate(-2px, -2px);
+	--card-clip: visible;
+
+	/* ---- Tables ---- */
+	--table-head-bg: var(--ink);
+	--table-head-text: var(--surface);
+	--table-head-link: var(--accent);
+	--table-head-border-bottom: var(--border-strong);
+	--table-cell-border: 1.5px solid var(--ink);
+	--table-row-hover-bg: var(--accent);
+	--table-stripe-bg: var(--surface-subtle);
+	--table-clip: visible;
+
+	/* ---- Badges ---- */
+	--badge-bg: var(--accent);
+	--badge-color: var(--ink);
+	--badge-border: 2px solid var(--ink);
+	--badge-shadow: none;
+	--badge-radius: 0;
+	--status-badge-border: 2px solid var(--ink);
+	--status-badge-radius: 0;
+	--status-badge-font: 0.7rem;
+	--status-active-bg: var(--danger);
+	--status-active-color: var(--surface);
+	--status-active-dot: var(--surface);
+	--status-pending-bg: var(--surface);
+	--status-pending-color: var(--ink);
+	--status-pulse: bpulse 1s infinite;
+
+	/* ---- Section titles ---- */
+	--section-title-border: 3px solid var(--ink);
+	--section-underline-display: block;
+
+	/* ---- Match / score display ---- */
+	--team1-display-color: var(--accent);
+	--team2-display-color: var(--surface);
+	--match-vs-color: var(--accent);
+	--accent-text: var(--accent);
+	--match-header-bg: var(--nav-bg);
+	--match-info-border: 2px dashed var(--ink);
+	--score-badge-bg: var(--ink);
+	--score-badge-color: var(--surface);
+	--score-badge-border: 2px solid var(--ink);
+	--score-badge-radius: 0;
+	--score-separator-color: rgba(255, 255, 255, 0.4);
+	--score-completed-bg: var(--accent);
+	--score-completed-border: none;
+	--score-winner-bg: var(--accent);
+	--score-winner-border: 2px solid var(--ink);
+	--score-winner-radius: 0;
+	--winner-inset-display: block;
+	--round-cell-bg: var(--ink);
+	--round-cell-text: var(--surface);
+	--round-win-color: var(--accent);
+	--dealer-badge-bg: var(--danger);
+	--ta-trigger-border-color: var(--accent);
+
+	/* ---- Back link (a.secondary) ---- */
+	--backlink-border: 2px solid var(--ink);
+	--backlink-padding: 6px 10px;
+	--backlink-bg: var(--surface);
+	--backlink-color: var(--ink);
+	--backlink-weight: 700;
+	--backlink-spacing: var(--letter-spacing-label);
+	--backlink-decoration: none;
+	--backlink-font-size: 0.78rem;
+	--backlink-hover-bg: var(--accent);
+	--backlink-hover-gap: 10px;
+
+	/* ---- Comptage recap ---- */
+	--contract-recap-bg: var(--ink);
+	--contract-recap-text: var(--surface);
+
+	/* ---- Misc surfaces ---- */
+	--podium-bg: var(--accent);
+	--highlight-bg: var(--accent);
+	--dialog-shadow: 8px 8px 0 var(--ink);
+
+	/* ---- Toasts ---- */
+	--toast-normal-bg: var(--ink);
+	--toast-normal-border: var(--ink);
+	--toast-normal-text: var(--surface);
+	--toast-success-bg: var(--accent);
+	--toast-success-border: var(--ink);
+	--toast-success-text: var(--ink);
+	--toast-error-bg: var(--danger);
+	--toast-error-border: var(--ink);
+	--toast-error-text: var(--surface);
+	--toast-border: 2.5px solid var(--ink);
+	--toast-radius: 0;
+	--toast-shadow: 4px 4px 0 var(--ink);
+	--toast-success-shadow: 4px 4px 0 var(--ink);
+	--toast-error-shadow: 4px 4px 0 var(--ink);
+	--toast-font: var(--font-mono);
+	--toast-font-size: 0.85rem;
+	--toast-weight: 600;
+	--toast-spacing: 0.8px;
+	--toast-transform: uppercase;
+}

@@ -132,7 +132,7 @@
 						<td class="ranking-position">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}</td>
 						<td><strong class="ranking-team-name">{team_name}</strong></td>
 						<td class="text-center"><strong class="table-cell-primary">{totalPoints}</strong></td>
-						<td class="text-center table-cell-emphasized" style:color={totalGoalAverage < 0 ? 'var(--b-red)' : 'var(--b-ink)'}>
+						<td class="text-center table-cell-emphasized" style:color={totalGoalAverage < 0 ? 'var(--danger)' : 'var(--ink)'}>
 							{totalGoalAverage > 0 ? '+' : ''}{totalGoalAverage}
 						</td>
 						<td class="text-center table-cell-emphasized">{matchCount}</td>
@@ -144,47 +144,3 @@
 		</table>
 	</div>
 </article>
-
-<style>
-	.day-strip {
-		display: flex;
-		gap: 8px;
-		overflow-x: auto;
-		padding-bottom: 6px;
-		margin-bottom: 1.5rem;
-	}
-	.day-cell {
-		flex-shrink: 0;
-		width: 64px;
-		height: 72px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-decoration: none !important;
-		background: var(--b-bg);
-		border: var(--b-border);
-		color: var(--b-ink) !important;
-		transition: transform 0.08s ease, box-shadow 0.08s ease;
-	}
-	.day-cell:hover {
-		transform: translate(-1px, -1px);
-		box-shadow: 3px 3px 0 var(--b-ink);
-	}
-	.day-cell.live {
-		background: var(--b-yellow);
-		box-shadow: 3px 3px 0 var(--b-ink);
-	}
-	.day-cell-num {
-		font-family: var(--font-display);
-		font-size: 1.5rem;
-		line-height: 1;
-	}
-	.day-cell-month {
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		font-weight: 700;
-		letter-spacing: 1px;
-		margin-top: 4px;
-	}
-</style>
