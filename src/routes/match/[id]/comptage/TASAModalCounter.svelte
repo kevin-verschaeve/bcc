@@ -46,7 +46,7 @@
 		</header>
 		<img src={pointsTaSa} alt="Tableau des points TA et SA" class="ta-sa-img" />
 		<footer>
-			<p class="manual-divider">— OU SAISIR MANUELLEMENT —</p>
+			<p class="manual-divider">— ou saisir manuellement —</p>
 			<div class="ta-sa-grid">
 				<div class="ta-sa-col">
 					<span class="ta-sa-label">TA + BELOTE</span>

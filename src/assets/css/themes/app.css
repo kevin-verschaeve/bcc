@@ -6,10 +6,11 @@
 
 [data-bcc-theme='app'] {
 	/* ---- Palette (semantic roles, not colour names) ---- */
-	--surface: #ffffff; /* page & card background */
-	--surface-subtle: #f8f9fa; /* muted panels, striped rows */
-	--ink: #374151; /* primary text */
-	--ink-muted: #6c757d; /* secondary text */
+	--surface-page: #f9f9f9; /* page background — cards float above it */
+	--surface: #ffffff; /* card background */
+	--surface-subtle: #f4f6f9; /* muted panels, striped rows */
+	--ink: #1f2937; /* primary text */
+	--ink-muted: #64748b; /* secondary text */
 	--accent: rgba(24, 144, 255, 0.12); /* highlight / attention / selection */
 	--danger: #e03131; /* live, delete, error */
 	--link: #0d6efd; /* interactive links */
@@ -21,8 +22,8 @@
 	--primary-focus: #0d6efd;
 	--contrast: #ffffff;
 	--muted-color: #6c757d;
-	--muted-border-color: #dee2e6;
-	--card-background-color: #f8f9fa;
+	--muted-border-color: #d7dce3;
+	--card-background-color: #f4f6f9;
 	--color-team1: #c08f36;
 	--color-team2: #0c7f36;
 
@@ -36,12 +37,12 @@
 	--letter-spacing-heading: -0.025em;
 
 	/* ---- Borders / shadows / radius ---- */
-	--border: none;
-	--border-strong: none;
-	--shadow-xs: none;
-	--shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
-	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-	--shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+	--border: 1px solid var(--muted-border-color);
+	--border-strong: 1px solid #dfe4ea;
+	--shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.06);
+	--shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.1);
+	--shadow-md: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.08);
+	--shadow-lg: 0 2px 6px rgba(15, 23, 42, 0.08), 0 12px 28px rgba(15, 23, 42, 0.14);
 	--radius: 12px;
 	--radius-sm: 8px;
 	--radius-pill: 20px;
@@ -81,8 +82,8 @@
 	--header-main-bg: transparent;
 	--nav-bg: rgba(255, 255, 255, 0.95);
 	--nav-text: inherit;
-	--nav-border: none;
-	--nav-border-bottom: 1px solid var(--muted-border-color);
+	--nav-border: 1px solid #dbe6f5;
+	--nav-border-bottom: 1px solid #dfe4ea;
 	--nav-backdrop: blur(8px);
 	--nav-icon-color: var(--ink);
 	--logo-color: var(--pico-secondary);
@@ -116,7 +117,7 @@
 	--drawer-accent: var(--primary);
 
 	/* ---- Page header ---- */
-	--page-header-bg: rgba(24, 144, 255, 0.08);
+	--page-header-bg: linear-gradient(135deg, #ffffff 0%, #eaf3ff 100%);
 	--page-header-title-color: var(--ink);
 	--page-header-sub-color: var(--muted-color);
 	--pageheader-btn-bg: var(--pico-primary);
@@ -126,8 +127,8 @@
 	--pageheader-btn-radius: 8px;
 
 	/* ---- Cards ---- */
-	--card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	--card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+	--card-shadow: var(--shadow-md);
+	--card-shadow-hover: var(--shadow-lg);
 	--card-hover-transform: translateY(-2px);
 	--card-clip: hidden;
 
@@ -137,17 +138,17 @@
 	--table-head-link: var(--primary);
 	--table-head-border-bottom: 2px solid var(--primary);
 	--table-cell-border: 1px solid var(--muted-border-color);
-	--table-row-hover-bg: var(--card-background-color);
-	--table-stripe-bg: rgba(0, 0, 0, 0.02);
+	--table-row-hover-bg: #e8f1fd;
+	--table-stripe-bg: rgba(15, 23, 42, 0.035);
 	--table-clip: hidden;
 
 	/* ---- Badges ---- */
-	--badge-bg: hsl(195, 85%, 95%);
-	--badge-color: var(--primary);
-	--badge-border: none;
-	--badge-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	--badge-bg: #e3effc;
+	--badge-color: #0b5ed7;
+	--badge-border: 1px solid #c5ddf8;
+	--badge-shadow: none;
 	--badge-radius: 20px;
-	--status-badge-border: none;
+	--status-badge-border: 1px solid rgba(15, 23, 42, 0.08);
 	--status-badge-radius: 20px;
 	--status-badge-font: 0.72rem;
 	--status-active-bg: rgba(47, 158, 68, 0.12);
@@ -166,11 +167,15 @@
 	--team2-display-color: var(--color-team2);
 	--match-vs-color: var(--muted-color);
 	--accent-text: var(--muted-color);
-	--match-header-bg: linear-gradient(90deg, rgba(192, 143, 54, 0.1) 0%, rgba(12, 127, 54, 0.1) 100%);
-	--match-info-border: 1px solid var(--muted-border-color);
-	--score-badge-bg: rgba(24, 144, 255, 0.05);
+	--match-header-bg: linear-gradient(
+		90deg,
+		rgba(192, 143, 54, 0.1) 0%,
+		rgba(12, 127, 54, 0.1) 100%
+	);
+	--match-info-border: 1px solid #dfe4ea;
+	--score-badge-bg: #f1f5fb;
 	--score-badge-color: var(--ink);
-	--score-badge-border: 1px solid var(--muted-border-color);
+	--score-badge-border: 1px solid #d7dce3;
 	--score-badge-radius: 8px;
 	--score-separator-color: var(--muted-color);
 	--score-completed-bg: rgba(255, 215, 0, 0.1);
@@ -183,7 +188,14 @@
 	--round-cell-text: inherit;
 	--round-win-color: var(--primary);
 	--dealer-badge-bg: var(--primary);
-	--ta-trigger-border-color: var(--primary);
+	--ta-trigger-border-color: var(--accent);
+	/* Hairline borders on a tinted panel; the result reads in primary. */
+	--ta-sa-border: 1px solid var(--muted-border-color);
+	--ta-sa-col-bg: var(--surface-subtle);
+	--ta-sa-input-shadow: var(--shadow-xs);
+	--ta-sa-result-color: var(--primary);
+	--ta-sa-divider-font: var(--font-body);
+	--ta-sa-divider-weight: 600;
 
 	/* ---- Back link (a.secondary) ---- */
 	--backlink-border: none;
@@ -202,8 +214,8 @@
 	--contract-recap-text: inherit;
 
 	/* ---- Misc surfaces ---- */
-	--podium-bg: rgba(24, 144, 255, 0.08);
-	--highlight-bg: var(--card-background-color);
+	--podium-bg: linear-gradient(135deg, #eaf3ff 0%, #dceafc 100%);
+	--highlight-bg: #eaf3ff;
 	--dialog-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 
 	/* ---- Toasts ---- */

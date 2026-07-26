@@ -11,7 +11,8 @@
 
 [data-bcc-theme='skeuomorphe'] {
 	/* ---- Palette (semantic roles, not colour names) ---- */
-	--surface: #fbf6e8; /* page & card background — cream paper */
+	--surface-page: #f3ead4; /* page background — slightly deeper cream than cards */
+	--surface: #fbf6e8; /* card background — cream paper */
 	--surface-subtle: #efe4c9; /* muted panels, striped rows */
 	--ink: #2a2018; /* primary text, dark warm brown */
 	--ink-muted: #6e5c40; /* secondary text */
@@ -190,6 +191,15 @@
 	--round-win-color: #e0c068;
 	--dealer-badge-bg: var(--danger);
 	--ta-trigger-border-color: #d4a262;
+	/* Gilt-edged parchment panels, inset so they read as pressed into the felt. */
+	--ta-sa-border: 1.5px solid #c8a877;
+	--ta-sa-col-bg: var(--surface-subtle);
+	--ta-sa-col-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+	--ta-sa-input-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+	--ta-sa-result-color: var(--link);
+	--ta-sa-divider-font: var(--font-display);
+	--ta-sa-divider-weight: 400;
+	--ta-sa-divider-style: italic;
 
 	/* ---- Back link (a.secondary) ---- */
 	--backlink-border: 1.5px solid var(--muted-border-color);

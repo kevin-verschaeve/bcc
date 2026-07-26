@@ -12,7 +12,8 @@
 
 [data-bcc-theme='brutalist'] {
 	/* ---- Palette (semantic roles, not colour names) ---- */
-	--surface: #faf7ee; /* page & card background */
+	--surface-page: #faf7ee; /* page background */
+	--surface: #faf7ee; /* card background */
 	--surface-subtle: #f4ecd8; /* muted panels, striped rows */
 	--ink: #0a0a0a; /* primary text, borders, dark fills */
 	--ink-muted: #3a3a3a; /* secondary text */
@@ -190,6 +191,10 @@
 	--round-win-color: var(--accent);
 	--dealer-badge-bg: var(--danger);
 	--ta-trigger-border-color: var(--accent);
+	/* Hard 2px rules and a flat cream panel — no depth, per the brutalist grid. */
+	--ta-sa-border: 2px solid var(--ink);
+	--ta-sa-col-bg: var(--surface);
+	--ta-sa-result-color: var(--ink);
 
 	/* ---- Back link (a.secondary) ---- */
 	--backlink-border: 2px solid var(--ink);

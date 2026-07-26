@@ -18,6 +18,10 @@
 	/* Fixed scrims — not theme-dependent. */
 	--overlay-bg: rgba(0, 0, 0, 0.5);
 
+	/* Close (X) glyph, masked so it takes its color from currentColor
+	   rather than a baked-in stroke like Pico's --pico-icon-close. */
+	--icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
+
 	/* Corner rounding for the comptage page blocks (header, dealer,
 	   contract, historique). Square by default; themes may soften it. */
 	--comptage-block-radius: 0px;
@@ -36,7 +40,7 @@
 /* ============== Base ============== */
 html,
 body {
-	background: var(--surface);
+	background: var(--surface-page);
 	color: var(--ink);
 	font-family: var(--font-body);
 	font-weight: 500;
@@ -477,6 +481,28 @@ button:active,
 [role='button']:active {
 	transform: var(--btn-active-transform);
 	box-shadow: var(--btn-active-shadow);
+}
+
+/* The shorthand `background` above resets background-image, which wipes out
+   Pico's close icon. Redraw it from currentColor so it follows each theme. */
+dialog > article button.close,
+dialog > article :is(a, button)[rel='prev'] {
+	/* Keep Pico's box model (1rem square, float: right); only repaint the
+	   glyph, masked so it takes the theme's color instead of Pico's grey.
+	   Paint from --ink, not currentColor: the generic button rule sets
+	   color to --btn-color, which is white-on-primary in the app theme. */
+	padding: 0;
+	border: none;
+	box-shadow: none;
+	background: var(--btn-close-color, var(--ink));
+	-webkit-mask: var(--icon-close) center / auto 1rem no-repeat;
+	mask: var(--icon-close) center / auto 1rem no-repeat;
+}
+dialog > article button.close:hover,
+dialog > article :is(a, button)[rel='prev']:hover {
+	transform: none;
+	box-shadow: none;
+	opacity: 1;
 }
 
 button.outline,
@@ -1495,9 +1521,9 @@ dialog article {
 
 /* ── comptage: TASAModalCounter ───────────────────────────── */
 .ta-sa-trigger {
-	background: transparent;
+	background: var(--accent);
 	border: 2px solid var(--ta-trigger-border-color);
-	color: var(--on-ink);
+	color: var(--ink);
 	font-family: var(--font-mono);
 	font-size: 0.72rem;
 	font-weight: 700;
@@ -1509,7 +1535,8 @@ dialog article {
 	cursor: pointer;
 }
 .ta-sa-trigger:hover {
-	background: var(--accent);
+	background: var(--surface);
+	border-color: var(--surface);
 	color: var(--ink);
 	transform: none;
 	box-shadow: none;
@@ -1535,15 +1562,18 @@ dialog h4 {
 	width: 100%;
 	height: auto;
 	display: block;
-	border: 2px solid var(--ink);
+	border: var(--ta-sa-border, var(--border-strong));
+	border-radius: var(--radius-sm);
 }
 .manual-divider {
 	text-align: center;
 	margin: 0 0 0.75rem;
-	font-family: var(--font-mono);
+	font-family: var(--ta-sa-divider-font, var(--font-mono));
 	font-size: 0.7rem;
-	font-weight: 700;
+	font-weight: var(--ta-sa-divider-weight, 700);
+	font-style: var(--ta-sa-divider-style, normal);
 	letter-spacing: 1.5px;
+	text-transform: var(--text-transform-ui);
 	color: var(--ink-muted);
 }
 .ta-sa-grid {
@@ -1558,8 +1588,10 @@ dialog h4 {
 	align-items: center;
 	gap: 6px;
 	padding: 8px;
-	border: 2px solid var(--ink);
-	background: var(--surface);
+	border: var(--ta-sa-border, var(--border-strong));
+	border-radius: var(--radius-sm);
+	background: var(--ta-sa-col-bg, var(--surface-subtle));
+	box-shadow: var(--ta-sa-col-shadow, none);
 }
 .ta-sa-label {
 	font-family: var(--font-mono);
@@ -1578,8 +1610,9 @@ dialog h4 {
 	font-size: 1rem;
 	padding: 6px;
 	background: var(--surface);
-	border: 2px solid var(--ink);
-	box-shadow: none;
+	border: var(--ta-sa-border, var(--border-strong));
+	border-radius: var(--radius-sm);
+	box-shadow: var(--ta-sa-input-shadow, none);
 }
 .ta-sa-col input:focus {
 	background: var(--input-focus-bg);
@@ -1588,7 +1621,7 @@ dialog h4 {
 	font-family: var(--font-display);
 	font-size: 1.5rem;
 	line-height: 1;
-	color: var(--ink);
+	color: var(--ta-sa-result-color, var(--ink));
 	letter-spacing: -1px;
 }
 @media (max-width: 480px) {
