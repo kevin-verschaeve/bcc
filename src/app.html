@@ -10,6 +10,24 @@
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<meta name="apple-mobile-web-app-title" content="BCC Coinche" />
+		<script>
+			// Applies the stored theme before the first paint, so the page never
+			// renders with the default theme and then swaps. Must stay inline,
+			// blocking, and above the SvelteKit head placeholder below.
+			// (Never write that placeholder's literal text here — SvelteKit
+			// substitutes it anywhere it appears, comments included.)
+			(function () {
+				var themes = ['brutalist', 'app', 'skeuomorphe'];
+				var theme = 'brutalist';
+				try {
+					var stored = localStorage.getItem('bcc-theme');
+					if (themes.indexOf(stored) !== -1) theme = stored;
+				} catch (e) {
+					// localStorage unavailable (private mode) — fall back to the default.
+				}
+				document.documentElement.dataset.bccTheme = theme;
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

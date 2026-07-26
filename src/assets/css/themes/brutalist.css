@@ -2,11 +2,15 @@
    BCC Coinche — Brutalist / Arcade theme.
    ONLY variable definitions. No selectors, no !important.
    base.css consumes every token defined here.
+
+   Scoped under [data-bcc-theme] so all themes can be loaded at
+   once and switched by attribute — see the inline bootstrap in
+   app.html, which sets the attribute before first paint (no FOUC).
    =========================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
-:root {
+[data-bcc-theme='brutalist'] {
 	/* ---- Palette (semantic roles, not colour names) ---- */
 	--surface: #faf7ee; /* page & card background */
 	--surface-subtle: #f4ecd8; /* muted panels, striped rows */

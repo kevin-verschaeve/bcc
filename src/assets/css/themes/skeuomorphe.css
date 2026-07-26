@@ -1,7 +1,7 @@
 /* ===========================================================
    BCC Coinche — Skeuomorphic theme.
    ONLY variable definitions. No selectors, no !important.
-   Same token set as theme-brutalist.css / theme-app.css,
+   Same token set as brutalist.css / app.css,
    different values. base.css consumes every token defined here.
    Look: green felt table, cream paper cards, copper accents,
    Playfair serif display, soft realistic layered shadows.
@@ -9,7 +9,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
-:root {
+[data-bcc-theme='skeuomorphe'] {
 	/* ---- Palette (semantic roles, not colour names) ---- */
 	--surface: #fbf6e8; /* page & card background — cream paper */
 	--surface-subtle: #efe4c9; /* muted panels, striped rows */

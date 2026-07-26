@@ -1,6 +1,7 @@
 node_modules
 CLAUDE.md
 .claude
+.agents
 
 # Output
 .output

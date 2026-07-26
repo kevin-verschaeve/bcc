@@ -1,10 +1,10 @@
 /* ===========================================================
    BCC Coinche — App (modern / clean) theme.
    ONLY variable definitions. No selectors, no !important.
-   Same token set as theme-brutalist.css, different values.
+   Same token set as brutalist.css, different values.
    =========================================================== */
 
-:root {
+[data-bcc-theme='app'] {
 	/* ---- Palette (semantic roles, not colour names) ---- */
 	--surface: #ffffff; /* page & card background */
 	--surface-subtle: #f8f9fa; /* muted panels, striped rows */

@@ -1,9 +1,13 @@
 <script lang="ts">
 	import './../pico.css';
-	import baseCssUrl from '../base.css?url';
-	import appThemeUrl from '../theme-app.css?url';
-	import brutalistThemeUrl from '../theme-brutalist.css?url';
-	import skeuomorpheThemeUrl from '../theme-skeuomorphe.css?url';
+	import '../base.css';
+	// All themes ship in one bundle and are scoped by [data-bcc-theme];
+	// switching is an attribute flip, so there is no stylesheet fetch and
+	// no flash. app.html sets the attribute before first paint.
+	import '../assets/css/themes/app.css';
+	import '../assets/css/themes/brutalist.css';
+	import '../assets/css/themes/skeuomorphe.css';
+	import ThemePicker, { type Theme } from '$lib/components/ThemePicker.svelte';
 	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
@@ -12,39 +16,31 @@
 
 	let { children } = $props();
 
-	type Theme = 'app' | 'brutalist' | 'skeuomorphe';
 	const themes: Theme[] = ['brutalist', 'app', 'skeuomorphe'];
-	let theme = $state<Theme>('brutalist');
+	const DEFAULT_THEME: Theme = 'brutalist';
 
-	const themeUrls: Record<Theme, string> = {
-		app: appThemeUrl,
-		brutalist: brutalistThemeUrl,
-		skeuomorphe: skeuomorpheThemeUrl
-	};
-	const themeIcons: Record<Theme, string> = {
-		brutalist: '🔲',
-		app: '🎨',
-		skeuomorphe: '♠️'
-	};
-	const themeLabels: Record<Theme, string> = {
-		brutalist: 'brutal',
-		app: 'classique',
-		skeuomorphe: 'skeuomorphe'
+	// Read back what the app.html bootstrap already applied, so hydration
+	// agrees with the painted DOM instead of resetting to the default.
+	const readTheme = (): Theme => {
+		if (typeof document === 'undefined') return DEFAULT_THEME;
+		const applied = document.documentElement.dataset.bccTheme as Theme | undefined;
+		return applied && themes.includes(applied) ? applied : DEFAULT_THEME;
 	};
 
-	const themeUrl = $derived(themeUrls[theme]);
-	const nextTheme = $derived(themes[(themes.indexOf(theme) + 1) % themes.length]);
+	let theme = $state<Theme>(readTheme());
 
-	const cycleTheme = () => {
-		const next = themes[(themes.indexOf(theme) + 1) % themes.length];
+	const setTheme = (next: Theme) => {
 		theme = next;
-		localStorage.setItem('bcc-theme', theme);
+		document.documentElement.dataset.bccTheme = next;
+		try {
+			localStorage.setItem('bcc-theme', next);
+		} catch {
+			// Private mode / storage disabled — the theme still applies for this session.
+		}
 	};
 
 	// Register service worker for PWA - only once on mount
 	onMount(() => {
-		theme = (localStorage.getItem('bcc-theme') as Theme) || 'brutalist';
-
 		if ('serviceWorker' in navigator) {
 			// Always register from root scope
 			navigator.serviceWorker
@@ -95,8 +91,6 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<title>BCC - Coinche</title>
-	<link rel="stylesheet" href={baseCssUrl} />
-	<link rel="stylesheet" href={themeUrl} />
 </svelte:head>
 
 <div class="container">
@@ -115,7 +109,12 @@
 			</div>
 
 			<!-- Burger menu button for mobile -->
-			<button class="burger-menu" class:burger-open={mobileMenuOpen} onclick={toggleMobileMenu} aria-label="Toggle menu">
+			<button
+				class="burger-menu"
+				class:burger-open={mobileMenuOpen}
+				onclick={toggleMobileMenu}
+				aria-label="Toggle menu"
+			>
 				<span class="burger-line"></span>
 				<span class="burger-line"></span>
 				<span class="burger-line"></span>
@@ -124,7 +123,12 @@
 			<!-- Navigation menu -->
 			<ul class="header-nav-list" class:mobile-menu-open={mobileMenuOpen}>
 				<li>
-					<a href="https://www.notion.so/BCC-Tournament-bddfd1ac300c40bd9c41deec65a15bba" target="_blank" class="nav-link nav-link-secondary" onclick={closeMobileMenu}>
+					<a
+						href="https://www.notion.so/BCC-Tournament-bddfd1ac300c40bd9c41deec65a15bba"
+						target="_blank"
+						class="nav-link nav-link-secondary"
+						onclick={closeMobileMenu}
+					>
 						Règles
 					</a>
 				</li>
@@ -144,9 +148,7 @@
 					</a>
 				</li>
 				<li>
-					<button class="theme-toggle" onclick={cycleTheme} aria-label="Changer le thème" title={`Passer au thème ${themeLabels[nextTheme]}`}>
-						{themeIcons[nextTheme]}
-					</button>
+					<ThemePicker {theme} {setTheme} />
 				</li>
 			</ul>
 		</nav>
