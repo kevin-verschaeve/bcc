@@ -150,12 +150,20 @@ a:hover {
 	margin: 0;
 	padding: 0;
 	display: flex;
+	/* stretch: every item — links and the theme trigger — shares the tallest
+	   item's height, so they read as one row whatever the theme's metrics. */
+	align-items: stretch;
 	gap: 6px;
 	list-style: none;
 }
+.header-nav-list > li {
+	display: flex;
+	align-items: stretch;
+}
 
 .nav-link {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	padding: var(--nav-link-padding);
 	font-family: var(--font-display);
 	font-size: var(--nav-link-font);
@@ -209,6 +217,8 @@ a:hover {
 .theme-picker {
 	position: relative;
 	flex-shrink: 0;
+	display: flex;
+	align-items: stretch;
 }
 
 .theme-picker-trigger {
@@ -225,8 +235,11 @@ a:hover {
 	font-weight: var(--nav-link-weight);
 	letter-spacing: var(--nav-link-spacing);
 	text-transform: var(--text-transform-ui);
-	padding: 0 0.6rem;
-	height: 40px;
+	/* Same box as .nav-link so the trigger matches the sibling nav items in
+	   every theme — the nav padding token varies per theme, a fixed height
+	   would only line up in one of them. */
+	padding: var(--nav-link-padding);
+	line-height: inherit;
 	width: auto;
 	margin: 0;
 	cursor: pointer;
@@ -1284,7 +1297,13 @@ dialog article {
 	   clip an absolutely-positioned panel — so the options sit inline and the
 	   trigger becomes a section label. */
 	.theme-picker {
+		/* Stack: the section label above, the option list below. The desktop rule
+		   is a row, which here would sit the label beside the menu and squeeze the
+		   option labels into wrapping. */
+		flex-direction: column;
+		align-items: stretch;
 		width: 100%;
+		min-width: 0;
 	}
 	.theme-picker-trigger {
 		display: none;
@@ -1333,6 +1352,9 @@ dialog article {
 	.theme-picker-option-hint {
 		color: var(--nav-text);
 		opacity: 0.65;
+		/* The drawer is too narrow for the desktop nowrap — let hints wrap
+		   instead of being clipped by the drawer edge. */
+		white-space: normal;
 	}
 	.header-nav-list .nav-link {
 		display: block;
