@@ -3,6 +3,7 @@
 	import baseCssUrl from '../base.css?url';
 	import appThemeUrl from '../theme-app.css?url';
 	import brutalistThemeUrl from '../theme-brutalist.css?url';
+	import skeuomorpheThemeUrl from '../theme-skeuomorphe.css?url';
 	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
@@ -11,13 +12,32 @@
 
 	let { children } = $props();
 
-	type Theme = 'app' | 'brutalist';
+	type Theme = 'app' | 'brutalist' | 'skeuomorphe';
+	const themes: Theme[] = ['brutalist', 'app', 'skeuomorphe'];
 	let theme = $state<Theme>('brutalist');
 
-	const themeUrl = $derived(theme === 'brutalist' ? brutalistThemeUrl : appThemeUrl);
+	const themeUrls: Record<Theme, string> = {
+		app: appThemeUrl,
+		brutalist: brutalistThemeUrl,
+		skeuomorphe: skeuomorpheThemeUrl
+	};
+	const themeIcons: Record<Theme, string> = {
+		brutalist: '🔲',
+		app: '🎨',
+		skeuomorphe: '♠️'
+	};
+	const themeLabels: Record<Theme, string> = {
+		brutalist: 'brutal',
+		app: 'classique',
+		skeuomorphe: 'skeuomorphe'
+	};
 
-	const toggleTheme = () => {
-		theme = theme === 'brutalist' ? 'app' : 'brutalist';
+	const themeUrl = $derived(themeUrls[theme]);
+	const nextTheme = $derived(themes[(themes.indexOf(theme) + 1) % themes.length]);
+
+	const cycleTheme = () => {
+		const next = themes[(themes.indexOf(theme) + 1) % themes.length];
+		theme = next;
 		localStorage.setItem('bcc-theme', theme);
 	};
 
@@ -124,8 +144,8 @@
 					</a>
 				</li>
 				<li>
-					<button class="theme-toggle" onclick={toggleTheme} aria-label="Changer le thème" title={theme === 'brutalist' ? 'Passer au thème classique' : 'Passer au thème brutal'}>
-						{theme === 'brutalist' ? '🎨' : '🔲'}
+					<button class="theme-toggle" onclick={cycleTheme} aria-label="Changer le thème" title={`Passer au thème ${themeLabels[nextTheme]}`}>
+						{themeIcons[nextTheme]}
 					</button>
 				</li>
 			</ul>

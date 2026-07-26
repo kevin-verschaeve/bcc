@@ -17,6 +17,10 @@
 
 	/* Fixed scrims — not theme-dependent. */
 	--overlay-bg: rgba(0, 0, 0, 0.5);
+
+	/* Corner rounding for the comptage page blocks (header, dealer,
+	   contract, historique). Square by default; themes may soften it. */
+	--comptage-block-radius: 0px;
 }
 
 @keyframes bpulse {
@@ -34,7 +38,6 @@ html, body {
 }
 
 main {
-	padding-top: var(--spacing-md);
 	padding-bottom: 2rem;
 }
 
@@ -999,6 +1002,8 @@ dialog, dialog article {
 	box-shadow: var(--card-shadow);
 	padding: 1rem;
 	margin-bottom: 1rem;
+	border-radius: var(--comptage-block-radius);
+	overflow: hidden;
 }
 
 /* ── comptage: PageHeader ─────────────────────────────────── */
@@ -1009,6 +1014,8 @@ dialog, dialog article {
 	margin-bottom: 1rem;
 	border: var(--border-strong);
 	box-shadow: var(--card-shadow);
+	border-radius: var(--comptage-block-radius);
+	overflow: hidden;
 }
 .header-top {
 	display: flex;
@@ -1212,6 +1219,8 @@ dialog h4 {
 	border: var(--border-strong);
 	box-shadow: var(--card-shadow);
 	margin-bottom: 1rem;
+	border-radius: var(--comptage-block-radius);
+	overflow: hidden;
 }
 .history-head {
 	display: flex;
@@ -1240,7 +1249,7 @@ dialog h4 {
 	width: 100%;
 	border-collapse: collapse;
 	margin: 0;
-	border-radius: var(--radius);
+	border-radius: 0;
 	border: none;
 	background: transparent;
 }
@@ -1254,8 +1263,11 @@ dialog h4 {
 	text-align: center;
 	background: var(--table-head-bg);
 	border-bottom: 2px solid var(--ink);
-	color: inherit;
+	color: var(--table-head-text);
 }
+/* Team names sit on the dark table head: use the on-dark team colors */
+.hist-th.team1-color { color: var(--team1-display-color); }
+.hist-th.team2-color { color: var(--team2-display-color); }
 .history-table tbody tr { border-bottom: 1.5px dashed var(--ink); background: transparent; }
 .history-table tbody tr:last-child { border-bottom: none; }
 .history-table tbody tr:hover { background: transparent; }
@@ -1701,6 +1713,7 @@ dialog h4 {
 	border: var(--border-strong);
 	box-shadow: var(--card-shadow);
 	margin-bottom: 1.25rem;
+	border-radius: var(--comptage-block-radius);
 }
 .dealer-info {
 	display: flex;
