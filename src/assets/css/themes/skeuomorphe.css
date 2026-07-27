@@ -90,6 +90,7 @@
 	--nav-text: #fbf6e8;
 	--nav-border: 1px solid #072a18;
 	--nav-border-bottom: none;
+	--nav-radius: var(--radius);
 	--nav-backdrop: none;
 	--nav-icon-color: #fbf6e8;
 	--logo-color: var(--nav-text);
@@ -100,7 +101,7 @@
 	--logo-icon-size: 36px;
 	--logo-icon-font: 1.3rem;
 	--nav-link-font: 0.9rem;
-	--nav-link-padding: 8px 14px;
+	--nav-link-padding: 4px 12px;
 	--nav-link-weight: 600;
 	--nav-link-spacing: 0.2px;
 	--nav-link-radius: 6px;

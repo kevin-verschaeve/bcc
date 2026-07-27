@@ -25,6 +25,10 @@
 	/* Corner rounding for the comptage page blocks (header, dealer,
 	   contract, historique). Square by default; themes may soften it. */
 	--comptage-block-radius: 0px;
+
+	/* Corner rounding for the sticky nav bar. Square by default;
+	   themes may soften it. */
+	--nav-radius: 0px;
 }
 
 @keyframes bpulse {
@@ -105,6 +109,7 @@ a:hover {
 	padding: 14px 18px;
 	border: var(--nav-border);
 	border-bottom: var(--nav-border-bottom);
+	border-radius: var(--nav-radius);
 	box-shadow: var(--card-shadow);
 	backdrop-filter: var(--nav-backdrop);
 	-webkit-backdrop-filter: var(--nav-backdrop);
@@ -1251,6 +1256,9 @@ dialog article {
 		padding: 10px 14px;
 		margin-top: 0;
 		gap: 1rem;
+		/* Edge-to-edge against the viewport here, so rounding the top
+		   corners would just expose slivers of page behind the bar. */
+		border-radius: 0;
 	}
 	.header-logo-text {
 		font-size: 0.78rem;

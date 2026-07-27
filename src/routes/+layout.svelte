@@ -17,7 +17,7 @@
 	let { children } = $props();
 
 	const themes: Theme[] = ['brutalist', 'app', 'skeuomorphe'];
-	const DEFAULT_THEME: Theme = 'brutalist';
+	const DEFAULT_THEME: Theme = 'app';
 
 	// Read back what the app.html bootstrap already applied, so hydration
 	// agrees with the painted DOM instead of resetting to the default.
