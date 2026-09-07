@@ -1,3 +1,12 @@
+function shuffle<T>(items: T[]): T[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export function generateTournamentSchedule(tournament, teams) {
   const n = teams.length;
   if (n % 2 !== 0) {
@@ -5,7 +14,7 @@ export function generateTournamentSchedule(tournament, teams) {
   }
 
   const schedule = [];
-  const teamList = [...teams];
+  const teamList = shuffle(teams);
 
   for (let round = 0; round < n - 1; round++) {
     const day = [];
