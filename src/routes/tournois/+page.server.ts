@@ -1,12 +1,6 @@
 import { setFlash } from 'sveltekit-flash-message/server';
 import type { PageServerLoad, Actions } from './$types'
 
-export const config = {
-  isr: {
-    expiration: 600,
-  }
-};
-
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
   const { data: tournaments } = await supabase.from('tournaments').select().order('id', {ascending: false});
 
