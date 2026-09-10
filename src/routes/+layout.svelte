@@ -148,6 +148,11 @@
 					</a>
 				</li>
 				<li>
+					<a href="/comptage" class={getNavLinkClass('/comptage')} onclick={closeMobileMenu}>
+						Comptage
+					</a>
+				</li>
+				<li>
 					<ThemePicker {theme} {setTheme} />
 				</li>
 			</ul>

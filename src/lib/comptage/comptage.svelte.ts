@@ -3,26 +3,54 @@ import { toast } from 'svelte-sonner';
 import { WINNING_SCORE } from '$lib/scoreUtils';
 
 export const suits = ['♥', '♠', '♦', '♣', 'TA', 'SA'] as const;
-export const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150', 'Capot', 'Générale'] as const;
+export const pointOptions = [
+	'80',
+	'90',
+	'100',
+	'110',
+	'120',
+	'130',
+	'140',
+	'150',
+	'Capot',
+	'Générale'
+] as const;
 
-const STORAGE_KEY = 'bcc-comptage';
+/**
+ * Default storage slot. Each `ComptageGame` can override it so two counters
+ * (a tournament match and a one-off game) never share the same saved state.
+ */
+export const DEFAULT_STORAGE_KEY = 'bcc-comptage';
 
 export type ScanCard = { rank: string; suit: string };
 export type ScanResult = { cards: ScanCard[]; points: number };
 
-export type MatchTeam = {
+export type ComptagePlayer = { name: string };
+
+export type ComptageTeam = {
 	name: string;
-	player1: { name: string };
-	player2: { name: string };
+	player1: ComptagePlayer;
+	player2: ComptagePlayer;
 };
 
-export type MatchData = {
-	id: number;
-	team1: MatchTeam;
-	team2: MatchTeam;
+/**
+ * Everything the counter needs to know about the two teams facing each other.
+ * A tournament match row satisfies it as-is; a one-off game builds it by hand.
+ */
+export type ComptageMatch = {
+	team1: ComptageTeam;
+	team2: ComptageTeam;
+};
+
+export type ComptageOptions = {
+	/** localStorage slot holding the in-progress game. */
+	storageKey?: string;
 };
 
 export class ComptageGame {
+	readonly match: ComptageMatch;
+	readonly storageKey: string;
+
 	// Game state
 	team1Points = $state<number[]>([]);
 	team2Points = $state<number[]>([]);
@@ -50,12 +78,18 @@ export class ComptageGame {
 	team1Total = $derived(this.team1Points.reduce((sum, p) => sum + p, 0));
 	team2Total = $derived(this.team2Points.reduce((sum, p) => sum + p, 0));
 	hasWinner = $derived(this.team1Total >= WINNING_SCORE || this.team2Total >= WINNING_SCORE);
-	currentDealer = $derived(this.dealerOrder.length === 4 ? this.dealerOrder[this.dealerIndex % 4] : null);
+	currentDealer = $derived(
+		this.dealerOrder.length === 4 ? this.dealerOrder[this.dealerIndex % 4] : null
+	);
 
-	readonly match: MatchData;
+	/** Name of the team that reached the winning score (only meaningful once `hasWinner`). */
+	get winnerTeamName() {
+		return this.team1Total >= WINNING_SCORE ? this.match.team1.name : this.match.team2.name;
+	}
 
-	constructor(match: MatchData) {
+	constructor(match: ComptageMatch, options: ComptageOptions = {}) {
 		this.match = match;
+		this.storageKey = options.storageKey ?? DEFAULT_STORAGE_KEY;
 
 		const initial = this.#loadFromStorage();
 		if (initial) {
@@ -73,13 +107,14 @@ export class ComptageGame {
 		this.pointInput = Number(this.selectedPoints);
 
 		$effect(() => {
-			this.showSelection = (!this.taker || !this.selectedSuit || !this.selectedPoints) && !this.hasWinner;
+			this.showSelection =
+				(!this.taker || !this.selectedSuit || !this.selectedPoints) && !this.hasWinner;
 		});
 
 		$effect(() => {
 			if (browser) {
 				localStorage.setItem(
-					STORAGE_KEY,
+					this.storageKey,
 					JSON.stringify({
 						team1Points: this.team1Points,
 						team2Points: this.team2Points,
@@ -98,7 +133,7 @@ export class ComptageGame {
 
 	#loadFromStorage() {
 		if (!browser) return null;
-		const stored = localStorage.getItem(STORAGE_KEY);
+		const stored = localStorage.getItem(this.storageKey);
 		if (stored) {
 			try {
 				return JSON.parse(stored);
@@ -288,7 +323,7 @@ export class ComptageGame {
 		this.team2Points = [];
 		this.resetSelection();
 		if (browser) {
-			localStorage.removeItem(STORAGE_KEY);
+			localStorage.removeItem(this.storageKey);
 		}
 	}
 

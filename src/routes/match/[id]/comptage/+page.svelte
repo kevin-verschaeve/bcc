@@ -1,45 +1,39 @@
 <script lang="ts">
+	import { enhance, applyAction } from '$app/forms';
 	import type { PageProps } from './$types';
-	import { ComptageGame } from './comptage.svelte.js';
-	import PageHeader from './PageHeader.svelte';
-	import TASAModalCounter from './TASAModalCounter.svelte';
-	import DealerSection from './DealerSection.svelte';
-	import ContractSelection from './ContractSelection.svelte';
-	import TakerDisplay from './TakerDisplay.svelte';
-	import ScorePanel from './ScorePanel.svelte';
-	import ScoreTable from './ScoreTable.svelte';
-	import WinnerSection from './WinnerSection.svelte';
+	import Comptage from '$lib/comptage/Comptage.svelte';
+	import WinnerSection from '$lib/comptage/WinnerSection.svelte';
+	import { ComptageGame } from '$lib/comptage/comptage.svelte.js';
 
 	let { data }: PageProps = $props();
 
 	const game = new ComptageGame(data.match);
 </script>
 
-<div class="top-bar">
-	<a href="/match/{data.match.id}/scores" class="secondary back-link">← Scores</a>
-	<button type="button" class="reset-btn" onclick={() => game.resetAll(true)} aria-label="Réinitialiser">
-		↺ RESET
-	</button>
-</div>
+<Comptage {game}>
+	{#snippet back()}
+		<a href="/match/{data.match.id}/scores" class="secondary back-link">← Scores</a>
+	{/snippet}
 
-<PageHeader title="Comptage">
-	<TASAModalCounter />
-</PageHeader>
+	{#snippet winner()}
+		<form
+			method="POST"
+			action="?/saveScore"
+			use:enhance={() => {
+				return async ({ result }) => {
+					if (result.type === 'success') {
+						game.resetAll(false);
+					}
+					await applyAction(result);
+				};
+			}}
+		>
+			<input type="hidden" name="score_team1" value={game.team1Total} />
+			<input type="hidden" name="score_team2" value={game.team2Total} />
 
-<DealerSection {game} />
-
-<section class="contract-panel">
-	{#if game.showSelection}
-		<ContractSelection {game} />
-	{/if}
-
-	<TakerDisplay {game} />
-
-	{#if game.hasWinner}
-		<WinnerSection {game} />
-	{/if}
-</section>
-
-<ScorePanel {game} />
-
-<ScoreTable {game} />
+			<WinnerSection {game}>
+				<button type="submit" class="winner-submit"> VALIDER & NOUVELLE MANCHE → </button>
+			</WinnerSection>
+		</form>
+	{/snippet}
+</Comptage>
