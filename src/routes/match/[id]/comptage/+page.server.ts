@@ -51,11 +51,15 @@ export const actions = {
       return fail(400, {message: canAdd.error});
     }
 
-    await supabase.from('match_scores').insert({
+    const { error: insertError } = await supabase.from('match_scores').insert({
       match: matchId,
       score_team1: scoreTeam1,
       score_team2: scoreTeam2,
     });
+    if (insertError) {
+      setFlash({type: 'error', message: insertError.message}, cookies);
+      return fail(500, {message: insertError.message});
+    }
 
     setFlash({type: 'success', message: 'Score ajouté avec succès !'}, cookies);
 

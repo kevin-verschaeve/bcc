@@ -1,4 +1,4 @@
-import type { Actions } from '@sveltejs/kit';
+import { fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types'
 import { setFlash } from "sveltekit-flash-message/server";
 import { validateScore, canAddScore } from '$lib/scoreUtils';
@@ -33,12 +33,16 @@ export const actions = {
         return;
     }
 
-    await supabase.from('match_scores')
+    const { error: updateError } = await supabase.from('match_scores')
       .update({
         score_team1: scoreTeam1,
         score_team2: scoreTeam2,
       })
       .eq('id', scoreId);
+    if (updateError) {
+      setFlash({type: 'error', message: updateError.message}, cookies);
+      return fail(500, {message: updateError.message});
+    }
 
     setFlash({type: 'success', message: 'Score modifié avec succès !'}, cookies);
   },
@@ -47,9 +51,13 @@ export const actions = {
     const formData = await request.formData();
     const scoreId = +formData.get('score_id');
 
-    await supabase.from('match_scores')
+    const { error } = await supabase.from('match_scores')
       .delete()
       .eq('id', scoreId);
+    if (error) {
+      setFlash({type: 'error', message: error.message}, cookies);
+      return fail(500, {message: error.message});
+    }
 
     setFlash({type: 'success', message: 'Score supprimé avec succès !'}, cookies);
   },
@@ -72,11 +80,15 @@ export const actions = {
       return;
     }
 
-    await supabase.from('match_scores').insert({
+    const { error: insertError } = await supabase.from('match_scores').insert({
       match: matchId,
       score_team1: scoreTeam1,
       score_team2: scoreTeam2,
     });
+    if (insertError) {
+      setFlash({type: 'error', message: insertError.message}, cookies);
+      return fail(500, {message: insertError.message});
+    }
 
     setFlash({type: 'success', message: 'Score ajouté avec succès !'}, cookies);
   },

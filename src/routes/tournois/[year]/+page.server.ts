@@ -1,4 +1,4 @@
-import { redirect, error } from '@sveltejs/kit';
+import { redirect, error, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
 import { generateTournamentSchedule } from '$lib/MatchGenerator';
@@ -43,23 +43,31 @@ export const actions = {
         return;
       }
 
-      const { data: tournament } = await supabase.from('tournaments')
+      const { data: tournament, error: updateError } = await supabase.from('tournaments')
         .update({status: 'started'})
         .eq('id', formData.get('tournament'))
         .select()
         .single();
+      if (updateError) {
+        setFlash({type: 'error', message: updateError.message}, cookies);
+        return fail(500, {message: updateError.message});
+      }
 
       const schedule = generateTournamentSchedule(tournament, teams);
 
       let i = 1;
       for (let day of schedule) {
         for(let meet of day) {
-          await supabase.from('matchs').insert({
+          const { error: insertError } = await supabase.from('matchs').insert({
             number: i,
             tournament: meet.tournament.id,
             team1: meet.team1.team,
             team2: meet.team2.team,
           });
+          if (insertError) {
+            setFlash({type: 'error', message: insertError.message}, cookies);
+            return fail(500, {message: insertError.message});
+          }
         }
         i++;
       }
