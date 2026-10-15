@@ -5,6 +5,7 @@
 
 	$effect(() => {
 		if (showModal) dialog.showModal();
+		else if (dialog?.open) dialog.close();
 	});
 </script>
 
