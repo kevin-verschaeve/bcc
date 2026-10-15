@@ -1,7 +1,17 @@
-import type { PageServerLoad } from '../$types'
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ params, locals: { supabase }, setHeaders }) => {
+  if (!/^\d+$/.test(params.number)) {
+    error(404, 'Jour introuvable');
+  }
+
   const { data: tournament } = await supabase.from('tournaments').select('id, year, month_start').eq('year', params.year).single();
+
+  if (!tournament) {
+    error(404, 'Tournoi introuvable');
+  }
+
   const { data: matchs } = await supabase.from('matchs')
     .select(`
       id,
@@ -40,7 +50,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase }, setHe
     .order('created_at');
 
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('matchs')
     .select('number')
     .eq('tournament', tournament.id)
@@ -58,6 +68,6 @@ export const load: PageServerLoad = async ({ params, locals: { supabase }, setHe
     tournament,
     lastDay,
     matchs: matchs ?? [],
-    scores: scores.length ? Object.groupBy(scores, ({match}) => match?.id) : [],
+    scores: scores?.length ? Object.groupBy(scores, ({match}) => match?.id) : [],
   }
 }
