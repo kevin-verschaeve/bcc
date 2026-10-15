@@ -74,7 +74,10 @@
 		<h3>Nouveau tournoi</h3>
 	{/snippet}
 
-	<form method="POST" action="?/create" use:enhance={() => ({ result }) => { if (result.type === 'success') showCreateModal = false; }}>
+	<form method="POST" action="?/create" use:enhance={() => async ({ result, update }) => {
+		if (result.type === 'success') showCreateModal = false;
+		await update();
+	}}>
 		<label for="name">
 			Nom <small>(optionnel)</small>
 			<input type="text" name="name" id="name" />
