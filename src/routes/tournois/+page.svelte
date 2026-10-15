@@ -12,8 +12,8 @@
 		label: new Date(2000, i, 1).toLocaleDateString('fr-FR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase()),
 	}));
 
-	const liveTournament = $derived(data.tournaments.find(t => t.status === 'in_progress'));
-	const otherTournaments = $derived(data.tournaments.filter(t => t.status !== 'in_progress'));
+	const liveTournament = $derived(data.tournaments.find(t => t.status === 'started'));
+	const otherTournaments = $derived(data.tournaments.filter(t => t.status !== 'started'));
 </script>
 
 <a href="/" class="secondary">← Retour</a>
