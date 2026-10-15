@@ -7,7 +7,22 @@ export const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150
 
 const STORAGE_KEY = 'bcc-comptage';
 
-export type ScanCard = { rank: string; suit: string };
+const MAX_IMAGE_SIDE = 1600;
+
+async function resizeImage(file: File): Promise<Blob> {
+	const bitmap = await createImageBitmap(file);
+	const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
+	const canvas = document.createElement('canvas');
+	canvas.width = Math.round(bitmap.width * scale);
+	canvas.height = Math.round(bitmap.height * scale);
+	canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+	bitmap.close();
+	return new Promise((resolve, reject) =>
+		canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('resize'))), 'image/jpeg', 0.85)
+	);
+}
+
+export type ScanCard ={ rank: string; suit: string };
 export type ScanResult = { cards: ScanCard[]; points: number };
 
 export type MatchTeam = {
@@ -308,10 +323,10 @@ export class ComptageGame {
 		this.scanResult = null;
 
 		const formData = new FormData();
-		formData.append('image', file);
-		formData.append('atout', this.selectedSuit!);
-
 		try {
+			formData.append('image', await resizeImage(file), 'photo.jpg');
+			formData.append('atout', this.selectedSuit!);
+
 			const res = await fetch('/api/scan-cards', { method: 'POST', body: formData });
 			if (!res.ok) {
 				const body = await res.json().catch(() => null);
