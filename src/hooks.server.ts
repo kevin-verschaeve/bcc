@@ -12,6 +12,7 @@ const supabase: Handle = async ({ event, resolve }) => {
    * The Supabase client gets the Auth token from the request cookies.
    */
   event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    global: { fetch: event.fetch },
     cookies: {
       getAll: () => event.cookies.getAll(),
       /**
