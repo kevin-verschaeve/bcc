@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase }, cooki
   const canAdd = await canAddScore(supabase, Number(params.id));
   if (!canAdd.allowed) {
     setFlash({type: 'error', message: canAdd.error!}, cookies);
-    return redirect(301, `/match/${params.id}/scores`);
+    return redirect(302, `/match/${params.id}/scores`);
   }
 
   return {
@@ -65,7 +65,7 @@ export const actions = {
 
     const canAddNow = await canAddScore(supabase, matchId);
     if (!canAddNow.allowed) {
-      return redirect(301, `/match/${params.id}/scores`);
+      return redirect(303, `/match/${params.id}/scores`);
     }
 
     return { success: true };
