@@ -5,7 +5,9 @@ import { WINNING_SCORE } from '$lib/scoreUtils';
 export const suits = ['♥', '♠', '♦', '♣', 'TA', 'SA'] as const;
 export const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150', 'Capot', 'Générale'] as const;
 
-const STORAGE_KEY = 'bcc-comptage';
+const STORAGE_PREFIX = 'bcc-comptage-';
+const LEGACY_STORAGE_KEY = 'bcc-comptage';
+const MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 const MAX_IMAGE_SIDE = 1600;
 
@@ -72,6 +74,7 @@ export class ComptageGame {
 	constructor(match: MatchData) {
 		this.match = match;
 
+		this.#purgeStale();
 		const initial = this.#loadFromStorage();
 		if (initial) {
 			this.team1Points = initial.team1Points ?? [];
@@ -94,8 +97,9 @@ export class ComptageGame {
 		$effect(() => {
 			if (browser) {
 				localStorage.setItem(
-					STORAGE_KEY,
+					this.#key,
 					JSON.stringify({
+						updatedAt: Date.now(),
 						team1Points: this.team1Points,
 						team2Points: this.team2Points,
 						taker: this.taker,
@@ -111,9 +115,28 @@ export class ComptageGame {
 		});
 	}
 
+	get #key() {
+		return STORAGE_PREFIX + this.match.id;
+	}
+
+	// Supprime l'ancienne clé globale et les sauvegardes d'autres matchs périmées
+	#purgeStale() {
+		if (!browser) return;
+		localStorage.removeItem(LEGACY_STORAGE_KEY);
+		for (const key of Object.keys(localStorage)) {
+			if (!key.startsWith(STORAGE_PREFIX) || key === this.#key) continue;
+			try {
+				const { updatedAt } = JSON.parse(localStorage.getItem(key) ?? '{}');
+				if (!updatedAt || Date.now() - updatedAt > MAX_AGE_MS) localStorage.removeItem(key);
+			} catch {
+				localStorage.removeItem(key);
+			}
+		}
+	}
+
 	#loadFromStorage() {
 		if (!browser) return null;
-		const stored = localStorage.getItem(STORAGE_KEY);
+		const stored = localStorage.getItem(this.#key);
 		if (stored) {
 			try {
 				return JSON.parse(stored);
@@ -303,7 +326,7 @@ export class ComptageGame {
 		this.team2Points = [];
 		this.resetSelection();
 		if (browser) {
-			localStorage.removeItem(STORAGE_KEY);
+			localStorage.removeItem(this.#key);
 		}
 	}
 
