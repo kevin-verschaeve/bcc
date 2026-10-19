@@ -12,6 +12,7 @@
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { page } from '$app/state';
+	import { dev } from '$app/environment';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
@@ -41,7 +42,10 @@
 
 	// Register service worker for PWA - only once on mount
 	onMount(() => {
-		if ('serviceWorker' in navigator) {
+		// No sw.js is served by the dev server (devOptions.enabled is false)
+		if (!dev && 'serviceWorker' in navigator) {
+			// Purge the HTML cache left by earlier versions of the service worker
+			caches?.delete('pages-cache').catch(() => {});
 			// Always register from root scope
 			navigator.serviceWorker
 				.register('/sw.js', { scope: '/' })
