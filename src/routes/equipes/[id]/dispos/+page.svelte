@@ -38,11 +38,14 @@
 		}));
 	}
 
-	if (typeof window !== 'undefined') {
-		(window as any).deleteEvent = (eventId: string) => {
-			ec.removeEventById(eventId);
-			syncFromCalendar();
-		};
+	// Delegated from the calendar wrapper: the delete buttons are injected as raw HTML
+	// by `eventContent`, so they carry a data attribute instead of an inline handler.
+	function handleCalendarClick(e: MouseEvent) {
+		const button = (e.target as Element).closest<HTMLElement>('[data-delete-event]');
+		if (!button) return;
+		e.stopPropagation();
+		ec.removeEventById(button.dataset.deleteEvent);
+		syncFromCalendar();
 	}
 
 	let options = {
@@ -81,7 +84,8 @@
 					<div style="display: flex; justify-content: space-between">
 						${info.timeText}
 						<button
-							onclick="event.stopPropagation(); window.deleteEvent('${info.event.id}')"
+							type="button"
+							data-delete-event="${info.event.id}"
 							style="background: rgba(255,255,255,0.3); border: none; border-radius: 3px; color: white; cursor: pointer; padding: 0 8px; font-size: 12px; line-height: 1;"
 							data-tooltip="Supprimer"
 						>✕</button>
@@ -109,7 +113,8 @@
 <p><small>{data.team.player1.name} - {data.team.player2.name}</small></p>
 
 <article>
-	<section>
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+	<section onclickcapture={handleCalendarClick}>
 	    <Calendar bind:this={ec} plugins={[TimeGrid, Interaction]} {options} />
 	</section>
 

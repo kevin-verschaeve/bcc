@@ -7,7 +7,7 @@
 	import '../assets/css/themes/app.css';
 	import '../assets/css/themes/brutalist.css';
 	import '../assets/css/themes/skeuomorphe.css';
-	import ThemePicker, { type Theme } from '$lib/components/ThemePicker.svelte';
+	import ThemePicker, { type Theme } from '$lib/component/ThemePicker.svelte';
 	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
@@ -49,9 +49,6 @@
 			// Always register from root scope
 			navigator.serviceWorker
 				.register('/sw.js', { scope: '/' })
-				.then((registration) => {
-					console.log('✅ Service Worker registered:', registration.scope);
-				})
 				.catch((error) => {
 					console.error('❌ Service Worker registration error:', error);
 				});
@@ -159,8 +156,13 @@
 	</header>
 
 	{#if mobileMenuOpen}
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="menu-overlay" onclick={closeMobileMenu}></div>
+		<button
+			type="button"
+			class="menu-overlay"
+			aria-label="Fermer le menu"
+			tabindex="-1"
+			onclick={closeMobileMenu}
+		></button>
 	{/if}
 
 	<main>
