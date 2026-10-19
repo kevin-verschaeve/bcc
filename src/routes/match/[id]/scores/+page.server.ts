@@ -20,12 +20,12 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
   }
 }
 
-export const actions = {
+export const actions: Actions = {
   updateScore: async ({ request, cookies, locals: { supabase } }) => {
     const formData = await request.formData();
-    const scoreId = +formData.get('score_id');
-    const scoreTeam1 = +formData.get('score_team1');
-    const scoreTeam2 = +formData.get('score_team2');
+    const scoreId = Number(formData.get('score_id'));
+    const scoreTeam1 = Number(formData.get('score_team1'));
+    const scoreTeam2 = Number(formData.get('score_team2'));
 
     const error = validateScore(scoreTeam1, scoreTeam2);
     if (error) {
@@ -49,7 +49,7 @@ export const actions = {
 
   deleteScore: async ({ request, locals: { supabase }, cookies }) => {
     const formData = await request.formData();
-    const scoreId = +formData.get('score_id');
+    const scoreId = Number(formData.get('score_id'));
 
     const { error } = await supabase.from('match_scores')
       .delete()
@@ -64,8 +64,8 @@ export const actions = {
 
   addScore: async ({ request, cookies, params, locals: { supabase } }) => {
     const formData = await request.formData();
-    const scoreTeam1 = +formData.get('score_team1');
-    const scoreTeam2 = +formData.get('score_team2');
+    const scoreTeam1 = Number(formData.get('score_team1'));
+    const scoreTeam2 = Number(formData.get('score_team2'));
 
     const error = validateScore(scoreTeam1, scoreTeam2);
     if (error) {

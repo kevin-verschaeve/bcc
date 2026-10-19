@@ -33,8 +33,8 @@ export async function canAddScore(
     .eq('match', matchId)
     .order('created_at', { ascending: false });
 
-  const team1Wins = scores?.filter(s => s.score_team1 >= 1000).length ?? 0;
-  const team2Wins = scores?.filter(s => s.score_team2 >= 1000).length ?? 0;
+  const team1Wins = scores?.filter(s => (s.score_team1 ?? 0) >= 1000).length ?? 0;
+  const team2Wins = scores?.filter(s => (s.score_team2 ?? 0) >= 1000).length ?? 0;
 
   if (team1Wins >= 2 || team2Wins >= 2) {
     return { allowed: false, error: 'Une équipe a déjà gagné !' };

@@ -26,7 +26,7 @@
 				start: String(item.start || ''),
 				end: String(item.end || '')
 			};
-		}).filter(slot => slot.start && slot.end)
+		}).filter((slot: TimeSlot) => slot.start && slot.end)
 	);
 
 	function syncFromCalendar() {
