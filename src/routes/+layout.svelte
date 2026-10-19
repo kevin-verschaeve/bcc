@@ -42,7 +42,14 @@
 
 	// Register service worker for PWA - only once on mount
 	onMount(() => {
-		// No sw.js is served by the dev server (devOptions.enabled is false)
+		// No sw.js is served by the dev server (devOptions.enabled is false): drop any worker
+		// registered earlier on this origin, otherwise the browser keeps polling /sw.js (404)
+		if (dev && 'serviceWorker' in navigator) {
+			navigator.serviceWorker
+				.getRegistrations()
+				.then((registrations) => registrations.forEach((r) => r.unregister()))
+				.catch(() => {});
+		}
 		if (!dev && 'serviceWorker' in navigator) {
 			// Purge the HTML cache left by earlier versions of the service worker
 			caches?.delete('pages-cache').catch(() => {});
