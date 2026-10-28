@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ComptageGame } from './comptage.svelte.js';
-	import { suits, pointOptions } from './comptage.svelte.js';
+	import { suits, pointOptions, coincheOptions } from './comptage.svelte.js';
 
 	let { game }: { game: ComptageGame } = $props();
 
@@ -76,6 +76,23 @@
 					</button>
 				{/each}
 			</div>
+		{/each}
+	</div>
+</div>
+
+<div class="contract-step">
+	<div class="step-header">
+		<span class="step-num">4</span>
+		<span class="step-label">COINCHE</span>
+	</div>
+	<div class="players-row">
+		{#each coincheOptions as option}
+			<button
+				type="button"
+				class="player-btn"
+				class:selected={game.coinche === option.value}
+				onclick={() => game.selectCoinche(option.value)}
+			>{option.label}</button>
 		{/each}
 	</div>
 </div>
