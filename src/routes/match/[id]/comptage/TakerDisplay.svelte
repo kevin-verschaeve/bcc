@@ -18,6 +18,12 @@
 					class:red={game.selectedSuit === '♥' || game.selectedSuit === '♦'}
 				>{game.selectedSuit ?? '—'}</span>
 			</div>
+			{#if game.coinche !== 'none'}
+				<div class="recap-cell">
+					<span class="recap-label">COINCHE</span>
+					<span class="recap-value">×{game.coincheMultiplier}</span>
+				</div>
+			{/if}
 			<div class="recap-cell recap-cell-name">
 				<span class="recap-label">PRENEUR</span>
 				<span class="recap-value recap-name">{game.taker ?? '—'}</span>

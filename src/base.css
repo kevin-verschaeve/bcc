@@ -2588,6 +2588,15 @@ dialog h4 {
 	transform: var(--btn-hover-transform);
 	box-shadow: var(--shadow-sm);
 }
+.coinche-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+}
+.coinche-grid .contract-btn {
+	font-size: 0.75rem;
+	padding: 10px 2px;
+}
 .suits-grid {
 	display: grid;
 	grid-template-columns: repeat(6, 1fr);

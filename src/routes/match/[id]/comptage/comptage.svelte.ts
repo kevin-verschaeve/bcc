@@ -5,6 +5,13 @@ import { WINNING_SCORE } from '$lib/scoreUtils';
 export const suits = ['♥', '♠', '♦', '♣', 'TA', 'SA'] as const;
 export const pointOptions = ['80', '90', '100', '110', '120', '130', '140', '150', 'Capot', 'Générale'] as const;
 
+export const coincheOptions = [
+	{ value: 'none', label: 'RIEN', multiplier: 1 },
+	{ value: 'coinche', label: 'COINCHE ×2', multiplier: 2 },
+	{ value: 'surcoinche', label: 'SURCOINCHE ×4', multiplier: 4 }
+] as const;
+export type CoincheLevel = (typeof coincheOptions)[number]['value'];
+
 const STORAGE_PREFIX = 'bcc-comptage-';
 const LEGACY_STORAGE_KEY = 'bcc-comptage';
 const MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -48,6 +55,7 @@ export class ComptageGame {
 	selectedPoints = $state<string | null>(null);
 	selectedTeam = $state<'team1' | 'team2' | null>(null);
 	teamBelote = $state<'team1' | 'team2' | null>(null);
+	coinche = $state<CoincheLevel>('none');
 	pointInput = $state<number | null>(null);
 	showSelection = $state(true);
 
@@ -84,6 +92,7 @@ export class ComptageGame {
 			this.selectedPoints = initial.selectedPoints ?? null;
 			this.selectedTeam = initial.selectedTeam ?? null;
 			this.teamBelote = initial.teamBelote ?? null;
+			this.coinche = coincheOptions.some((o) => o.value === initial.coinche) ? initial.coinche : 'none';
 			this.dealerOrder = this.#isValidDealerOrder(initial.dealerOrder) ? initial.dealerOrder : [];
 			this.dealerIndex = initial.dealerIndex ?? 0;
 		}
@@ -108,7 +117,8 @@ export class ComptageGame {
 						dealerOrder: this.dealerOrder,
 						dealerIndex: this.dealerIndex,
 						selectedTeam: this.selectedTeam,
-						teamBelote: this.teamBelote
+						teamBelote: this.teamBelote,
+						coinche: this.coinche
 					})
 				);
 			}
@@ -234,6 +244,15 @@ export class ComptageGame {
 		this.pointInput = Number(this.selectedPoints);
 	}
 
+	selectCoinche(level: CoincheLevel) {
+		this.coinche = level;
+		if (this.taker && this.selectedSuit && this.selectedPoints) this.showSelection = false;
+	}
+
+	get coincheMultiplier() {
+		return coincheOptions.find((o) => o.value === this.coinche)!.multiplier;
+	}
+
 	selectTeam(team: 'team1' | 'team2') {
 		this.selectedTeam = this.selectedTeam === team ? null : team;
 	}
@@ -244,6 +263,7 @@ export class ComptageGame {
 		this.selectedPoints = null;
 		this.selectedTeam = null;
 		this.teamBelote = null;
+		this.coinche = 'none';
 	}
 
 	addPoints() {
@@ -276,7 +296,8 @@ export class ComptageGame {
 		this.#doAddPoints(this.selectedTeam === 'team1' ? 'team2' : 'team1', 160);
 	}
 
-	#doAddPoints(team: 'team1' | 'team2', points: number) {
+	#doAddPoints(team: 'team1' | 'team2', basePoints: number) {
+		const points = basePoints * this.coincheMultiplier;
 		if (team === 'team1') {
 			this.team1Points = [...this.team1Points, points + (this.teamBelote === 'team1' ? 20 : 0)];
 		} else {
