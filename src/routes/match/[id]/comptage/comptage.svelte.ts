@@ -58,6 +58,7 @@ export class ComptageGame {
 	coinche = $state<CoincheLevel>('none');
 	pointInput = $state<number | null>(null);
 	showSelection = $state(true);
+	askBeloteNeeded = $state(false);
 
 	// Dealer state
 	dealerOrder = $state<string[]>([]);
@@ -268,24 +269,44 @@ export class ComptageGame {
 
 	addPoints() {
 		const value = parseInt(String(this.pointInput));
+		const contract = Number(this.selectedPoints);
+
+		const numericContract = this.selectedPoints !== null && !isNaN(contract);
+		// L'équipe preneuse a la belote : elle a pu servir à faire le contrat, on demande à l'utilisateur
+		const askBelote =
+			numericContract && this.selectedTeam !== null && this.teamBelote === this.selectedTeam;
 
 		if (value < 80 && value !== 20) {
 			toast.error('Le score ne peut pas être inférieur à 80 (sauf 20 pour la belote) !');
 			return;
 		}
 
-		if (
-			this.selectedPoints !== null &&
-			!isNaN(Number(this.selectedPoints)) &&
-			value < Number(this.selectedPoints)
-		) {
+		if (numericContract && value < contract) {
 			toast.error('Le score ne peux pas être différent du contrat !');
 			return;
 		}
 
 		if (!isNaN(value) && value > 0 && this.selectedTeam) {
-			this.#doAddPoints(this.selectedTeam, value);
+			if (askBelote) {
+				this.askBeloteNeeded = true;
+				return;
+			}
+			this.#doAddPoints(this.selectedTeam, this.#scoredPoints(value));
 		}
+	}
+
+	// On ne marque que son contrat (pas les points réalisés en plus) ; Capot/Générale : points saisis
+	#scoredPoints(value: number) {
+		const contract = Number(this.selectedPoints);
+		return this.selectedPoints !== null && !isNaN(contract) ? contract : value;
+	}
+
+	// Si la belote était nécessaire au contrat, elle n'est pas comptée : seul le contrat est gardé
+	answerBeloteNeeded(needed: boolean) {
+		this.askBeloteNeeded = false;
+		if (!this.selectedTeam) return;
+		const points = this.#scoredPoints(parseInt(String(this.pointInput)));
+		this.#doAddPoints(this.selectedTeam, points, !needed);
 	}
 
 	setDedans() {
@@ -296,12 +317,13 @@ export class ComptageGame {
 		this.#doAddPoints(this.selectedTeam === 'team1' ? 'team2' : 'team1', 160);
 	}
 
-	#doAddPoints(team: 'team1' | 'team2', basePoints: number) {
+	#doAddPoints(team: 'team1' | 'team2', basePoints: number, countBelote = true) {
 		const points = basePoints * this.coincheMultiplier;
+		const belote = countBelote && this.teamBelote === team ? 20 : 0;
 		if (team === 'team1') {
-			this.team1Points = [...this.team1Points, points + (this.teamBelote === 'team1' ? 20 : 0)];
+			this.team1Points = [...this.team1Points, points + belote];
 		} else {
-			this.team2Points = [...this.team2Points, points + (this.teamBelote === 'team2' ? 20 : 0)];
+			this.team2Points = [...this.team2Points, points + belote];
 		}
 		this.pointInput = null;
 
