@@ -79,23 +79,23 @@
 	{/if}
 </div>
 
-<PageHeader title="Comptage libre" badge="HORS TOURNOI" />
+<PageHeader title="Partie libre" badge="HORS TOURNOI" />
 
-<form class="libre-panel" onsubmit={start}>
-	<p class="libre-hint">
+<form class="free-panel" onsubmit={start}>
+	<p class="free-hint">
 		Une partie ponctuelle, sans tournoi : indique qui joue et c'est parti. Les noms proposés sont
 		ceux des joueurs enregistrés, mais tu peux saisir n'importe quel nom.
 	</p>
 
-	<div class="libre-teams">
-		<fieldset class="libre-team">
-			<legend class="libre-team-title team1-color">ÉQUIPE 1</legend>
-			<label class="libre-field">
-				<span class="libre-label">NOM D'ÉQUIPE <small>(optionnel)</small></span>
+	<div class="free-teams">
+		<fieldset class="free-team">
+			<legend class="free-team-title team1-color">ÉQUIPE 1</legend>
+			<label class="free-field">
+				<span class="free-label">NOM D'ÉQUIPE <small>(optionnel)</small></span>
 				<input type="text" bind:value={team1Name} placeholder="Équipe 1" autocomplete="off" />
 			</label>
-			<label class="libre-field">
-				<span class="libre-label">JOUEUR 1</span>
+			<label class="free-field">
+				<span class="free-label">JOUEUR 1</span>
 				<input
 					type="text"
 					bind:value={team1Player1}
@@ -104,8 +104,8 @@
 					autocomplete="off"
 				/>
 			</label>
-			<label class="libre-field">
-				<span class="libre-label">JOUEUR 2</span>
+			<label class="free-field">
+				<span class="free-label">JOUEUR 2</span>
 				<input
 					type="text"
 					bind:value={team1Player2}
@@ -116,16 +116,16 @@
 			</label>
 		</fieldset>
 
-		<div class="libre-vs">VS</div>
+		<div class="free-vs">VS</div>
 
-		<fieldset class="libre-team">
-			<legend class="libre-team-title team2-color">ÉQUIPE 2</legend>
-			<label class="libre-field">
-				<span class="libre-label">NOM D'ÉQUIPE <small>(optionnel)</small></span>
+		<fieldset class="free-team">
+			<legend class="free-team-title team2-color">ÉQUIPE 2</legend>
+			<label class="free-field">
+				<span class="free-label">NOM D'ÉQUIPE <small>(optionnel)</small></span>
 				<input type="text" bind:value={team2Name} placeholder="Équipe 2" autocomplete="off" />
 			</label>
-			<label class="libre-field">
-				<span class="libre-label">JOUEUR 1</span>
+			<label class="free-field">
+				<span class="free-label">JOUEUR 1</span>
 				<input
 					type="text"
 					bind:value={team2Player1}
@@ -134,8 +134,8 @@
 					autocomplete="off"
 				/>
 			</label>
-			<label class="libre-field">
-				<span class="libre-label">JOUEUR 2</span>
+			<label class="free-field">
+				<span class="free-label">JOUEUR 2</span>
 				<input
 					type="text"
 					bind:value={team2Player2}
@@ -153,5 +153,5 @@
 		{/each}
 	</datalist>
 
-	<button type="submit" class="libre-submit">DÉMARRER LA PARTIE →</button>
+	<button type="submit" class="free-submit">DÉMARRER LA PARTIE →</button>
 </form>

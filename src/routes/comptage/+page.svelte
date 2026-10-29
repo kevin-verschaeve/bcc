@@ -5,8 +5,8 @@
 	import type { PageProps } from './$types';
 	import type { ComptageMatch } from '$lib/comptage/comptage.svelte.js';
 	import ComptageSetup from './ComptageSetup.svelte';
-	import LibreComptage from './LibreComptage.svelte';
-	import { loadLibreMatch, saveLibreMatch } from './libreMatch';
+	import FreeComptage from './FreeComptage.svelte';
+	import { loadFreeMatch, saveFreeMatch } from './freeMatch';
 
 	let { data }: PageProps = $props();
 
@@ -21,12 +21,12 @@
 	const showSetup = $derived(!match || editingPlayers);
 
 	onMount(() => {
-		match = loadLibreMatch();
+		match = loadFreeMatch();
 		ready = true;
 	});
 
 	function start(next: ComptageMatch) {
-		saveLibreMatch(next);
+		saveFreeMatch(next);
 		match = next;
 		if (editingPlayers) {
 			goto('/comptage');
@@ -44,6 +44,6 @@
 			onresume={() => goto('/comptage')}
 		/>
 	{:else}
-		<LibreComptage match={match!} />
+		<FreeComptage match={match!} />
 	{/if}
 {/if}

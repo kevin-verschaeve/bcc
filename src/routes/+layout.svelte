@@ -157,7 +157,7 @@
 				</li>
 				<li>
 					<a href="/comptage" class={getNavLinkClass('/comptage')} onclick={closeMobileMenu}>
-						Comptage
+						Partie libre
 					</a>
 				</li>
 				<li>

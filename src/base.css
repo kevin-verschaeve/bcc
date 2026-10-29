@@ -219,57 +219,124 @@ a:hover {
 	cursor: pointer;
 }
 /* ============== Theme picker ============== */
+/* Desktop: a settings gear opens a dropdown of themes. Mobile: the gear is
+   hidden and the options sit inline in the drawer (see the compact block). */
 .theme-picker {
 	position: relative;
 	flex-shrink: 0;
 	display: flex;
 	align-items: stretch;
 }
-
 .theme-picker-trigger {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	justify-content: center;
+	/* Same box recipe as .nav-link (padding + border + one line of text), with
+	   the icon sized to that line — so heights match in every theme. */
+	height: auto;
+	font-size: var(--nav-link-font);
+	line-height: inherit;
+	padding: var(--nav-link-padding);
+	padding-inline: 0;
+	aspect-ratio: 1;
+	/* Pico gives `nav li a` negative margins; repeat the vertical ones so the
+	   trigger is as tall as the links. Horizontally only the left one, so the gap
+	   to the previous link matches the others; a right one would push the last
+	   item out of the nav. */
+	margin: calc(var(--pico-nav-link-spacing-vertical) * -1) 0
+		calc(var(--pico-nav-link-spacing-vertical) * -1)
+		calc(var(--pico-nav-link-spacing-horizontal) * -1);
 	background: transparent;
 	border: 2px solid var(--nav-icon-color);
 	border-radius: var(--nav-link-radius);
 	box-shadow: none;
 	color: var(--nav-icon-color);
-	font-family: var(--font-display);
-	font-size: var(--nav-link-font);
-	font-weight: var(--nav-link-weight);
-	letter-spacing: var(--nav-link-spacing);
-	text-transform: var(--text-transform-ui);
-	/* Same box as .nav-link so the trigger matches the sibling nav items in
-	   every theme — the nav padding token varies per theme, a fixed height
-	   would only line up in one of them. */
-	padding: var(--nav-link-padding);
-	line-height: inherit;
-	width: auto;
-	margin: 0;
 	cursor: pointer;
 }
-.theme-picker-trigger:hover {
+.theme-picker-trigger svg {
+	width: 1.25em;
+	height: 1.25em;
+}
+.theme-picker-trigger:hover,
+.theme-picker-trigger[aria-expanded='true'] {
 	background: var(--nav-link-hover-bg);
 	border-color: var(--nav-link-hover-bg);
 	color: var(--nav-link-hover-color);
 	box-shadow: none;
 	transform: none;
 }
-.theme-picker-caret {
-	font-size: 0.7rem;
-	line-height: 1;
-}
-
-/* Reads as a quieter prefix so the theme name stays the emphasis. */
-.theme-picker-trigger-prefix {
-	opacity: 0.7;
-	font-weight: 400;
-}
-
-/* Drawer-only heading — see the compact block below. */
 .theme-picker-section-label {
 	display: none;
+}
+.theme-picker-group {
+	display: none;
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	z-index: 9997;
+	min-width: 260px;
+	flex-direction: column;
+	gap: 2px;
+	padding: 6px;
+	background: var(--surface);
+	border: var(--nav-border, 2px solid var(--ink));
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-md);
+}
+.theme-picker-group.open {
+	display: flex;
+}
+.theme-picker-option {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	width: 100%;
+	margin: 0;
+	padding: 0.5rem 0.6rem;
+	background: transparent;
+	border: 2px solid transparent;
+	border-radius: var(--radius-sm);
+	box-shadow: none;
+	color: var(--ink);
+	font-family: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+.theme-picker-option:hover,
+.theme-picker-option:focus-visible {
+	background: var(--surface-subtle);
+	border-color: var(--ink);
+	box-shadow: none;
+	transform: none;
+}
+.theme-picker-option[aria-checked='true'] {
+	background: var(--surface-subtle);
+}
+.theme-picker-option-text {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	flex: 1;
+	min-width: 0;
+}
+.theme-picker-option-label {
+	font-family: var(--font-display);
+	font-size: 0.9rem;
+	font-weight: 600;
+	letter-spacing: var(--nav-link-spacing);
+	text-transform: var(--text-transform-ui);
+	color: var(--ink);
+}
+.theme-picker-option-hint {
+	font-size: 0.75rem;
+	color: var(--ink-muted);
+	white-space: nowrap;
+}
+.theme-picker-check {
+	width: 1em;
+	flex-shrink: 0;
+	color: var(--ink);
+	font-weight: 700;
 }
 
 /* Swatches preview a theme's own palette, so they use that theme's literal
@@ -333,76 +400,6 @@ a:hover {
 .theme-swatch[data-swatch='skeuomorphe'] .theme-swatch-dot {
 	background: #8d5a25;
 	border-radius: 50%;
-}
-
-.theme-picker-menu {
-	position: absolute;
-	top: calc(100% + 8px);
-	right: 0;
-	z-index: 9997;
-	min-width: 260px;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	padding: 6px;
-	background: var(--surface);
-	border: var(--nav-border, 2px solid var(--ink));
-	border-radius: var(--radius);
-	box-shadow: var(--shadow-md);
-}
-
-.theme-picker-option {
-	display: flex;
-	align-items: center;
-	gap: 0.6rem;
-	width: 100%;
-	margin: 0;
-	padding: 0.5rem 0.6rem;
-	background: transparent;
-	border: 2px solid transparent;
-	border-radius: var(--radius-sm);
-	box-shadow: none;
-	color: var(--ink);
-	font-family: inherit;
-	text-align: left;
-	cursor: pointer;
-}
-.theme-picker-option:hover,
-.theme-picker-option:focus-visible {
-	background: var(--surface-subtle);
-	border-color: var(--ink);
-	box-shadow: none;
-	transform: none;
-}
-.theme-picker-option[aria-checked='true'] {
-	background: var(--surface-subtle);
-}
-
-.theme-picker-option-text {
-	display: flex;
-	flex-direction: column;
-	gap: 1px;
-	flex: 1;
-	min-width: 0;
-}
-.theme-picker-option-label {
-	font-family: var(--font-display);
-	font-size: 0.9rem;
-	font-weight: 600;
-	letter-spacing: var(--nav-link-spacing);
-	text-transform: var(--text-transform-ui);
-	color: var(--ink);
-}
-.theme-picker-option-hint {
-	font-size: 0.75rem;
-	color: var(--ink-muted);
-	white-space: nowrap;
-}
-.theme-picker-check {
-	width: 1em;
-	flex-shrink: 0;
-	color: var(--ink);
-	font-weight: 700;
 }
 
 .burger-line {
@@ -1307,17 +1304,12 @@ dialog article {
 		display: flex;
 	}
 
-	/* In the drawer there is no room to float, and `overflow-y: auto` would
-	   clip an absolutely-positioned panel — so the options sit inline and the
-	   trigger becomes a section label. */
+	/* In the drawer there is no room to float, so the options sit inline under
+	   a section label and the gear is hidden. */
 	.theme-picker {
-		/* Stack: the section label above, the option list below. The desktop rule
-		   is a row, which here would sit the label beside the menu and squeeze the
-		   option labels into wrapping. */
 		flex-direction: column;
 		align-items: stretch;
 		width: 100%;
-		min-width: 0;
 	}
 	.theme-picker-trigger {
 		display: none;
@@ -1333,7 +1325,8 @@ dialog article {
 		color: var(--nav-text);
 		opacity: 0.5;
 	}
-	.theme-picker-menu {
+	.theme-picker-group {
+		display: flex;
 		position: static;
 		min-width: 0;
 		width: 100%;
@@ -1350,14 +1343,11 @@ dialog article {
 		padding: 10px 14px;
 	}
 	.theme-picker-option:hover,
-	.theme-picker-option:focus-visible {
-		border-left-color: var(--drawer-accent);
-		background: var(--drawer-link-hover-bg);
-		border-bottom-color: rgba(255, 255, 255, 0.1);
-	}
+	.theme-picker-option:focus-visible,
 	.theme-picker-option[aria-checked='true'] {
 		border-left-color: var(--drawer-accent);
 		background: var(--drawer-link-hover-bg);
+		border-bottom-color: rgba(255, 255, 255, 0.1);
 	}
 	.theme-picker-option-label,
 	.theme-picker-check {
@@ -1366,8 +1356,6 @@ dialog article {
 	.theme-picker-option-hint {
 		color: var(--nav-text);
 		opacity: 0.65;
-		/* The drawer is too narrow for the desktop nowrap — let hints wrap
-		   instead of being clipped by the drawer edge. */
 		white-space: normal;
 	}
 	.header-nav-list .nav-link {
@@ -1988,7 +1976,7 @@ dialog h4 {
 /* ── comptage libre: setup des joueurs ────────────────────── */
 /* The one-off counter asks for its four players first; the screen reuses the
    comptage blocks so it reads as the same tool, minus the tournament. */
-.libre-panel {
+.free-panel {
 	background: var(--surface);
 	border: var(--border-strong);
 	box-shadow: var(--card-shadow);
@@ -1996,20 +1984,20 @@ dialog h4 {
 	margin-bottom: 1rem;
 	border-radius: var(--comptage-block-radius);
 }
-.libre-hint {
+.free-hint {
 	font-family: var(--font-mono);
 	font-size: 0.78rem;
 	line-height: 1.5;
 	color: var(--ink-muted);
 	margin: 0 0 1.25rem;
 }
-.libre-teams {
+.free-teams {
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
 	gap: 10px;
 	align-items: start;
 }
-.libre-team {
+.free-team {
 	border: 2px solid var(--ink);
 	padding: 0.75rem;
 	margin: 0;
@@ -2018,34 +2006,34 @@ dialog h4 {
 /* The `--team*-display-color` tokens are tuned for dark blocks; on this light
    panel the on-surface variants are the readable ones (same trick as
    `.score-card .team1-color` above). */
-.libre-panel .team1-color {
+.free-panel .team1-color {
 	color: var(--color-team1);
 }
-.libre-panel .team2-color {
+.free-panel .team2-color {
 	color: var(--color-team2);
 }
-.libre-team-title {
+.free-team-title {
 	font-size: 1rem;
 	letter-spacing: var(--letter-spacing-label);
 	text-transform: var(--text-transform-ui);
 	padding: 0 6px;
 	margin: 0;
 }
-.libre-vs {
+.free-vs {
 	font-family: var(--font-display);
 	font-size: 1.4rem;
 	align-self: center;
 	color: var(--ink-muted);
 	padding: 0 4px;
 }
-.libre-field {
+.free-field {
 	display: block;
 	margin-bottom: 0.75rem;
 }
-.libre-field:last-child {
+.free-field:last-child {
 	margin-bottom: 0;
 }
-.libre-label {
+.free-label {
 	display: block;
 	font-family: var(--font-mono);
 	font-size: 0.68rem;
@@ -2055,17 +2043,17 @@ dialog h4 {
 	color: var(--ink);
 	margin-bottom: 5px;
 }
-.libre-label small {
+.free-label small {
 	font-weight: 500;
 	color: var(--ink-muted);
 	letter-spacing: 0;
 	text-transform: none;
 }
-.libre-field input {
+.free-field input {
 	width: 100%;
 	margin: 0;
 }
-.libre-submit {
+.free-submit {
 	font-family: var(--font-mono);
 	font-size: 0.85rem;
 	font-weight: 700;
@@ -2079,17 +2067,17 @@ dialog h4 {
 	box-shadow: none;
 	text-transform: var(--text-transform-ui);
 }
-.libre-submit:hover {
+.free-submit:hover {
 	background: var(--accent);
 	color: var(--ink);
 	transform: none;
 	box-shadow: none;
 }
 @media (max-width: 560px) {
-	.libre-teams {
+	.free-teams {
 		grid-template-columns: 1fr;
 	}
-	.libre-vs {
+	.free-vs {
 		text-align: center;
 		padding: 2px 0;
 	}
