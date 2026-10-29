@@ -9,8 +9,8 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
     .single()
 
     if (tournament !== null) {
-        return redirect(301, `/tournois/${tournament.year}`);
+        return redirect(302, `/tournois/${tournament.year}`);
     }
 
-    redirect(301, '/tournois');
+    redirect(302, '/tournois');
 }

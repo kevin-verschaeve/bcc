@@ -10,16 +10,18 @@
 
 	let { data }: PageProps = $props();
 
-	const matchScores = $derived(data.scores);
+	const matchScores: Record<number, Round[] | undefined> = $derived(data.scores as Record<number, Round[]>);
 	const currentDay: number = $derived(Number(page.params.number));
 	const nextDay: number = $derived(currentDay + 1);
 	const maxDay: number = $derived(data.lastDay);
 
 	let showModal: boolean = $state(false);
-	let teamDetail = $state(null);
-	const showTeamInfo = (team) => { teamDetail = team; showModal = true; };
+	type Round = { score_team1: number; score_team2: number };
+	type Team = PageProps['data']['matchs'][number]['team1'];
+	let teamDetail = $state<Team | null>(null);
+	const showTeamInfo = (team: Team) => { teamDetail = team; showModal = true; };
 
-	const isFinished = (rounds) => {
+	const isFinished = (rounds: Round[]) => {
 		if (rounds.length < 2) return false;
 		if (rounds.length === 3) return true;
 		const t1 = rounds.filter(r => r.score_team1 >= WINNING_SCORE).length;
@@ -27,13 +29,13 @@
 		return t1 === 2 || t2 === 2;
 	};
 
-	const getStatus = (rounds) => {
+	const getStatus = (rounds: Round[]) => {
 		if (rounds.length === 0) return 'todo';
 		if (isFinished(rounds)) return 'done';
 		return 'live';
 	};
 
-	const wins = (rounds, side: 1 | 2) =>
+	const wins = (rounds: Round[], side: 1 | 2) =>
 		rounds.filter(r => (side === 1 ? r.score_team1 : r.score_team2) >= WINNING_SCORE).length;
 </script>
 
@@ -147,6 +149,6 @@
 	{#if teamDetail}
 		<p>{teamDetail.player1.name}: {teamDetail.player1.tel}</p>
 		<p>{teamDetail.player2.name}: {teamDetail.player2.tel}</p>
-		<TeamAvailabilities availabilities={teamDetail.availabilities.filter(a => getNumberFromMonth(new Date(a.start).getMonth(), data.tournament.month_start) === Number(page.params.number))} />
+		<TeamAvailabilities availabilities={teamDetail.availabilities.filter((a: { start: string }) => getNumberFromMonth(new Date(a.start).getMonth(), data.tournament.month_start) === Number(page.params.number))} />
 	{/if}
 </Modal>

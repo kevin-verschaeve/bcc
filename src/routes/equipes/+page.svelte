@@ -6,7 +6,7 @@
    import type { Tables } from '../../../database.types';
 
   let { data }: PageProps = $props();
-  let players: Tables<'players'>[] = $state(data.players);
+  let players: Tables<'players'>[] = $derived(data.players);
 
   let showModal: boolean = $state(false);
 </script>

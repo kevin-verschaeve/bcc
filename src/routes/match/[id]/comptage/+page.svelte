@@ -3,11 +3,11 @@
 	import type { PageProps } from './$types';
 	import Comptage from '$lib/comptage/Comptage.svelte';
 	import WinnerSection from '$lib/comptage/WinnerSection.svelte';
-	import { ComptageGame } from '$lib/comptage/comptage.svelte.js';
+	import { ComptageGame, matchStorageKey } from '$lib/comptage/comptage.svelte.js';
 
 	let { data }: PageProps = $props();
 
-	const game = new ComptageGame(data.match);
+	const game = new ComptageGame(data.match, { storageKey: matchStorageKey(data.match.id) });
 </script>
 
 <Comptage {game}>

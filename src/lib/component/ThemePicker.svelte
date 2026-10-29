@@ -132,6 +132,7 @@
 			class="theme-picker-menu"
 			role="radiogroup"
 			aria-label="Choix du thème"
+			tabindex="-1"
 			onmouseleave={restore}
 		>
 			{#each OPTIONS as option (option.id)}

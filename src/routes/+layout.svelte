@@ -7,11 +7,12 @@
 	import '../assets/css/themes/app.css';
 	import '../assets/css/themes/brutalist.css';
 	import '../assets/css/themes/skeuomorphe.css';
-	import ThemePicker, { type Theme } from '$lib/components/ThemePicker.svelte';
+	import ThemePicker, { type Theme } from '$lib/component/ThemePicker.svelte';
 	import favicon from '$lib/assets/favicon.ico';
 	import { getFlash } from 'sveltekit-flash-message';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { page } from '$app/state';
+	import { dev } from '$app/environment';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
@@ -41,13 +42,20 @@
 
 	// Register service worker for PWA - only once on mount
 	onMount(() => {
-		if ('serviceWorker' in navigator) {
+		// No sw.js is served by the dev server (devOptions.enabled is false): drop any worker
+		// registered earlier on this origin, otherwise the browser keeps polling /sw.js (404)
+		if (dev && 'serviceWorker' in navigator) {
+			navigator.serviceWorker
+				.getRegistrations()
+				.then((registrations) => registrations.forEach((r) => r.unregister()))
+				.catch(() => {});
+		}
+		if (!dev && 'serviceWorker' in navigator) {
+			// Purge the HTML cache left by earlier versions of the service worker
+			caches?.delete('pages-cache').catch(() => {});
 			// Always register from root scope
 			navigator.serviceWorker
 				.register('/sw.js', { scope: '/' })
-				.then((registration) => {
-					console.log('✅ Service Worker registered:', registration.scope);
-				})
 				.catch((error) => {
 					console.error('❌ Service Worker registration error:', error);
 				});
@@ -160,8 +168,13 @@
 	</header>
 
 	{#if mobileMenuOpen}
-		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="menu-overlay" onclick={closeMobileMenu}></div>
+		<button
+			type="button"
+			class="menu-overlay"
+			aria-label="Fermer le menu"
+			tabindex="-1"
+			onclick={closeMobileMenu}
+		></button>
 	{/if}
 
 	<main>

@@ -2,6 +2,7 @@
 	import type { ComptageGame } from './comptage.svelte.js';
 	import { WINNING_SCORE } from '$lib/scoreUtils';
 	import ScanPanel from './ScanPanel.svelte';
+	import Modal from '$lib/component/Modal.svelte';
 
 	let { game }: { game: ComptageGame } = $props();
 </script>
@@ -101,3 +102,14 @@
 
 	<ScanPanel {game} />
 {/if}
+
+<Modal bind:showModal={game.askBeloteNeeded}>
+	{#snippet header()}
+		<strong>Belote</strong>
+	{/snippet}
+	<p>La belote a-t-elle été nécessaire pour faire le contrat ?</p>
+	<footer>
+		<button type="button" class="secondary" onclick={() => game.answerBeloteNeeded(false)}>Non</button>
+		<button type="button" onclick={() => game.answerBeloteNeeded(true)}>Oui</button>
+	</footer>
+</Modal>

@@ -12,8 +12,8 @@
 		label: new Date(2000, i, 1).toLocaleDateString('fr-FR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase()),
 	}));
 
-	const liveTournament = $derived(data.tournaments.find(t => t.status === 'in_progress'));
-	const otherTournaments = $derived(data.tournaments.filter(t => t.status !== 'in_progress'));
+	const liveTournament = $derived(data.tournaments.find(t => t.status === 'started'));
+	const otherTournaments = $derived(data.tournaments.filter(t => t.status !== 'started'));
 </script>
 
 <a href="/" class="secondary">← Retour</a>
@@ -74,7 +74,10 @@
 		<h3>Nouveau tournoi</h3>
 	{/snippet}
 
-	<form method="POST" action="?/create" use:enhance={() => ({ result }) => { if (result.type === 'success') showCreateModal = false; }}>
+	<form method="POST" action="?/create" use:enhance={() => async ({ result, update }) => {
+		if (result.type === 'success') showCreateModal = false;
+		await update();
+	}}>
 		<label for="name">
 			Nom <small>(optionnel)</small>
 			<input type="text" name="name" id="name" />

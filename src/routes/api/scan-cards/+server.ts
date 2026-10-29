@@ -15,51 +15,75 @@ Example: [{"rank":"A","suit":"♥"},{"rank":"J","suit":"♠"},{"rank":"10","suit
 
 Return ONLY the JSON array, no explanation, no markdown.`;
 
-export const POST: RequestHandler = async ({ request }) => {
-	const formData = await request.formData();
-	const image = formData.get('image') as File | null;
-	const atout = formData.get('atout') as string | null;
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ATOUTS = ['♥', '♦', '♠', '♣', 'TA', 'SA'];
 
-	if (!image || !atout) {
-		return error(400, 'Image et couleur d\'atout requises');
+// Limite par IP, en mémoire : best effort (chaque instance serverless a son propre compteur).
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+const hits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+	const now = Date.now();
+	const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+	recent.push(now);
+	hits.set(ip, recent);
+	if (hits.size > 1000) {
+		for (const [key, times] of hits) {
+			if (times.every((t) => now - t >= RATE_WINDOW_MS)) hits.delete(key);
+		}
+	}
+	return recent.length > RATE_LIMIT;
+}
+
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
+	if (isRateLimited(getClientAddress())) {
+		return error(429, 'Trop de requêtes, réessayez dans une minute');
 	}
 
-	const imageBuffer = await image.arrayBuffer();
-	const base64 = Buffer.from(imageBuffer).toString('base64');
+	const formData = await request.formData();
+	const image = formData.get('image');
+	const atout = formData.get('atout');
 
-	let cards: Card[] = [];
+	if (!(image instanceof File) || typeof atout !== 'string' || !ATOUTS.includes(atout)) {
+		return error(400, 'Image et couleur d\'atout requises');
+	}
+	if (!ALLOWED_MIME_TYPES.includes(image.type)) {
+		return error(415, 'Format d\'image non supporté (JPEG, PNG ou WebP)');
+	}
+	if (image.size > MAX_IMAGE_BYTES) {
+		return error(413, 'Image trop volumineuse (4 Mo maximum)');
+	}
+
+	const base64 = Buffer.from(await image.arrayBuffer()).toString('base64');
+
+	let cards: Card[];
 	try {
 		const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-		const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+		const model = genAI.getGenerativeModel({ model: 'gemini-3.8-flash' });
 
 		const result = await model.generateContent([
-			{
-				inlineData: {
-					data: base64.split(',')[1] || base64,
-					mimeType: 'image/jpeg',
-				}
-			},
-			{
-				text: PROMPT,
-			},
+			{ inlineData: { data: base64, mimeType: image.type } },
+			{ text: PROMPT }
 		]);
 
-		const response = await result.response;
-
-		const text = response.text() ?? '';
-
+		const text = result.response.text() ?? '';
 		const clean = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
 		cards = JSON.parse(clean);
-
-		if (!Array.isArray(cards)) {
-			throw new Error('Format de retour invalide.');
-		}
-
-		if (cards.length === 0 || cards.length % 4 !== 0) {
-			throw new Error(`${cards.length} cartes trouvées, veuillez refaire une photo en montrant toutes les cartes.`);
-		}
 	} catch (e) {
-		return error(500, `Impossible d\'analyser la réponse du modèle: ${e.message}`);
+		const message = e instanceof Error ? e.message : String(e);
+		return error(500, `Impossible d'analyser la réponse du modèle: ${message}`);
+	}
+
+	if (!Array.isArray(cards)) {
+		return error(500, 'Impossible d\'analyser la réponse du modèle: format de retour invalide');
+	}
+	if (cards.length === 0 || cards.length % 4 !== 0) {
+		return error(
+			422,
+			`${cards.length} cartes trouvées, veuillez refaire une photo en montrant toutes les cartes.`
+		);
 	}
 
 	const points = calculateTrickPoints(cards, atout as AtoutSuit);

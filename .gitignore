@@ -3,6 +3,8 @@ CLAUDE.md
 .claude
 .agents
 
+supabase/.*
+
 # Output
 .output
 .vercel

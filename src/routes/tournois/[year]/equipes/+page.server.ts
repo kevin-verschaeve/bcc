@@ -1,3 +1,4 @@
+import { fail } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
@@ -21,14 +22,22 @@ export const actions = {
 	delete: async ({ request, cookies, locals: { supabase } }) => {
     const formData = await request.formData();
 
-    await supabase.from('tournament_teams').delete().eq('id', formData.get('tournament_team'));
+    const { error } = await supabase.from('tournament_teams').delete().eq('id', formData.get('tournament_team'));
+    if (error) {
+      setFlash({type: 'error', message: error.message}, cookies);
+      return fail(500, {message: error.message});
+    }
 
     setFlash({type: 'success', message: 'Tournoi supprimé avec succès !'}, cookies);
 	},
 	addTeam: async ({ request, cookies, locals: { supabase } }) => {
     const formData = await request.formData();
 
-    await supabase.from('tournament_teams').insert({team: formData.get('team_id'), tournament: formData.get('tournament_id')})
+    const { error } = await supabase.from('tournament_teams').insert({team: formData.get('team_id'), tournament: formData.get('tournament_id')});
+    if (error) {
+      setFlash({type: 'error', message: error.message}, cookies);
+      return fail(500, {message: error.message});
+    }
     setFlash({type: 'success', message: 'Équipe ajoutée au tournoi avec succès !'}, cookies);
 	}
 } satisfies Actions;

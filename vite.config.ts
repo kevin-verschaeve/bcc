@@ -42,21 +42,12 @@ export default defineConfig(({ mode }) => ({
 			},
 			workbox: {
 				globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,woff2}'],
-				// Don't use NavigationRoute - let SvelteKit handle navigation
+				// Navigations (SSR HTML) go straight to the network: the content is dynamic
+				// (scores, rankings) and must never be served stale from the service worker.
 				navigateFallback: null,
+				// Drop outdated precaches when a new service worker takes over
+				cleanupOutdatedCaches: true,
 				runtimeCaching: [
-					{
-						// Cache navigation requests (SvelteKit pages)
-						urlPattern: ({ request }) => request.mode === 'navigate',
-						handler: 'NetworkFirst',
-						options: {
-							cacheName: 'pages-cache',
-							expiration: {
-								maxEntries: 20,
-								maxAgeSeconds: 60 * 60 // 1 hour
-							}
-						}
-					},
 					{
 						urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
 						handler: 'NetworkFirst',

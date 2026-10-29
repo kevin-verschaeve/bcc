@@ -1,4 +1,4 @@
-import { redirect, error } from '@sveltejs/kit';
+import { redirect, error, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types'
 import type { Actions } from './$types';
 import { generateTournamentSchedule } from '$lib/MatchGenerator';
@@ -43,25 +43,46 @@ export const actions = {
         return;
       }
 
-      const { data: tournament } = await supabase.from('tournaments')
-        .update({status: 'started'})
-        .eq('id', formData.get('tournament'))
+      if (teams.length % 2 !== 0) {
+        setFlash({type: 'error', message: 'Le nombre d\'équipes doit être pair pour démarrer le tournoi.'}, cookies);
+        return fail(400, {message: 'Nombre d\'équipes impair'});
+      }
+
+      const { data: tournament, error: tournamentError } = await supabase.from('tournaments')
         .select()
+        .eq('id', formData.get('tournament'))
         .single();
+      if (tournamentError || !tournament) {
+        const message = tournamentError?.message ?? 'Tournoi introuvable';
+        setFlash({type: 'error', message}, cookies);
+        return fail(500, {message});
+      }
 
-      const schedule = generateTournamentSchedule(tournament, teams);
+      const matchs = generateTournamentSchedule(tournament, teams).flatMap((day, index) =>
+        day.map((meet) => ({
+          number: index + 1,
+          tournament: tournament.id,
+          team1: meet.team1.team,
+          team2: meet.team2.team,
+        }))
+      );
 
-      let i = 1;
-      for (let day of schedule) {
-        for(let meet of day) {
-          await supabase.from('matchs').insert({
-            number: i,
-            tournament: meet.tournament.id,
-            team1: meet.team1.team,
-            team2: meet.team2.team,
-          });
-        }
-        i++;
+      // Un seul insert (atomique) : tout le calendrier ou rien.
+      const { error: insertError } = await supabase.from('matchs').insert(matchs);
+      if (insertError) {
+        setFlash({type: 'error', message: insertError.message}, cookies);
+        return fail(500, {message: insertError.message});
+      }
+
+      // Le statut ne change qu'une fois le calendrier créé.
+      const { error: updateError } = await supabase.from('tournaments')
+        .update({status: 'started'})
+        .eq('id', tournament.id);
+      if (updateError) {
+        // Évite un calendrier orphelin sur un tournoi resté « not_started ».
+        await supabase.from('matchs').delete().eq('tournament', tournament.id);
+        setFlash({type: 'error', message: updateError.message}, cookies);
+        return fail(500, {message: updateError.message});
       }
 
       setFlash({type: 'success', message: 'Tournoi démarré avec succès !'}, cookies);

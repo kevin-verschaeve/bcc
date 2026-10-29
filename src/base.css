@@ -1275,6 +1275,12 @@ dialog article {
 	.menu-overlay {
 		position: fixed;
 		inset: 0;
+		width: auto;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
 		background: var(--overlay-bg);
 		z-index: 9997;
 	}
@@ -2692,6 +2698,15 @@ dialog h4 {
 	transform: var(--btn-hover-transform);
 	box-shadow: var(--shadow-sm);
 }
+.coinche-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+}
+.coinche-grid .contract-btn {
+	font-size: 0.75rem;
+	padding: 10px 2px;
+}
 .suits-grid {
 	display: grid;
 	grid-template-columns: repeat(6, 1fr);
@@ -2721,12 +2736,19 @@ dialog h4 {
 .suit-btn.red:hover {
 	color: var(--danger);
 }
-.suit-btn.selected {
+.suit-btn.selected,
+.suit-btn.selected:hover,
+.suit-btn.selected:focus,
+.suit-btn.selected:active {
 	background: var(--accent);
+	color: var(--ink);
 	transform: var(--btn-hover-transform);
 	box-shadow: var(--shadow-sm);
 }
-.suit-btn.red.selected {
+.suit-btn.red.selected,
+.suit-btn.red.selected:hover,
+.suit-btn.red.selected:focus,
+.suit-btn.red.selected:active {
 	color: var(--danger);
 }
 .players-row {
@@ -2746,6 +2768,15 @@ dialog h4 {
 	letter-spacing: var(--letter-spacing-label);
 	text-transform: var(--text-transform-ui);
 	margin-bottom: 2px;
+}
+/* label sits on the light page, not on the dark scoreboard: use the base team colours */
+.players-team-label.team1-color,
+.setup-team-label.team1-color {
+	color: var(--color-team1);
+}
+.players-team-label.team2-color,
+.setup-team-label.team2-color {
+	color: var(--color-team2);
 }
 .players-team .player-btn {
 	font-family: var(--font-mono);

@@ -31,16 +31,16 @@
 		<span class="badge">SAISON {data.tournament.year}/{(data.tournament.year + 1).toString().slice(2)}</span>
 		{#if data.tournament.status === 'not_started'}
 			<span class="status-badge pending">Non démarré</span>
-		{:else if data.tournament.status === 'in_progress'}
+		{:else if data.tournament.status === 'started'}
 			<span class="status-badge active">En cours</span>
 		{/if}
 	</div>
 	<h1 class="page-header-title">{data.tournament.name || `Saison ${data.tournament.year}`}</h1>
 	<p class="page-header-subtitle">Tournoi {data.tournament.year} – {data.tournament.year + 1}</p>
 
-	{#if data.tournament.status === 'in_progress'}
+	{#if data.tournament.status === 'started'}
 		<a href="/tournois/{data.tournament.year}/jour/{currentDayNumber}" role="button">
-			ZAP MATCHS DU MOIS →
+			MATCHS DU MOIS →
 		</a>
 	{/if}
 
@@ -59,7 +59,7 @@
 	<h3 class="section-title">Jours de tournoi</h3>
 	<div class="day-strip">
 		{#each days as number}
-			{@const isLive = number === currentDayNumber && data.tournament.status === 'in_progress'}
+			{@const isLive = number === currentDayNumber && data.tournament.status === 'started'}
 			<a href="/tournois/{data.tournament.year}/jour/{number}" class="day-cell" class:live={isLive}>
 				<div class="day-cell-num">J{number}</div>
 				<div class="day-cell-month">{getMonthFromNumber(number, data.tournament.month_start).slice(0, 3).toUpperCase()}</div>

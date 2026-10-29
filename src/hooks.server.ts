@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { dev } from '$app/environment'
 import { type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
@@ -11,6 +12,7 @@ const supabase: Handle = async ({ event, resolve }) => {
    * The Supabase client gets the Auth token from the request cookies.
    */
   event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    global: { fetch: event.fetch },
     cookies: {
       getAll: () => event.cookies.getAll(),
       /**
@@ -81,4 +83,16 @@ const supabase: Handle = async ({ event, resolve }) => {
 //   return resolve(event)
 // }
 
-export const handle: Handle = sequence(supabase/*, authGuard */)
+// Dev only: a service worker registered earlier on this origin keeps polling /sw.js.
+// Answer with a worker that unregisters itself so the stale one goes away and the 404s stop.
+const devServiceWorkerCleanup: Handle = async ({ event, resolve }) => {
+  if (dev && event.url.pathname === '/sw.js') {
+    return new Response(
+      'self.addEventListener("install",()=>self.skipWaiting());self.addEventListener("activate",()=>self.registration.unregister());',
+      { headers: { 'content-type': 'text/javascript', 'cache-control': 'no-store' } },
+    )
+  }
+  return resolve(event)
+}
+
+export const handle: Handle = sequence(devServiceWorkerCleanup, supabase/*, authGuard */)
