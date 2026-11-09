@@ -2680,7 +2680,8 @@ dialog h4 {
 	grid-row: 1 / span 2;
 	min-width: 0;
 	writing-mode: vertical-rl;
-	letter-spacing: 3px;
+	text-orientation: upright;
+	letter-spacing: 0;
 }
 .contract-btn:hover {
 	background: var(--control-hover-bg);
