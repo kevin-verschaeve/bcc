@@ -69,6 +69,38 @@
 {/if}
 
 <article>
+	<h3 class="section-title section-title-center">Classement général</h3>
+	<div class="overflow-auto">
+		<table class="striped" role="grid">
+			<thead>
+				<tr>
+					<th class="table-col-rank">#</th>
+					<th>Équipe</th>
+					<th class="text-center">Pts</th>
+					<th class="text-center">Goal avg</th>
+					<th class="text-center">Matchs</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each rankedTeams as { team_name, totalPoints, totalGoalAverage, matchCount }, index}
+					<tr class={index < 3 ? 'ranking-row-podium' : ''}>
+						<td class="ranking-position">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}</td>
+						<td><strong class="ranking-team-name">{team_name}</strong></td>
+						<td class="text-center"><strong class="table-cell-primary">{totalPoints}</strong></td>
+						<td class="text-center table-cell-emphasized" style:color={totalGoalAverage < 0 ? 'var(--danger)' : 'var(--ink)'}>
+							{totalGoalAverage > 0 ? '+' : ''}{totalGoalAverage}
+						</td>
+						<td class="text-center table-cell-emphasized">{matchCount}</td>
+					</tr>
+				{:else}
+					<tr><td colspan="5" class="text-center"><em class="table-cell-muted">Aucun match joué</em></td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</article>
+
+<article class="mt-lg">
 	<h3 class="section-title">Résultats par jour</h3>
 	<div class="overflow-auto">
 		<table class="striped" role="grid">
@@ -107,38 +139,6 @@
 					</tr>
 				{:else}
 					<tr><td colspan="{(days.length * 2) + 1}" class="text-center"><em class="table-cell-muted">Aucun match joué</em></td></tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-</article>
-
-<article class="mt-lg">
-	<h3 class="section-title section-title-center">Classement général</h3>
-	<div class="overflow-auto">
-		<table class="striped" role="grid">
-			<thead>
-				<tr>
-					<th class="table-col-rank">#</th>
-					<th>Équipe</th>
-					<th class="text-center">Pts</th>
-					<th class="text-center">Goal avg</th>
-					<th class="text-center">Matchs</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each rankedTeams as { team_name, totalPoints, totalGoalAverage, matchCount }, index}
-					<tr class={index < 3 ? 'ranking-row-podium' : ''}>
-						<td class="ranking-position">{index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}</td>
-						<td><strong class="ranking-team-name">{team_name}</strong></td>
-						<td class="text-center"><strong class="table-cell-primary">{totalPoints}</strong></td>
-						<td class="text-center table-cell-emphasized" style:color={totalGoalAverage < 0 ? 'var(--danger)' : 'var(--ink)'}>
-							{totalGoalAverage > 0 ? '+' : ''}{totalGoalAverage}
-						</td>
-						<td class="text-center table-cell-emphasized">{matchCount}</td>
-					</tr>
-				{:else}
-					<tr><td colspan="5" class="text-center"><em class="table-cell-muted">Aucun match joué</em></td></tr>
 				{/each}
 			</tbody>
 		</table>
