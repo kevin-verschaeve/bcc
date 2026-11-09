@@ -28,6 +28,7 @@
 			<button
 				type="button"
 				class="contract-btn"
+				class:special={points === 'Capot'}
 				class:selected={game.selectedPoints === points}
 				onclick={() => game.selectPoints(points)}
 			>{points}</button>
