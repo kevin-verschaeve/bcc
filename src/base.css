@@ -2674,6 +2674,14 @@ dialog h4 {
 	text-transform: var(--text-transform-ui);
 	letter-spacing: 0.3px;
 }
+/* Capot : grande case sur les deux lignes, dans la 5e colonne */
+.points-grid .contract-btn.special {
+	grid-column: 5;
+	grid-row: 1 / span 2;
+	min-width: 0;
+	writing-mode: vertical-rl;
+	letter-spacing: 3px;
+}
 .contract-btn:hover {
 	background: var(--control-hover-bg);
 	color: var(--control-hover-color);

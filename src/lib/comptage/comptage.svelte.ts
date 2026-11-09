@@ -12,8 +12,7 @@ export const pointOptions = [
 	'130',
 	'140',
 	'150',
-	'Capot',
-	'Générale'
+	'Capot'
 ] as const;
 
 export const coincheOptions = [
