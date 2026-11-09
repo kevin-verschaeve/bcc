@@ -318,8 +318,11 @@ export class ComptageGame {
 
 		const numericContract = !isNaN(contract);
 		// L'équipe preneuse a la belote : elle a pu servir à faire le contrat, on demande à l'utilisateur
+		// (sauf Capot/Générale : réussis, la belote ne change rien, elle est comptée en plus)
 		const askBelote =
-			numericContract && this.selectedTeam !== null && this.teamBelote === this.selectedTeam;
+			numericContract &&
+			!(this.selectedPoints! in SPECIAL_CONTRACT_POINTS) &&
+			this.selectedTeam !== null && this.teamBelote === this.selectedTeam;
 
 		if (value < 80 && value !== 20) {
 			toast.error('Le score ne peut pas être inférieur à 80 (sauf 20 pour la belote) !');
