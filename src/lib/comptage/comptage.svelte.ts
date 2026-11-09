@@ -23,6 +23,9 @@ export const coincheOptions = [
 ] as const;
 export type CoincheLevel = (typeof coincheOptions)[number]['value'];
 
+/** Points marqués par un contrat spécial. */
+const SPECIAL_CONTRACT_POINTS: Record<string, number> = { Capot: 250, Générale: 500 };
+
 const MATCH_STORAGE_PREFIX = 'bcc-comptage-';
 const LEGACY_STORAGE_KEY = 'bcc-comptage';
 
@@ -132,7 +135,7 @@ export class ComptageGame {
 			this.dealerIndex = initial.dealerIndex ?? 0;
 		}
 
-		this.pointInput = Number(this.selectedPoints);
+		this.pointInput = this.#defaultPointInput();
 
 		$effect(() => {
 			this.showSelection =
@@ -274,7 +277,17 @@ export class ComptageGame {
 
 	selectPoints(points: string) {
 		this.selectedPoints = this.selectedPoints === points ? null : points;
-		this.pointInput = Number(this.selectedPoints);
+		this.pointInput = this.#defaultPointInput();
+	}
+
+	// Valeur numérique du contrat (Capot = 250, Générale = 500), NaN si aucun contrat
+	#contractValue() {
+		if (this.selectedPoints === null) return NaN;
+		return SPECIAL_CONTRACT_POINTS[this.selectedPoints] ?? Number(this.selectedPoints);
+	}
+
+	#defaultPointInput() {
+		return this.selectedPoints === null ? 0 : this.#contractValue();
 	}
 
 	selectCoinche(level: CoincheLevel) {
@@ -301,9 +314,9 @@ export class ComptageGame {
 
 	addPoints() {
 		const value = parseInt(String(this.pointInput));
-		const contract = Number(this.selectedPoints);
+		const contract = this.#contractValue();
 
-		const numericContract = this.selectedPoints !== null && !isNaN(contract);
+		const numericContract = !isNaN(contract);
 		// L'équipe preneuse a la belote : elle a pu servir à faire le contrat, on demande à l'utilisateur
 		const askBelote =
 			numericContract && this.selectedTeam !== null && this.teamBelote === this.selectedTeam;
@@ -327,10 +340,10 @@ export class ComptageGame {
 		}
 	}
 
-	// On ne marque que son contrat (pas les points réalisés en plus) ; Capot/Générale : points saisis
+	// On ne marque que son contrat (pas les points réalisés en plus) ; Capot = 250, Générale = 500
 	#scoredPoints(value: number) {
-		const contract = Number(this.selectedPoints);
-		return this.selectedPoints !== null && !isNaN(contract) ? contract : value;
+		const contract = this.#contractValue();
+		return isNaN(contract) ? value : contract;
 	}
 
 	// Si la belote était nécessaire au contrat, elle n'est pas comptée : seul le contrat est gardé
